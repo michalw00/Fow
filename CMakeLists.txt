@@ -3,46 +3,64 @@ project(Fow)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(BUILD_GAMES OFF CACHE BOOL "" FORCE)
+# Fetching raylib
+include(FetchContent)
+set(FETCHCONTENT_QUIET FALSE)
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # Disable raylib examples
+set(BUILD_GAMES OFF CACHE BOOL "" FORCE)    # Disable raylib example games
 
-add_subdirectory(external/raylib)
-add_subdirectory(external/raylib_cpp)
+FetchContent_Declare(
+    raylib
+    GIT_REPOSITORY "https://github.com/raysan5/raylib.git"
+    GIT_TAG "master"
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(raylib)
 
-file(GLOB_RECURSE RAYLIB_CPP_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/external/raylib_cpp/include/*.hpp)
+# Fetching raylib-cpp
+FetchContent_Declare(
+    raylib_cpp
+    GIT_REPOSITORY "https://github.com/RobLoach/raylib-cpp.git"
+    GIT_TAG "master"
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(raylib_cpp)
+
+file(GLOB_RECURSE RAYLIB_CPP_HEADERS ${CMAKE_BINARY_DIR}/_deps/raylib_cpp-src/include/*.hpp)
 add_custom_target(raylib_cpp_sources SOURCES ${RAYLIB_CPP_HEADERS})
 
+# Adding source files
 set(SOURCE_LIST
-src/main.cc
+    src/main.cc
 
-src/match/match.h
-src/match/match.cc   	
-src/match/player.h 
-src/match/player.cc
-src/match/map/map.h
-src/match/map/map.cc
-src/match/map/tile.h
-src/match/map/tile.cc
-	
-	
-src/core/core.h
-src/core/core.cc
+    src/match/match.h
+    src/match/match.cc
+    src/match/player.h
+    src/match/player.cc
+    src/match/map/map.h
+    src/match/map/map.cc
+    src/match/map/tile.h
+    src/match/map/tile.cc
 
-src/core/screen/screen.h
-src/core/screen/menu_screen.h
-src/core/screen/menu_screen.cc
+    src/core/core.h
+    src/core/core.cc
 
+    src/core/screen/screen.h
+    src/core/screen/menu_screen.h
+    src/core/screen/menu_screen.cc
 
-src/input/input.h
-src/input/input.cc
-	
+    src/input/input.h
+    src/input/input.cc
 )
 
 add_executable(Fow ${SOURCE_LIST})
 
+# Organize source files into folders for Visual Studio
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_LIST})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/external/raylib_cpp/include FILES ${RAYLIB_CPP_HEADERS})
+source_group(TREE ${CMAKE_BINARY_DIR}/_deps/raylib_cpp-src/include FILES ${RAYLIB_CPP_HEADERS})
 
+# Set the startup project for Visual Studio
 set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "Fow")
 
+# Link libraries
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib raylib_cpp)
