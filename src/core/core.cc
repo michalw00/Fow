@@ -16,7 +16,7 @@ namespace fow {
 
     Core::Core() {
         InitWindow();
-        current_screen_ = ScreenType::kMenu;
+        screen_controller_ = std::make_unique<ScreenController>(ScreenType::kMenu);
     }
 
     void Core::InitWindow() {
@@ -24,14 +24,13 @@ namespace fow {
         window_.SetFullscreen(0);
         window_.SetExitKey(KEY_NULL);
         window_.SetTargetFPS(60);
+
     }
 
     void Core::Loop() {
         while (!window_.ShouldClose()) {
-            window_.BeginDrawing();
-            ClearBackground(RAYWHITE);
-
-            window_.EndDrawing();
+            
+            screen_controller_->DrawScreen(window_);
         }
 
         window_.Close();

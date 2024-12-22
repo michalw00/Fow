@@ -1,8 +1,11 @@
 #pragma once
 
+#include <memory>
+
 #include <Window.hpp>
 
 #include "screen/screen.h"
+#include "screen/screen_controller.h"
 
 namespace fow {
 
@@ -18,8 +21,7 @@ namespace fow {
         void InitWindow();
         void Loop();
 
-
-        ScreenType current_screen_;
         RWindow window_;
+        std::unique_ptr<ScreenController> screen_controller_;
     };
 }

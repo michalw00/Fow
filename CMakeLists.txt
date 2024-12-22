@@ -31,26 +31,31 @@ add_custom_target(raylib_cpp_sources SOURCES ${RAYLIB_CPP_HEADERS})
 
 # Adding source files
 set(SOURCE_LIST
-    src/main.cc
 
-    src/match/match.h
-    src/match/match.cc
-    src/match/player.h
-    src/match/player.cc
-    src/match/map/map.h
-    src/match/map/map.cc
-    src/match/map/tile.h
-    src/match/map/tile.cc
+src/main.cc
 
-    src/core/core.h
-    src/core/core.cc
+src/core/core.h
+src/core/core.cc
 
-    src/core/screen/screen.h
-    src/core/screen/menu_screen.h
-    src/core/screen/menu_screen.cc
+src/match/match.h
+src/match/match.cc
+src/match/player.h
+src/match/player.cc
+src/match/map/map.h
+src/match/map/map.cc
+src/match/map/tile.h
+src/match/map/tile.cc
 
-    src/input/input.h
-    src/input/input.cc
+src/core/screen/screen.h
+src/core/screen/screen.cc
+src/core/screen/screen_controller.h
+src/core/screen/screen_controller.cc
+src/core/screen/menu_screen.h
+src/core/screen/menu_screen.cc
+
+src/input/input.h
+src/input/input.cc
+
 )
 
 add_executable(Fow ${SOURCE_LIST})
