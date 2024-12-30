@@ -22,7 +22,7 @@ namespace fow {
 		}
 		float mouse_wheel = GetMouseWheelMove();
 		if (std::abs(mouse_wheel) > 0.0f) {
-			inputs.Zoom(camera_.get(), mouse_wheel * 0.05f, 0.1f, 2.f);
+			inputs.Zoom(camera_.get(), mouse_wheel * 0.05f, 0.5f, 2.f);
 		}
 
 		current_screen_->Update();
