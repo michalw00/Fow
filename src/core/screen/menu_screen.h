@@ -2,6 +2,8 @@
 
 #include "screen.h"
 
+#include <Window.hpp>
+
 namespace fow {
 
     class MenuScreen : public Screen {

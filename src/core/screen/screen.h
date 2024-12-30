@@ -10,6 +10,7 @@
 #include <Texture.hpp>
 #include <Vector2.hpp>
 #include <Camera2D.hpp>
+#include <Window.hpp>
 
 namespace fow {
 
@@ -27,18 +28,26 @@ namespace fow {
         virtual void Draw() = 0;
         virtual void Unload() = 0;
         virtual ScreenType Finish() = 0;
-        
+
+        void ScaleTextsPositions(const RWindow& window, float basic_width, float basic_height);
     protected:
         void AddImage(std::string name, RImage image);
         void AddTexture(std::string name, RTexture texture);
         
         void AddText(std::string name, const RText& text);
-        void PlaceText(std::string name, RVector2 position);
-        void PlaceText(const RText& text, RVector2 position);
+        void PlaceText(std::string name, RVector2 position, bool center_around_pos);
+        void PlaceText(RText& text, RVector2 position, bool center_around_pos);
 
-        std::vector<std::pair<RText, RVector2>> drawable_texts_;
-        std::shared_ptr<RCamera2D> camera_;
+        struct DrawableText {
+            RText text;
+            RVector2 position;
+        };
+
+        std::vector<DrawableText> drawable_texts_;
     private:
+        void ScaleText(RText& text, RVector2& position, const RWindow& window, float basic_width, float basic_height);
+        void OffsetFromTextCenter(const RText& text, RVector2& position);
+
         std::map<std::string, RImage> images_;
         std::map<std::string, RTexture> textures_;
         std::map<std::string, RText> texts_;

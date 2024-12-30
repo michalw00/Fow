@@ -17,8 +17,8 @@ namespace fow {
         void operator=(Core const&) = delete;
         
     private:
-        Core();
-        void InitWindow();
+        Core() {};
+        void InitWindow(int width, int height, bool fullscreen);
         void Loop();
 
         RWindow window_;
