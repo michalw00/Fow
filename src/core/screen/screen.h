@@ -31,10 +31,9 @@ namespace fow {
 
         void ScaleTextsPositions(const RWindow& window, float basic_width, float basic_height);
     protected:
-        void AddImage(std::string name, RImage image);
-        void AddTexture(std::string name, RTexture texture);
-        
-        void AddText(std::string name, const RText& text);
+        void AddImage(std::string&& name, RImage&& image);
+        void AddTexture(std::string&& name, RTexture&& texture);      
+        void AddText(std::string&& name, RText&& text);
         void PlaceText(std::string name, RVector2 position, bool center_around_pos);
         void PlaceText(RText& text, RVector2 position, bool center_around_pos);
 

@@ -16,7 +16,7 @@ namespace fow {
     }
 
     void MenuScreen::Draw() {
-        for (auto drawable_text : drawable_texts_) {
+        for (auto&& drawable_text : drawable_texts_) {
             RText& text = drawable_text.text;
 
             RVector2& position = drawable_text.position;

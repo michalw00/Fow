@@ -8,16 +8,16 @@ namespace fow {
         }
     }
 
-    void Screen::AddImage(std::string name, RImage image) {
-        images_.emplace(name, image);
+    void Screen::AddImage(std::string&& name, RImage&& image) {
+        images_.emplace(std::move(name), std::move(image));
     }
 
-    void Screen::AddTexture(std::string name, RTexture texture) {
+    void Screen::AddTexture(std::string&& name, RTexture&& texture) {
         textures_.emplace(std::move(name), std::move(texture));
     }
 
-    void Screen::AddText(std::string name, const RText& text) {
-        texts_.emplace(name, text);
+    void Screen::AddText(std::string&& name, RText&& text) {
+        texts_.emplace(std::move(name), std::move(text));
     }
 
     void Screen::PlaceText(std::string name, RVector2 position, bool center_around_pos) {
