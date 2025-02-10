@@ -37,6 +37,23 @@ src/main.cc
 src/core/core.h
 src/core/core.cc
 
+src/core/screen/screen.h
+src/core/screen/screen.cc
+src/core/screen/screen_controller.h
+src/core/screen/screen_controller.cc
+src/core/screen/menu_screen.h
+src/core/screen/menu_screen.cc
+
+src/drawable/button.h
+src/drawable/button.cc
+src/drawable/drawable.h
+src/drawable/drawable.cc
+src/drawable/text.h
+src/drawable/text.cc
+
+src/input/input.h
+src/input/input.cc
+
 src/match/match.h
 src/match/match.cc
 src/match/player.h
@@ -46,15 +63,7 @@ src/match/map/map.cc
 src/match/map/tile.h
 src/match/map/tile.cc
 
-src/core/screen/screen.h
-src/core/screen/screen.cc
-src/core/screen/screen_controller.h
-src/core/screen/screen_controller.cc
-src/core/screen/menu_screen.h
-src/core/screen/menu_screen.cc
 
-src/input/input.h
-src/input/input.cc
 
 )
 

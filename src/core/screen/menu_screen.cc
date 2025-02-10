@@ -13,28 +13,17 @@ namespace fow {
     void MenuScreen::Init() {
         AddText("Title", RText("FOW", 100.0f));
         AddText("Leave", RText("Leave", 50.f));
-    }
-
-    void MenuScreen::Draw() {
-        for (auto&& drawable_text : drawable_texts_) {
-            RText& text = drawable_text.text;
-
-            RVector2& position = drawable_text.position;
-
-            text.Draw(position);
-        }
+        AddText("Start game", RText("Start game", 50.f));
     }
 
     void MenuScreen::Update() {
-        drawable_texts_.clear();
 
         RVector2 title_position = { 0, -200 };
-        PlaceText("Title", title_position, true);
+        PlaceText(texts_["Title"], title_position, true);
+        RVector2 start_game_position = { 0, 0 };
+        PlaceButton(texts_["Start game"], start_game_position, true, []() {});
         RVector2 leave_position = { 0, 100 }; 
-        PlaceText("Leave", leave_position, true);
-    }
-
-    void MenuScreen::Unload() {
+        PlaceButton(texts_["Leave"], leave_position, true, []() {});
 
     }
 

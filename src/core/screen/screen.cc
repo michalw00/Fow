@@ -1,10 +1,26 @@
 #include "screen.h"
 
+#include "../../drawable/text.h"
+
 namespace fow {
 
+    void Screen::Draw() {
+        for (auto& drawable : drawables_) {
+            drawable->Draw();
+        }
+        drawables_.clear();
+    }
+
+    void Screen::CheckHoverButtons(const RCamera2D& camera) {
+        for (auto& button : buttons_) {
+            button->CheckMouseHover(camera);
+        }
+    }
+
     void Screen::ScaleTextsPositions(const RWindow& window, float basic_width, float basic_height) {
-        for (auto& drawable_text : drawable_texts_) {   
-            ScaleText(drawable_text.text, drawable_text.position, window, basic_width, basic_height);
+        RVector2 scale = { window.GetWidth() / basic_width, window.GetHeight() / basic_height };
+        for (auto& drawable : drawables_) {   
+            drawable->Scale(scale);
         }
     }
 
@@ -20,34 +36,16 @@ namespace fow {
         texts_.emplace(std::move(name), std::move(text));
     }
 
-    void Screen::PlaceText(std::string name, RVector2 position, bool center_around_pos) {
-        RText text = texts_[name];
+    void Screen::PlaceText(RText text, RVector2 position, bool centered) {
+        text.SetSpacing(10.f);        
+        drawables_.push_back(std::make_shared<Text>(position, text, centered));
+    }
+
+    void Screen::PlaceButton(RText text, RVector2 position, bool centered, std::function<void()> action) {
         text.SetSpacing(10.f);
-        if (center_around_pos) {
-            OffsetFromTextCenter(text, position);
-        }
-        drawable_texts_.push_back({ text, position });
-    }
-
-    void Screen::PlaceText(RText& text, RVector2 position, bool center_around_pos) {
-        text.SetSpacing(10.f);
-        if (center_around_pos) {
-            OffsetFromTextCenter(text, position);
-        }
-        drawable_texts_.push_back({ text, position });
-    }
-
-    void Screen::ScaleText(RText& text, RVector2& position, const RWindow& window, float basic_width, float basic_height) {
-        RVector2 scale = { window.GetWidth() / basic_width, window.GetHeight() / basic_height };
-        text.spacing *= scale.x;
-        text.fontSize *= scale.x;
-        position *= scale;
-    }
-
-    void Screen::OffsetFromTextCenter(const RText& text, RVector2& position) {
-        RVector2 offset = text.MeasureEx();
-        offset /= 2.f;
-        position -= offset;
+        std::shared_ptr<TextButton> text_button = std::make_shared<TextButton>(position, text, centered, action);
+        drawables_.push_back(text_button);
+        buttons_.push_back(text_button);
     }
 
 }

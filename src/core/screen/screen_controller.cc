@@ -32,6 +32,7 @@ namespace fow {
 		camera_->BeginMode();
 
 		window_.ClearBackground(RColor{});
+		current_screen_->CheckHoverButtons(*camera_);
 		current_screen_->Draw();
 
 		camera_->EndMode();
