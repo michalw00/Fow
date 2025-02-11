@@ -16,7 +16,7 @@ namespace fow {
     public:
         Button(RVector2 position, std::function<void()> action);
         virtual ~Button() {}; 
-        void CheckMouseHover(const RCamera2D& camera);
+        void CheckMouse(const RCamera2D& camera);
     protected:
         bool is_hovered = 0;
         RRectangle area_;

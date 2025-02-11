@@ -18,10 +18,8 @@ namespace fow {
         
     private:
         Core() {};
-        void InitWindow(int width, int height, bool fullscreen);
-        void Loop();
+        std::unique_ptr<RWindow> InitWindow(int width, int height, bool fullscreen);
 
-        RWindow window_;
         std::unique_ptr<ScreenController> screen_controller_;
     };
 }

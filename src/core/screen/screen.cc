@@ -4,21 +4,22 @@
 
 namespace fow {
 
-    void Screen::Draw() {
+    void Screen::Draw(RCamera2D& camera) {
+        camera.BeginMode();
         for (auto& drawable : drawables_) {
             drawable->Draw();
         }
-        drawables_.clear();
+        camera.EndMode();
     }
 
-    void Screen::CheckHoverButtons(const RCamera2D& camera) {
+    void Screen::CheckButtons(const RCamera2D& camera) {
         for (auto& button : buttons_) {
-            button->CheckMouseHover(camera);
+            button->CheckMouse(camera);
         }
     }
 
-    void Screen::ScaleTextsPositions(const RWindow& window, float basic_width, float basic_height) {
-        RVector2 scale = { window.GetWidth() / basic_width, window.GetHeight() / basic_height };
+    void Screen::ScaleTextsPositions(float window_width, float window_height, float basic_width, float basic_height) {
+        RVector2 scale = { window_width / basic_width, window_height / basic_height };
         for (auto& drawable : drawables_) {   
             drawable->Scale(scale);
         }
@@ -33,16 +34,15 @@ namespace fow {
     }
 
     void Screen::AddText(std::string&& name, RText&& text) {
+        text.SetSpacing(10.f);
         texts_.emplace(std::move(name), std::move(text));
     }
 
-    void Screen::PlaceText(RText text, RVector2 position, bool centered) {
-        text.SetSpacing(10.f);        
+    void Screen::PlaceText(RText text, RVector2 position, bool centered) {               
         drawables_.push_back(std::make_shared<Text>(position, text, centered));
     }
 
     void Screen::PlaceButton(RText text, RVector2 position, bool centered, std::function<void()> action) {
-        text.SetSpacing(10.f);
         std::shared_ptr<TextButton> text_button = std::make_shared<TextButton>(position, text, centered, action);
         drawables_.push_back(text_button);
         buttons_.push_back(text_button);

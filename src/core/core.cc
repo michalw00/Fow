@@ -13,31 +13,23 @@ namespace fow {
 
     void Core::Start() {
         // Initialization 
-        InitWindow(1600, 900, false);
-        screen_controller_ = std::make_unique<ScreenController>(ScreenType::kMenu, window_);
+        std::unique_ptr<RWindow> window = InitWindow(1600, 900, false);
+        screen_controller_ = std::make_unique<ScreenController>(ScreenType::kMenu, std::move(window));
         // Main cycle
-        Loop();
-
+        screen_controller_->ProcessScreen();
     }
 
-    void Core::InitWindow(int width, int height, bool fullscreen) {     
-        window_.Init(width, height, "Fow");      
+    std::unique_ptr<RWindow> Core::InitWindow(int width, int height, bool fullscreen) { 
+        std::unique_ptr<RWindow> window;
+        window->Init(width, height, "Fow");      
         if (fullscreen) {
             int display = GetCurrentMonitor();
-            window_.SetSize(GetMonitorWidth(display), GetMonitorHeight(display));
-            window_.SetFullscreen(fullscreen);
+            window->SetSize(GetMonitorWidth(display), GetMonitorHeight(display));
+            window->SetFullscreen(fullscreen);
         }    
-        window_.SetExitKey(KEY_NULL);
-        window_.SetTargetFPS(60);
+        window->SetExitKey(KEY_NULL);
+        window->SetTargetFPS(60);
 
-    }
-
-    void Core::Loop() {
-        while (!window_.ShouldClose()) {
-            
-            screen_controller_->ProcessScreen();
-        }
-
-        window_.Close();
+        return window;
     }
 }

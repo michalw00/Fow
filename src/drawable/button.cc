@@ -7,9 +7,12 @@ namespace fow {
     Button::Button(RVector2 position, std::function<void()> action)
         : Drawable(position), action_(action) {}
 
-    void Button::CheckMouseHover(const RCamera2D& camera) {
+    void Button::CheckMouse(const RCamera2D& camera) {
         RVector2 mouse_point = camera.GetScreenToWorld(GetMousePosition());
         is_hovered = area_.CheckCollision(mouse_point);
+        if (is_hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            action_();
+        }
     }
 
     TextureButton::TextureButton(RVector2 position, RTexture&& texture, std::function<void()> action)

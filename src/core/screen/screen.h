@@ -32,11 +32,13 @@ namespace fow {
         virtual void Update() = 0;     
         virtual ScreenType Finish() = 0;
 
-        void Draw();
+        void Draw(RCamera2D& camera);
 
-        void CheckHoverButtons(const RCamera2D& camera);
+        void CheckButtons(const RCamera2D& camera);
 
-        void ScaleTextsPositions(const RWindow& window, float basic_width, float basic_height);
+        void ScaleTextsPositions(float window_width, float window_height, float basic_width, float basic_height);
+
+        bool ShouldClose() { return should_close_; }
     protected:
         void AddImage(std::string&& name, RImage&& image);
         void AddTexture(std::string&& name, RTexture&& texture);      
@@ -51,6 +53,8 @@ namespace fow {
         std::unordered_map<std::string, RImage> images_;
         std::unordered_map<std::string, RTexture> textures_;
         std::unordered_map<std::string, RText> texts_;
+
+        bool should_close_ = false;
     };
 
 }
