@@ -62,4 +62,4 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-src/assets/* linguist-vendored = false
+src/assets/* linguist-vendored
