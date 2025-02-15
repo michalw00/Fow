@@ -3,7 +3,7 @@
 #include <Image.hpp>
 #include <Texture.hpp>
 
-#include "../images/test.h"
+#include "../assets/images/test.h"
 #include "../drawable/button/texture_button.h"
 
 namespace fow {

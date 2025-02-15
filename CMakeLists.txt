@@ -70,7 +70,7 @@ src/match/map/tile.cc
 src/menu/menu_screen.h
 src/menu/menu_screen.cc
 
-src/images/test.h
+src/assets/images/test.h
 
 )
 
