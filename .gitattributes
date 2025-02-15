@@ -62,4 +62,4 @@
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
 
-src/assets*.h linguist-vendored = false
+src/assets/* linguist-vendored = false
