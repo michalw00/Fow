@@ -9,10 +9,7 @@ namespace fow {
 	public:
 
 	private:
-		
-		
-
-
+		Map map_;
 	};
 
 }

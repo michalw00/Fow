@@ -1,8 +1,6 @@
 #pragma once 
 
-#include "screen.h"
-
-#include <Window.hpp>
+#include "../core/screen/screen.h"
 
 namespace fow {
 

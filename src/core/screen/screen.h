@@ -1,21 +1,18 @@
 #pragma once
 
+#include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
-#include <memory>
-#include <functional>
 
+#include <Camera2D.hpp>
 #include <Image.hpp>
 #include <Text.hpp>
 #include <Texture.hpp>
-#include <Vector2.hpp>
-#include <Camera2D.hpp>
-#include <Window.hpp>
-#include <Rectangle.hpp>
 
+#include "../../drawable/button/button.h"
 #include "../../drawable/drawable.h"
-#include "../../drawable/button.h"
+#include "../../drawable/text.h"
 
 namespace fow {
 
@@ -26,7 +23,7 @@ namespace fow {
 
     class Screen {
     public:
-        virtual ~Screen() {};
+        virtual ~Screen();
 
         virtual void Init() = 0;
         virtual void Update() = 0;     
@@ -36,25 +33,27 @@ namespace fow {
 
         void CheckButtons(const RCamera2D& camera);
 
-        void ScaleTextsPositions(float window_width, float window_height, float basic_width, float basic_height);
+        void ScalePositions(float window_width, float window_height, float basic_width, float basic_height);
 
-        bool ShouldClose() { return should_close_; }
+        bool ShouldClose() const { return should_close_; }
+        bool ShouldFinish() const { return should_finish_; }
     protected:
         void AddImage(std::string&& name, RImage&& image);
-        void AddTexture(std::string&& name, RTexture&& texture);      
-        void AddText(std::string&& name, RText&& text);
+        void AddTexture(std::string&& name, std::shared_ptr <RTexture> texture);
+        void AddRText(std::string&& name, RText&& rtext);
 
-        void PlaceText(RText text, RVector2 position, bool centered);
-        void PlaceButton(RText text, RVector2 position, bool centered, std::function<void()> action);
+        void PlaceText(std::shared_ptr<Text> text);
+        void PlaceButton(std::shared_ptr<Button> button);
 
         std::vector<std::shared_ptr<Drawable>> drawables_;
         std::vector<std::shared_ptr<Button>> buttons_;
 
         std::unordered_map<std::string, RImage> images_;
-        std::unordered_map<std::string, RTexture> textures_;
-        std::unordered_map<std::string, RText> texts_;
+        std::unordered_map<std::string, std::shared_ptr<RTexture>> textures_;
+        std::unordered_map<std::string, RText> rtexts_;
 
         bool should_close_ = false;
+        bool should_finish_ = false;
     };
 
 }

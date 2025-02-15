@@ -1,7 +1,8 @@
 #include "screen_controller.h"
 
-#include "menu_screen.h"
+#include "../../menu/menu_screen.h"
 #include "../../input/input.h"
+#include "../../match/match_screen.h"
 
 namespace fow {
 
@@ -26,7 +27,7 @@ namespace fow {
 				inputs.Zoom(camera_.get(), mouse_wheel * 0.05f, 0.5f, 2.f);
 			}
 		
-			current_screen_->ScaleTextsPositions(window_->GetWidth(), window_->GetHeight(), 1600, 900);
+			current_screen_->ScalePositions(window_->GetWidth(), window_->GetHeight(), 1600, 900);
 			current_screen_->CheckButtons(*camera_);
 			
 			current_screen_->Update();
@@ -37,6 +38,12 @@ namespace fow {
 			current_screen_->Draw(*camera_);
 
 			window_->EndDrawing();
+
+			if (current_screen_->ShouldFinish()) {
+				ScreenType new_screen_type = current_screen_->Finish();
+				current_screen_ = CreateScreen(new_screen_type);
+				current_screen_->Init();
+			}
 		}
 		window_->Close();
 	}
@@ -48,9 +55,7 @@ namespace fow {
 				break;
 			}
 			case ScreenType::kMatch: {
-				break;
-			}
-			default: {
+				return std::make_shared<MatchScreen>();
 				break;
 			}
 		}

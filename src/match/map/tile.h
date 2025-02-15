@@ -1,11 +1,13 @@
 #pragma once
 
-#include "raylib.h"
+#include "../../drawable/button/texture_button.h"
 
-class Tile {
-public:
+namespace fow {
+    class Tile {
+    public:
+        Tile(std::shared_ptr<TextureButton> texture_button);
+    private:
+        std::shared_ptr<TextureButton> texture_button_;
+    };
 
-private:
-    Texture texture_;
-    Rectangle rectangle_;
-};
+}
