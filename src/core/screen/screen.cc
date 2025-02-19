@@ -8,23 +8,23 @@ namespace fow {
         }
     }
 
-    void Screen::Draw(RCamera2D& camera) {
-        camera.BeginMode();
+    void Screen::Draw() {
+        camera_->BeginMode();
         for (auto& drawable : drawables_) {
             drawable->Draw();
         }
-        camera.EndMode();
+        camera_->EndMode();
     }
 
-    void Screen::CheckButtons(const RCamera2D& camera) {
-        RVector2 mouse_position = camera.GetScreenToWorld(GetMousePosition());
+    void Screen::CheckButtons() {
+        RVector2 mouse_position = camera_->GetScreenToWorld(GetMousePosition());
         for (auto& button : buttons_) {
             button->CheckMouse(mouse_position);
         }
     }
 
-    void Screen::ScalePositions(float window_width, float window_height, float basic_width, float basic_height) {
-        RVector2 scale = { window_width / basic_width, window_height / basic_height };
+    void Screen::ScalePositions(float window_width, float window_height) {
+        RVector2 scale = { window_width / basic_width_, window_height / basic_height_ };
         for (auto& drawable : drawables_) {
             drawable->Scale(scale);
         }

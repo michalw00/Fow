@@ -23,17 +23,16 @@ namespace fow {
 
     class Screen {
     public:
+        Screen(std::shared_ptr<RCamera2D> camera) : camera_(camera) {}
         virtual ~Screen();
 
         virtual void Init() = 0;
         virtual void Update() = 0;     
         virtual ScreenType Finish() = 0;
 
-        void Draw(RCamera2D& camera);
-
-        void CheckButtons(const RCamera2D& camera);
-
-        void ScalePositions(float window_width, float window_height, float basic_width, float basic_height);
+        void Draw();
+        void CheckButtons();
+        void ScalePositions(float window_width, float window_height);
 
         bool ShouldClose() const { return should_close_; }
         bool ShouldFinish() const { return should_finish_; }
@@ -52,8 +51,13 @@ namespace fow {
         std::unordered_map<std::string, std::shared_ptr<RTexture>> textures_;
         std::unordered_map<std::string, RText> rtexts_;
 
+        std::shared_ptr<RCamera2D> camera_;
+
         bool should_close_ = false;
         bool should_finish_ = false;
+
+        float basic_width_ = 1600.f;
+        float basic_height_ = 900.f;
     };
 
 }

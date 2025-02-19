@@ -5,7 +5,10 @@
 namespace fow {
     class Tile {
     public:
-        Tile(std::shared_ptr<TextureButton> texture_button);
+        Tile();
+
+        void SetTextureButton(std::shared_ptr<TextureButton>  texture_button) { texture_button_ = texture_button; }
+        std::shared_ptr<TextureButton> GetTextureButton() const { return texture_button_; }
     private:
         std::shared_ptr<TextureButton> texture_button_;
     };
