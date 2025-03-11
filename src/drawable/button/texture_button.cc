@@ -9,9 +9,12 @@ namespace fow {
 
     TextureButton::TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureStates texture)
         : Button(position, action), texture_(texture) {
-        float width = static_cast<float>(texture.basic->GetWidth());
-        float height = static_cast<float>(texture.basic->GetHeight());
+        
         area_ = { position, size };
+        texture.basic->width = size.GetX();
+        texture.basic->height = size.GetY();
+        texture.hovered->width = size.GetX();
+        texture.hovered->height = size.GetY();
     }
 
     void TextureButton::Draw() const {

@@ -12,8 +12,9 @@ namespace fow{
 
         RVector2 start_position(-750, -400);
 
-        RVector2 tile_size(1500.f / columns, 800.f / rows);
-        RVector2 step(tile_size+tile_size/2.5f);
+        RVector2 step(1500.f / columns, 800.f / rows);
+        float spacing = 0.035f;
+        RVector2 tile_size(step-step*spacing);
 
         render_map_.resize(columns);
 
