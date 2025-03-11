@@ -9,16 +9,25 @@
 #include "button.h"
 
 namespace fow {
+    struct TextureStates {
+        TextureStates(std::shared_ptr<RTexture> basic = nullptr, std::shared_ptr<RTexture> hovered = nullptr, std::shared_ptr<RTexture> fow = nullptr);           
+
+        std::shared_ptr<RTexture> basic;
+        std::shared_ptr<RTexture> hovered;
+        std::shared_ptr<RTexture> fow;
+    };
 
     class TextureButton : public Button {
     public:
-        TextureButton(RVector2 position, std::function<void()> action, std::shared_ptr<RTexture> texture, std::shared_ptr<RTexture> texture_hovered = nullptr);
+        TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureStates texture);
 
-        void SetTexture(std::shared_ptr<RTexture> texture) { texture_ = texture; }
-        void Draw() override;
-        void Scale(RVector2 scale) override;
+        bool SetFow(bool fow) { fow_ = fow; }
+
+        void Draw() const override;
+        void Scale(RVector2 scale) override;     
     private:
-        std::shared_ptr<RTexture> texture_;
-        std::shared_ptr<RTexture> texture_hovered_;
+        bool fow_ = true;
+
+        TextureStates texture_;
     };
 }

@@ -1,20 +1,24 @@
 #include "texture_button.h"
 
 namespace fow {
-    TextureButton::TextureButton(RVector2 position, std::function<void()> action, std::shared_ptr<RTexture> texture, std::shared_ptr<RTexture> texture_hovered)
-        : Button(position, action), texture_(texture), texture_hovered_(texture_hovered) {
+    TextureStates::TextureStates(std::shared_ptr<RTexture> basic, std::shared_ptr<RTexture> hovered, std::shared_ptr<RTexture> fow) {
+        this->basic = basic;
+        this->hovered = hovered;
+        this->fow = fow;
+    }
 
-        float width = static_cast<float>(texture_->GetWidth());
-        float height = static_cast<float>(texture_->GetHeight());
-        RVector2 size = { width, height };
+    TextureButton::TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureStates texture)
+        : Button(position, action), texture_(texture) {
+        float width = static_cast<float>(texture.basic->GetWidth());
+        float height = static_cast<float>(texture.basic->GetHeight());
         area_ = { position, size };
     }
 
-    void TextureButton::Draw() {
-        if (is_hovered_ && texture_hovered_ != nullptr) {
-            texture_hovered_->Draw(area_, position_);          
+    void TextureButton::Draw() const {
+        if (is_hovered_ && texture_.hovered != nullptr) {
+            texture_.hovered->Draw(position_);
         } else {
-            texture_->Draw(area_, position_);
+            texture_.basic->Draw(position_);
         }
     }
 

@@ -10,7 +10,7 @@ namespace fow {
 	public:
 		Text(RVector2 position, const RText& rtext, bool centered = true);
 
-		void Draw() override;
+		void Draw() const override;
 		void Scale(RVector2 scale) override;
 	private:
 		RText rtext_;

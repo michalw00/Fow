@@ -8,17 +8,20 @@
 #include "button.h"
 
 namespace fow {
+    struct TextStates {
+        TextStates(const RText& text, int hovered_font_size_increase = 3, int hovered_color_alpha_decrease = 30);
+
+        RText basic;
+        RText hovered;
+    };
+
     class TextButton : public Button {
     public:
-        TextButton(RVector2 position, std::function<void()> action, const RText& rtext, bool centered = true);
+        TextButton(RVector2 position, std::function<void()> action, const RText& text, bool centered = true);
 
-        void Draw() override;
+        void Draw() const override;
         void Scale(RVector2 scale) override;
     private:
-        RText rtext_;
-        RText rtext_hovered_;
-
-        int hovered_font_size_increase_ = 3;
-        int hovered_color_alpha_decrease_ = 30;
+        TextStates text_;
     };
 }

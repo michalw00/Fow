@@ -2,18 +2,10 @@
 
 namespace fow {
 
-    Screen::~Screen() {
-        for (auto& image : images_) {
-            image.second.data = nullptr;
-        }
-    }
-
-    void Screen::Draw() {
-        camera_->BeginMode();
+    void Screen::Draw() const {    
         for (auto& drawable : drawables_) {
             drawable->Draw();
-        }
-        camera_->EndMode();
+        }    
     }
 
     void Screen::CheckButtons() {

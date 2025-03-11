@@ -1,23 +1,27 @@
 #include "text_button.h"
 
 namespace fow {
-    TextButton::TextButton(RVector2 position, std::function<void()> action, const RText& rtext, bool centered)
-        : Button(position, action), rtext_(rtext)  {
-        RVector2 size = rtext.MeasureEx();
+    TextStates::TextStates(const RText& text, int hovered_font_size_increase, int hovered_color_alpha_decrease) {
+        basic = text;
+        hovered = text;
+        hovered.fontSize += hovered_font_size_increase;
+        hovered.color.a -= hovered_color_alpha_decrease;
+    }
+
+    TextButton::TextButton(RVector2 position, std::function<void()> action, const RText& text, bool centered)
+        : Button(position, action), text_(text)  {
+        RVector2 size = text.MeasureEx();
         if (centered) {
             position_ -= size / 2.0;
         }
         area_ = { position, size };
-        rtext_hovered_ = rtext_;
-        rtext_hovered_.fontSize += hovered_font_size_increase_;
-        rtext_hovered_.color.a -= hovered_color_alpha_decrease_;
     }
 
-    void TextButton::Draw() {
+    void TextButton::Draw() const {
         if (is_hovered_) {
-            rtext_hovered_.Draw(position_);
+            text_.hovered.Draw(position_);
         } else {        
-            rtext_.Draw(position_);
+            text_.basic.Draw(position_);
         }
     }
 
@@ -25,9 +29,9 @@ namespace fow {
         position_ *= scale;
         RVector2 area_size = area_.GetSize() * scale;
         area_ = { position_, area_size };
-        rtext_.spacing *= scale.x;
-        rtext_.fontSize *= scale.x;
-        rtext_hovered_.spacing *= scale.x;
-        rtext_hovered_.fontSize *= scale.x;
+        text_.basic.spacing *= scale.x;
+        text_.basic.fontSize *= scale.x;
+        text_.hovered.spacing *= scale.x;
+        text_.hovered.fontSize *= scale.x;
     }
 }

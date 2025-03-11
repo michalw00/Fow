@@ -24,13 +24,13 @@ namespace fow {
     class Screen {
     public:
         Screen(std::shared_ptr<RCamera2D> camera) : camera_(camera) {}
-        virtual ~Screen();
+        virtual ~Screen() {};
 
         virtual void Init() = 0;
         virtual void Update() = 0;     
         virtual ScreenType Finish() = 0;
 
-        void Draw();
+        void Draw() const;
         void CheckButtons();
         void ScalePositions(float window_width, float window_height);
 

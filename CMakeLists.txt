@@ -3,6 +3,12 @@ project(Fow)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Copy assets to work directory
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/Release)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR}/Debug)
+
 # Fetching raylib
 include(FetchContent)
 set(FETCHCONTENT_QUIET FALSE)
@@ -66,15 +72,17 @@ src/match/map/map.h
 src/match/map/map.cc
 src/match/map/tile.h
 src/match/map/tile.cc
+src/match/map/terrain.h
+src/match/map/terrain.cc
 
 src/menu/menu_screen.h
 src/menu/menu_screen.cc
 
-src/assets/images/test.h
-
 )
 
 add_executable(Fow ${SOURCE_LIST})
+
+
 
 # Organize source files into folders for Visual Studio
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_LIST})

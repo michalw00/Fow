@@ -2,16 +2,22 @@
 
 #include <memory>
 #include "map/map.h"
+#include "player.h"
 
 namespace fow {
 
 	class Match {
 	public:
-		Match(int map_rows, int map_columns, std::shared_ptr<RTexture> texture);
+		void InitMap(int rows, int columns);
+		void InitPlayers(int number = 2);
 
-		Map GetMap() const { return map_; }
+		void UpdateRenderMap();
+
+		Map GetMap() const { return *map_; }
+		std::vector<Player> GetPlayers() const { return players_; }
 	private:
-		Map map_;
+		std::unique_ptr<Map> map_;
+		std::vector<Player> players_;
 	};
 
 }

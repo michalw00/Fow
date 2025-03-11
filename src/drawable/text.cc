@@ -8,7 +8,7 @@ namespace fow {
         }
     }
 
-    void Text::Draw() {
+    void Text::Draw() const {
         rtext_.Draw(position_);
     }
 

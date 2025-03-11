@@ -2,6 +2,6 @@
 
 namespace fow {
 
-    Tile::Tile(){}
+    Tile::Tile(std::shared_ptr<Terrain> terrain) : terrain_(terrain){}
 
 }

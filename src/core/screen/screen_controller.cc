@@ -26,7 +26,10 @@ namespace fow {
 			window_->BeginDrawing();
 
 			window_->ClearBackground(RColor{});
+
+			camera_->BeginMode();
 			current_screen_->Draw();
+			camera_->EndMode();
 
 			window_->EndDrawing();
 
@@ -34,7 +37,7 @@ namespace fow {
 				ScreenType new_screen_type = current_screen_->Finish();
 				current_screen_ = CreateScreen(new_screen_type, camera_);
 				current_screen_->Init();
-				current_screen_->ScalePositions(window_->GetWidth(), window_->GetHeight());
+				current_screen_->ScalePositions(window_width_, window_height_);
 			}
 		}
 		window_->Close();

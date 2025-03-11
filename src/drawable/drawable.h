@@ -8,7 +8,7 @@ namespace fow {
         Drawable(RVector2 position);
         virtual ~Drawable() {}
 
-        virtual void Draw() = 0;
+        virtual void Draw() const = 0;
         virtual void Scale(RVector2 scale) = 0;
 
         void SetPosition(RVector2 position) { position_ = position; }

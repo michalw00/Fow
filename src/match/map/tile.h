@@ -1,16 +1,17 @@
 #pragma once
 
-#include "../../drawable/button/texture_button.h"
+#include "terrain.h"
+#include <memory>
 
 namespace fow {
     class Tile {
     public:
-        Tile();
+        Tile(std::shared_ptr<Terrain> terrain = nullptr);
 
-        void SetTextureButton(std::shared_ptr<TextureButton>  texture_button) { texture_button_ = texture_button; }
-        std::shared_ptr<TextureButton> GetTextureButton() const { return texture_button_; }
+        void SetTerrain(std::shared_ptr<Terrain> terrain) { terrain_ = terrain; }
+        std::shared_ptr<Terrain> GetTerrain() const { return terrain_; }
     private:
-        std::shared_ptr<TextureButton> texture_button_;
+        std::shared_ptr<Terrain> terrain_;
     };
 
 }

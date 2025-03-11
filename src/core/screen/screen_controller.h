@@ -23,7 +23,7 @@ namespace fow {
         std::shared_ptr<RCamera2D> camera_;
         std::unique_ptr<RWindow> window_; 
 
-        float window_width_;
-        float window_height_;
+        int window_width_;
+        int window_height_;
     };
 }
