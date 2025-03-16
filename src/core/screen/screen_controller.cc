@@ -11,9 +11,7 @@ namespace fow {
 		window_height_= window_->GetHeight();
 		
 		InitCamera();
-		current_screen_ = CreateScreen(start_screen_type, camera_);
-		current_screen_->Init();
-		current_screen_->ScalePositions(window_width_, window_height_);	
+		ChangeScreen(start_screen_type);
 	}
 
 	void ScreenController::ProcessScreen() {
@@ -35,9 +33,7 @@ namespace fow {
 
 			if (current_screen_->ShouldFinish()) {
 				ScreenType new_screen_type = current_screen_->Finish();
-				current_screen_ = CreateScreen(new_screen_type, camera_);
-				current_screen_->Init();
-				current_screen_->ScalePositions(window_width_, window_height_);
+				ChangeScreen(new_screen_type);
 			}
 		}
 		window_->Close();
@@ -48,6 +44,12 @@ namespace fow {
 		RVector2 camera_offset = { window_width_ / 2.f, window_height_ / 2.f };
 		RVector2 camera_target = { 0, 0 };
 		camera_ = std::make_shared<RCamera2D>(camera_offset, camera_target);
+	}
+
+	void ScreenController::ChangeScreen(ScreenType screen_type) {
+		current_screen_ = CreateScreen(screen_type, camera_);
+		current_screen_->Init();
+		current_screen_->ScalePositions(window_width_, window_height_);
 	}
 
     std::shared_ptr<Screen> ScreenController::CreateScreen(ScreenType screen_type, std::shared_ptr<RCamera2D> camera) {

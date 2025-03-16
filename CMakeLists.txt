@@ -82,8 +82,6 @@ src/menu/menu_screen.cc
 
 add_executable(Fow ${SOURCE_LIST})
 
-
-
 # Organize source files into folders for Visual Studio
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_LIST})
 source_group(TREE ${CMAKE_BINARY_DIR}/_deps/raylib_cpp-src/include FILES ${RAYLIB_CPP_HEADERS})

@@ -13,7 +13,7 @@ namespace fow {
     class Player {
     public:
         Player();
-        void InitRenderMap(const Map& map);
+        void InitRenderMap(const Map& map, float basic_width, float basic_height);
 
         std::vector<std::vector<std::shared_ptr<TextureButton>>> GetRenderMap() const { return render_map_; }
     private:

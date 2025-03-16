@@ -11,7 +11,7 @@ namespace fow {
 
         match_ = std::make_unique<Match>();
         match_->InitMap(16, 30);
-        match_->InitPlayers();
+        match_->InitPlayers(basic_width_, basic_height_);
         auto&& players = match_->GetPlayers();
         auto&& player1_map = players[0].GetRenderMap();
         PlaceButtonsFromRenderMap(player1_map);

@@ -9,7 +9,7 @@ namespace fow {
 	class Match {
 	public:
 		void InitMap(int rows, int columns);
-		void InitPlayers(int number = 2);
+		void InitPlayers(float basic_width, float basic_height, int number = 2);
 
 		void UpdateRenderMap();
 

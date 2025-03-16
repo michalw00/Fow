@@ -37,8 +37,6 @@ namespace fow {
         bool ShouldClose() const { return should_close_; }
         bool ShouldFinish() const { return should_finish_; }
     protected:
-        void AddImage(std::string&& name, RImage&& image);
-        void AddTexture(std::string&& name, std::shared_ptr <RTexture> texture);
         void AddRText(std::string&& name, RText&& rtext);
 
         void PlaceText(std::shared_ptr<Text> text);
@@ -47,8 +45,6 @@ namespace fow {
         std::vector<std::shared_ptr<Drawable>> drawables_;
         std::vector<std::shared_ptr<Button>> buttons_;
 
-        std::unordered_map<std::string, RImage> images_;
-        std::unordered_map<std::string, std::shared_ptr<RTexture>> textures_;
         std::unordered_map<std::string, RText> rtexts_;
 
         std::shared_ptr<RCamera2D> camera_;

@@ -3,16 +3,20 @@
 namespace fow{
     Player::Player() {}
 
-    void Player::InitRenderMap(const Map& map) {
+    void Player::InitRenderMap(const Map& map, float basic_width, float basic_height) {
+        float edge_space = 100.f;
+        basic_width -= edge_space;
+        basic_height -= edge_space;
+
         auto&& tiles = map.GetTiles();
         auto&& terrain_manager = map.GetTerrainManager();
 
         size_t columns = tiles.size();
-        size_t rows = tiles[0].size();
+        size_t rows = tiles[0].size();       
 
-        RVector2 start_position(-750, -400);
+        RVector2 start_position(-basic_width/2.f, -basic_height/2.f);
 
-        RVector2 step(1500.f / columns, 800.f / rows);
+        RVector2 step(basic_width / columns, basic_height / rows);
         float spacing = 0.035f;
         RVector2 tile_size(step-step*spacing);
 
