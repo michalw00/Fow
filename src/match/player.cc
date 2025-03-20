@@ -3,7 +3,7 @@
 namespace fow{
     Player::Player() {}
 
-    void Player::InitRenderMap(const Map& map, float basic_width, float basic_height) {
+    void Player::InitRenderMap(Map& map, float basic_width, float basic_height) {
         float edge_space = 100.f;
         basic_width -= edge_space;
         basic_height -= edge_space;
@@ -33,5 +33,7 @@ namespace fow{
                 render_map_[i].emplace_back(button);
             }
         }
+
+        map.SetTerrainManager(terrain_manager);
     }
 }
