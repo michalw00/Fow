@@ -16,7 +16,11 @@ namespace fow {
 
 	void ScreenController::ProcessScreen() {
 		
-		while (!window_->ShouldClose() && !current_screen_->ShouldClose() ) {			
+		while (!window_->ShouldClose() && !current_screen_->ShouldClose() ) {
+
+			if (draw_fps_) {
+				DrawFPS(0, 0);
+			}
 					
 			current_screen_->CheckButtons();	
 			current_screen_->Update();

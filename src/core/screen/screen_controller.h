@@ -26,5 +26,7 @@ namespace fow {
 
         int window_width_;
         int window_height_;
+
+        bool draw_fps_ = true;
     };
 }
