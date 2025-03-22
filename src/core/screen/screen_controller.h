@@ -14,14 +14,13 @@ namespace fow {
 
         void ProcessScreen();
     private:
-        void InitCamera();
-        void ChangeScreen(ScreenType screen_type);
+        std::shared_ptr<RCamera2D> CreateCamera();
+        void ChangeScreen(ScreenType screen_type, std::shared_ptr<RCamera2D> camera);
 
         std::shared_ptr<Screen> CreateScreen(ScreenType screen_type, std::shared_ptr<RCamera2D> camera);
 
         std::shared_ptr<Screen> current_screen_;
 
-        std::shared_ptr<RCamera2D> camera_;
         std::unique_ptr<RWindow> window_; 
 
         int window_width_;

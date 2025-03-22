@@ -2,10 +2,12 @@
 
 namespace fow {
 
-    void Screen::Draw() const {    
+    void Screen::Draw() const {  
+        camera_->BeginMode();
         for (auto& drawable : drawables_) {
             drawable->Draw();
         }    
+        camera_->EndMode();
     }
 
     void Screen::CheckButtons() {
