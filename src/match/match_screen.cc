@@ -11,18 +11,18 @@ namespace fow {
 
         match_ = std::make_unique<Match>();
         match_->InitMap(16, 30);
-        match_->InitPlayers(basic_width_, basic_height_, 2);
+        match_->InitPlayers(basic_width_, basic_height_, *camera_.get());
     }
 
     void MatchScreen::Update() {
         drawables_.clear();
         buttons_.clear();      
 
-        const auto& player = match_->GetCurrentPlayer();
+        auto& player = match_->GetCurrentPlayer();
+        camera_ = player.GetCamera();
         PlaceButtonsFromRenderMap(player.GetRenderMap());
 
-        CheckInputs();
-               
+        CheckInputs();              
     }
 
     ScreenType MatchScreen::Finish() {

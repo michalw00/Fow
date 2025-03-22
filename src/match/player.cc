@@ -1,8 +1,6 @@
 #include "player.h"
 
-namespace fow{
-    Player::Player() {}
-
+namespace fow {
     void Player::InitRenderMap(Map& map, float basic_width, float basic_height) {
         float edge_space = 100.f;
         basic_width -= edge_space;

@@ -9,15 +9,15 @@ namespace fow {
 	class Match {
 	public:
 		void InitMap(int rows, int columns);
-		void InitPlayers(float basic_width, float basic_height, int number = 2);
+		void InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number = 2);
 
 		void EndTurn();
 
 		void UpdateRenderMap();
 
 		Map GetMap() const { return *map_; }
-		std::vector<Player> GetPlayers() const { return players_; }
-		const Player& GetCurrentPlayer() const { return players_.at(current_player_index_); }
+
+		Player& GetCurrentPlayer() { return players_.at(current_player_index_); }
 	private:
 		void NextPlayer();
 
