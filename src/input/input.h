@@ -5,8 +5,6 @@
 namespace fow {
 
     class Input {
-
-    private:
     public:
         void DragScreen(RCamera2D* camera);
 

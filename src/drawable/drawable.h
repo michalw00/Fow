@@ -10,8 +10,6 @@ namespace fow {
 
         virtual void Draw() const = 0;
         virtual void Scale(RVector2 scale) = 0;
-
-        void SetPosition(RVector2 position) { position_ = position; }
     protected:
         RVector2 position_;
     };
