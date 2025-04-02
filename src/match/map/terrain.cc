@@ -3,7 +3,7 @@
 namespace fow {
     Terrain::Terrain(TerrainType terrain_type, TerrainModifiers modifiers) : terrain_type_(terrain_type), modifiers_(modifiers) {}
 
-    std::shared_ptr<Terrain> TerrainManager::InitTerrain(TerrainType terrain_type) {       
+    std::shared_ptr<Terrain> TerrainManager::InitTerrain(TerrainType terrain_type) const {       
         TerrainModifiers modifiers{};
         
         switch (terrain_type) {
@@ -34,7 +34,7 @@ namespace fow {
         return terrain;
     }
 
-    TextureStates TerrainManager::InitTexture(TerrainType terrain_type) {
+    TextureStates TerrainManager::InitTexture(TerrainType terrain_type) const {
         std::string file_name;
 
         switch (terrain_type) {
@@ -74,7 +74,7 @@ namespace fow {
         return texture;
     }
 
-    std::shared_ptr<Terrain> TerrainManager::GetTerrain(TerrainType terrain_type) {
+    std::shared_ptr<Terrain> TerrainManager::GetTerrain(TerrainType terrain_type) const {
 
         auto it = terrains_.find(terrain_type);
 
@@ -85,7 +85,7 @@ namespace fow {
         }
     }
 
-    TextureStates TerrainManager::GetTexture(TerrainType terrain_type) {
+    TextureStates TerrainManager::GetTexture(TerrainType terrain_type) const {
         auto it = textures_.find(terrain_type);
 
         if (it != textures_.end()) {

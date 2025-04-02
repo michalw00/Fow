@@ -37,8 +37,8 @@ namespace fow {
 
     class TerrainManager {
     public:
-        std::shared_ptr<Terrain> GetTerrain(TerrainType terrain_type);
-        TextureStates GetTexture(TerrainType terrain_type);
+        std::shared_ptr<Terrain> GetTerrain(TerrainType terrain_type) const;
+        TextureStates GetTexture(TerrainType terrain_type) const;
     private:
 
         std::string texture_path = "assets/";
@@ -46,10 +46,10 @@ namespace fow {
         std::string hovered_suffix = "_hovered";
         std::string fow_suffix = "_fow";
 
-        std::shared_ptr<Terrain> InitTerrain(TerrainType terrain_type);
-        TextureStates InitTexture(TerrainType terrain_type);
+        std::shared_ptr<Terrain> InitTerrain(TerrainType terrain_type) const;
+        TextureStates InitTexture(TerrainType terrain_type) const;
 
-        std::unordered_map <TerrainType, std::shared_ptr<Terrain>> terrains_;
-        std::unordered_map <TerrainType, TextureStates> textures_;
+        mutable std::unordered_map <TerrainType, std::shared_ptr<Terrain>> terrains_;
+        mutable std::unordered_map <TerrainType, TextureStates> textures_;
     };
 }

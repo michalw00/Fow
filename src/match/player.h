@@ -13,7 +13,7 @@ namespace fow {
     class Player {
     public:
         void InitCamera(RCamera2D camera) {camera_ = std::make_shared<RCamera2D>(camera);}
-        void InitRenderMap(Map& map, float basic_width, float basic_height);
+        void InitRenderMap(const Map& map, float basic_width, float basic_height);
 
         std::shared_ptr<RCamera2D> GetCamera() { return camera_; }
         const std::vector<std::vector<std::shared_ptr<TextureButton>>>& GetRenderMap() const { return render_map_; }

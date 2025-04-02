@@ -1,13 +1,13 @@
 #include "player.h"
 
 namespace fow {
-    void Player::InitRenderMap(Map& map, float basic_width, float basic_height) {
+    void Player::InitRenderMap(const Map& map, float basic_width, float basic_height) {
         float edge_space = 100.f;
         basic_width -= edge_space;
         basic_height -= edge_space;
 
         auto&& tiles = map.GetTiles();
-        auto&& terrain_manager = map.GetTerrainManager();
+        auto& terrain_manager = map.GetTerrainManager();
 
         size_t columns = tiles.size();
         size_t rows = tiles[0].size();       
@@ -27,11 +27,10 @@ namespace fow {
                 RVector2 position = start_position + (step * factor);
                 TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
                 TextureStates tile_textures = terrain_manager.GetTexture(tile_type);
-                auto button = std::make_shared<TextureButton>(position, tile_size, [tiles, i, j]() {}, tile_textures);
+                auto&& button = std::make_shared<TextureButton>(position, tile_size, [tiles, i, j]() {}, tile_textures);
                 render_map_[i].emplace_back(button);
             }
         }
 
-        map.SetTerrainManager(terrain_manager);
     }
 }
