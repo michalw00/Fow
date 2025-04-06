@@ -26,7 +26,7 @@ namespace fow {
                 RVector2 factor(i, j);
                 RVector2 position = start_position + (step * factor);
                 TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
-                TextureStates tile_textures = terrain_manager.GetTexture(tile_type);
+                TextureState tile_textures = terrain_manager.GetTexture(tile_type);
                 auto&& button = std::make_shared<TextureButton>(position, tile_size, [tiles, i, j]() {}, tile_textures);
                 render_map_[i].emplace_back(button);
             }

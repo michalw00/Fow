@@ -7,19 +7,13 @@
 #include <Texture.hpp>
 
 #include "button.h"
+#include "../texture_manager.h"
 
-namespace fow {
-    struct TextureStates {
-        TextureStates(std::shared_ptr<RTexture> basic = nullptr, std::shared_ptr<RTexture> hovered = nullptr, std::shared_ptr<RTexture> fow = nullptr);           
-
-        std::shared_ptr<RTexture> basic;
-        std::shared_ptr<RTexture> hovered;
-        std::shared_ptr<RTexture> fow;
-    };
+namespace fow {   
 
     class TextureButton : public Button {
     public:
-        TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureStates texture);
+        TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureState texture);
 
         bool SetFow(bool fow) { fow_ = fow; }
 
@@ -28,6 +22,6 @@ namespace fow {
     private:
         bool fow_ = true;
 
-        TextureStates texture_;
+        TextureState texture_;
     };
 }

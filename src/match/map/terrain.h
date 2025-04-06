@@ -7,6 +7,7 @@
 #include <Texture.hpp>
 
 #include "../../drawable/button/texture_button.h"
+#include "../../drawable/texture_manager.h"
 
 namespace fow {
 
@@ -19,37 +20,17 @@ namespace fow {
         kWater
     };
 
-    struct TerrainModifiers {
-        float movement_cost;
-        float conceal;
-        bool is_water = false;
-    };
-
     class Terrain {
     public:      
-        Terrain(TerrainType terrain_type, TerrainModifiers modifiers);  
+        Terrain(TerrainType terrain_type);  
 
         TerrainType GetType() const { return terrain_type_; }
     private:   
         TerrainType terrain_type_;
-        TerrainModifiers modifiers_;  
     };
 
-    class TerrainManager {
-    public:
-        std::shared_ptr<Terrain> GetTerrain(TerrainType terrain_type) const;
-        TextureStates GetTexture(TerrainType terrain_type) const;
+    class TerrainManager : public TextureManager<TerrainType, Terrain>{
     private:
-
-        std::string texture_path = "assets/";
-        std::string format_suffix = ".png";
-        std::string hovered_suffix = "_hovered";
-        std::string fow_suffix = "_fow";
-
-        std::shared_ptr<Terrain> InitTerrain(TerrainType terrain_type) const;
-        TextureStates InitTexture(TerrainType terrain_type) const;
-
-        mutable std::unordered_map <TerrainType, std::shared_ptr<Terrain>> terrains_;
-        mutable std::unordered_map <TerrainType, TextureStates> textures_;
+        std::string GetTextureName(TerrainType terrain_type) const override;
     };
 }

@@ -14,7 +14,7 @@ namespace fow {
     }
 
     void Map::InitTiles() { 
-        auto plain_terrain = terrain_manager_.GetTerrain(TerrainType::kPlains);
+        auto plain_terrain = terrain_manager_.GetResource(TerrainType::kPlains);
         for (auto& row : tiles_) {
             for (auto& tile : row) {
                 tile.SetTerrain(plain_terrain);

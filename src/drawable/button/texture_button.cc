@@ -1,13 +1,8 @@
 #include "texture_button.h"
 
 namespace fow {
-    TextureStates::TextureStates(std::shared_ptr<RTexture> basic, std::shared_ptr<RTexture> hovered, std::shared_ptr<RTexture> fow) {
-        this->basic = basic;
-        this->hovered = hovered;
-        this->fow = fow;
-    }
 
-    TextureButton::TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureStates texture)
+    TextureButton::TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureState texture)
         : Button(position, action), texture_(texture) {
         
         area_ = { position, size };
