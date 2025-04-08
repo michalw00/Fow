@@ -1,6 +1,10 @@
 #include "player.h"
 
 namespace fow {
+    void Player::AddUnit(int position_width, int position_height, UnitType unit_type) {
+        units_.emplace_back(std::make_shared<Unit>(position_width, position_height, unit_type));
+    }
+
     void Player::InitRenderMap(const Map& map, float basic_width, float basic_height) {
         float edge_space = 100.f;
         basic_width -= edge_space;
@@ -25,12 +29,25 @@ namespace fow {
             for (size_t j = 0; j < rows; ++j) {
                 RVector2 factor(i, j);
                 RVector2 position = start_position + (step * factor);
+                auto& tile = tiles[i][j];
                 TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
                 TextureState tile_textures = terrain_manager.GetTexture(tile_type);
-                auto&& button = std::make_shared<TextureButton>(position, tile_size, [tiles, i, j]() {}, tile_textures);
+                auto&& button = std::make_shared<TextureButton>(position, tile_size, [this, i, j]() {SetSelectedTilePosition(i, j); }, tile_textures);
                 render_map_[i].emplace_back(button);
             }
         }
+    }
 
+    void Player::MoveSelectedUnit() { 
+        if (selected_unit_ != nullptr
+            && selected_unit_->GetPositionWidth() != selected_tile_width_
+            && selected_unit_->GetPositionHeight() != selected_tile_height_
+            && selected_tile_width_ >= 0 && selected_tile_height_ >= 0) {
+
+            selected_unit_->SetPosition(selected_tile_width_, selected_tile_height_);
+            selected_unit_ = nullptr;
+            selected_tile_width_ = -1;
+            selected_tile_height_ = -1;
+        }
     }
 }

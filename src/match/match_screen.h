@@ -18,7 +18,7 @@ namespace fow {
         ScreenType Finish() override;
 
         void CheckInputs();
-        void PlaceButtonsFromRenderMap(std::vector <std::vector<std::shared_ptr<TextureButton>>> buttons);
+        void PlacePlayerButtons(Player& player);
     private:
         std::unique_ptr<Match> match_;
         Input input;
