@@ -56,6 +56,9 @@ src/drawable/drawable.h
 src/drawable/drawable.cc
 src/drawable/text.h
 src/drawable/text.cc
+src/drawable/texture_manager.h
+src/drawable/texture_manager.cc
+
 src/drawable/button/button.h
 src/drawable/button/button.cc
 src/drawable/button/texture_button.h
@@ -78,6 +81,15 @@ src/match/map/tile.h
 src/match/map/tile.cc
 src/match/map/terrain.h
 src/match/map/terrain.cc
+
+src/match/targets/target.h
+src/match/targets/target.cc
+src/match/targets/bridge.h
+src/match/targets/bridge.cc
+src/match/targets/road.h
+src/match/targets/road.cc
+src/match/targets/units/unit.h
+src/match/targets/units/unit.cc
 
 src/menu/menu_screen.h
 src/menu/menu_screen.cc
