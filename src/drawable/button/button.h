@@ -14,8 +14,10 @@ namespace fow {
         Button(RVector2 position, std::function<void()> action);
         virtual ~Button() {}; 
         void CheckMouse(RVector2 mouse_position);
+
+        RRectangle GetArea() const { return area_; }
     protected:
-        bool is_hovered_ = 0;
+        bool is_hovered_ = false;
         RRectangle area_;
         std::function<void()> action_;    
     };
