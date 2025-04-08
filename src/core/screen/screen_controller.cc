@@ -20,9 +20,9 @@ namespace fow {
 			if (draw_fps_) {
 				DrawFPS(0, 0);
 			}
-					
-			current_screen_->CheckButtons();	
+								
 			current_screen_->Update();
+			current_screen_->CheckButtons();	
 
 			window_->BeginDrawing();
 
