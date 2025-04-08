@@ -40,8 +40,8 @@ namespace fow {
 
     void Player::MoveSelectedUnit() { 
         if (selected_unit_ != nullptr
-            && selected_unit_->GetPositionWidth() != selected_tile_width_
-            && selected_unit_->GetPositionHeight() != selected_tile_height_
+            && (selected_unit_->GetPositionWidth() != selected_tile_width_
+            || selected_unit_->GetPositionHeight() != selected_tile_height_)
             && selected_tile_width_ >= 0 && selected_tile_height_ >= 0) {
 
             selected_unit_->SetPosition(selected_tile_width_, selected_tile_height_);
