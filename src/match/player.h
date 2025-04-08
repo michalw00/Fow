@@ -22,7 +22,7 @@ namespace fow {
         void SetSelectedTilePosition(int width, int height) { selected_tile_width_ = width; selected_tile_height_ = height; }
 
         std::shared_ptr<RCamera2D> GetCamera() { return camera_; }
-        const std::vector<std::shared_ptr<Unit>>& GetUnits() { return units_; } const
+        const std::vector<std::shared_ptr<Unit>>& GetUnits() const { return units_; }
         const std::vector<std::vector<std::shared_ptr<TextureButton>>>& GetRenderMap() const { return render_map_; }
     private:      
         std::shared_ptr<Unit> selected_unit_ = nullptr;
