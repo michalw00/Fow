@@ -19,7 +19,7 @@ namespace fow {
     template <typename KeyType, typename ValueType>
     class TextureManager {
     public:
-        virtual TextureManager() {};
+        virtual ~TextureManager() {};
 
         std::shared_ptr<ValueType> GetResource(KeyType key) const {
             auto it = resources_.find(key);
