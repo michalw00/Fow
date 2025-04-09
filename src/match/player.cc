@@ -1,5 +1,7 @@
 #include "player.h"
 
+#include "algorithm"
+
 namespace fow {
     void Player::AddUnit(int position_width, int position_height, UnitType unit_type) {
         units_.emplace_back(std::make_shared<Unit>(position_width, position_height, unit_type));
@@ -40,9 +42,10 @@ namespace fow {
 
     void Player::MoveSelectedUnit() { 
         if (selected_unit_ != nullptr
-            && (selected_unit_->GetPositionWidth() != selected_tile_width_
-            || selected_unit_->GetPositionHeight() != selected_tile_height_)
-            && selected_tile_width_ >= 0 && selected_tile_height_ >= 0) {
+            && selected_tile_width_ >= 0 && selected_tile_height_ >= 0
+            && !std::any_of(units_.cbegin(), units_.cend(), [this](std::shared_ptr<Unit> it) {
+            return (it->GetPositionWidth() == selected_tile_width_
+                && it->GetPositionHeight() == selected_tile_height_); })) {
 
             selected_unit_->SetPosition(selected_tile_width_, selected_tile_height_);
             selected_unit_ = nullptr;
