@@ -12,6 +12,7 @@ namespace fow {
             player.InitRenderMap(*map_, basic_width, basic_height);
         }
         players_[0].AddUnit(1, 1, UnitType::kAntiTank);
+        players_[0].AddUnit(2, 2, UnitType::kInfantry);
         players_[1].AddUnit(2, 2, UnitType::kInfantry);
         current_player_index_ = 0;
 
