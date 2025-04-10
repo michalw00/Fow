@@ -271,6 +271,10 @@ namespace fow {
         }
     }
 
+    void Unit::ResetMovementPoints() {
+        movement_points_ = unit_modifiers_->start_movement_points;
+    }
+
     std::string UnitManager::GetTextureName(UnitType unit_type) const {
         
         switch (unit_type) {

@@ -57,18 +57,25 @@ namespace fow {
 
     class Unit : public Target {
     public:
-        Unit(int position_width, int position_height, UnitType unit_type) : Target(position_width, position_height), unit_type_(unit_type) {}
+        Unit(int position_width, int position_height, UnitType unit_type, std::shared_ptr<UnitModifiers> unit_modifiers) 
+            : Target(position_width, position_height), unit_type_(unit_type), unit_modifiers_(unit_modifiers), 
+            movement_points_(unit_modifiers->start_movement_points), health_points_(unit_modifiers->start_health_points) {}
 
         void Attack(std::shared_ptr<Target> other);
+        void ResetMovementPoints();
+        void SubstractMovementPoints(float movement_points) { movement_points_ -= movement_points; };
+        float GetMovementPoints() const { return movement_points_; }
+        float GetHealthPoints() const { return health_points_; }
 
         UnitType GetType() const { return unit_type_; }
     private:
+        
         UnitType unit_type_;
 
         std::shared_ptr<UnitModifiers> unit_modifiers_;
 
-        float movement_points_ = 0;
-        float health_points_ = 0;
+        float movement_points_;
+        float health_points_;
     };  
 
     class UnitManager : public TextureManager<UnitType, UnitModifiers>{
