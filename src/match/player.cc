@@ -3,8 +3,8 @@
 #include "algorithm"
 
 namespace fow {
-    void Player::AddUnit(int position_width, int position_height, UnitType unit_type) {
-        units_.emplace_back(std::make_shared<Unit>(position_width, position_height, unit_type));
+    void Player::AddUnit(int position_width, int position_height, UnitType unit_type, const UnitManager& unit_manager) {
+        units_.emplace_back(std::make_shared<Unit>(position_width, position_height, unit_type, unit_manager.GetResource(unit_type)));
     }
 
     void Player::InitRenderMap(const Map& map, float basic_width, float basic_height) {
@@ -39,18 +39,57 @@ namespace fow {
             }
         }
     }
+    
+    void Player::StartTurn() {
+        selected_unit_ = nullptr;
+        selected_tile_width_ = -1; 
+        selected_tile_height_ = -1;
+        ResetUnitsMovementPoints();
+    }
+
+    void Player::ResetUnitsMovementPoints() {
+        for (auto& unit : units_) {
+            unit->ResetMovementPoints();
+        }
+    }
 
     void Player::MoveSelectedUnit() { 
-        if (selected_unit_ != nullptr
-            && selected_tile_width_ >= 0 && selected_tile_height_ >= 0
-            && !std::any_of(units_.cbegin(), units_.cend(), [this](std::shared_ptr<Unit> it) {
+
+        if (selected_unit_ == nullptr) {
+            return;
+        }
+
+        auto IsOtherUnitThere = [this](auto it) {
             return (it->GetPositionWidth() == selected_tile_width_
-                && it->GetPositionHeight() == selected_tile_height_); })) {
+                && it->GetPositionHeight() == selected_tile_height_); };
+       
+        int horizontal_distance = std::abs(selected_unit_->GetPositionWidth() - selected_tile_width_);
+        int vertical_distance = std::abs(selected_unit_->GetPositionHeight() - selected_tile_height_);
+
+        if (selected_tile_width_ >= 0 
+            && selected_tile_height_ >= 0
+            && !std::any_of(units_.cbegin(), units_.cend(), IsOtherUnitThere)
+            && horizontal_distance <= 1 && vertical_distance <= 1) {
+
+            int diagonal_movement_cost = 1.5f;
+            int basic_movement_cost = 1.f;
+
+            if (horizontal_distance == 1 && vertical_distance == 1 
+                && selected_unit_->GetMovementPoints()+0.1f >= diagonal_movement_cost) {
+                selected_unit_->SubstractMovementPoints(diagonal_movement_cost);
+            } else if (selected_unit_->GetMovementPoints()+0.1f >= basic_movement_cost) {
+                selected_unit_->SubstractMovementPoints(basic_movement_cost);
+            } else {
+                return;
+            }
 
             selected_unit_->SetPosition(selected_tile_width_, selected_tile_height_);
+            
             selected_unit_ = nullptr;
             selected_tile_width_ = -1;
             selected_tile_height_ = -1;
+        } else {
+            return;
         }
     }
 }
