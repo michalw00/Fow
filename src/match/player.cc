@@ -71,8 +71,8 @@ namespace fow {
             && !std::any_of(units_.cbegin(), units_.cend(), IsOtherUnitThere)
             && horizontal_distance <= 1 && vertical_distance <= 1) {
 
-            int diagonal_movement_cost = 1.5f;
-            int basic_movement_cost = 1.f;
+            float diagonal_movement_cost = 1.5f;
+            float basic_movement_cost = 1.f;
 
             if (horizontal_distance == 1 && vertical_distance == 1 
                 && selected_unit_->GetMovementPoints()+0.1f >= diagonal_movement_cost) {
