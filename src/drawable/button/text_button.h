@@ -17,7 +17,7 @@ namespace fow {
 
     class TextButton : public Button {
     public:
-        TextButton(RVector2 position, std::function<void()> action, const RText& text, bool centered = true);
+        TextButton(RVector2 position, std::function<void()> action_lmb, const RText& text, bool centered = true, std::function<void()> action_rmb = []() {});
 
         void Draw() const override;
         void Scale(RVector2 scale) override;

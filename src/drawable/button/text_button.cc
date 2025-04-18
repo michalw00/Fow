@@ -8,8 +8,8 @@ namespace fow {
         hovered.color.a -= hovered_color_alpha_decrease;
     }
 
-    TextButton::TextButton(RVector2 position, std::function<void()> action, const RText& text, bool centered)
-        : Button(position, action), text_(text)  {
+    TextButton::TextButton(RVector2 position, std::function<void()> action, const RText& text, bool centered, std::function<void()> action_rmb)
+        : Button(position, action, action_rmb), text_(text)  {
         RVector2 size = text.MeasureEx();
         if (centered) {
             position_ -= size / 2.0;

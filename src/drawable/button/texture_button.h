@@ -13,15 +13,11 @@ namespace fow {
 
     class TextureButton : public Button {
     public:
-        TextureButton(RVector2 position, RVector2 size, std::function<void()> action, TextureState texture);
-
-        bool SetFow(bool fow) { fow_ = fow; }
+        TextureButton(RVector2 position, RVector2 size, std::function<void()> action_lmb, TextureState texture = {}, std::function<void()> action_rmb = []() {});
 
         void Draw() const override;
         void Scale(RVector2 scale) override;     
     private:
-        bool fow_ = true;
-
         TextureState texture_;
     };
 }
