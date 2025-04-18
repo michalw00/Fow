@@ -2,18 +2,19 @@
 #include <Texture.hpp>
 #include <memory>
 #include <unordered_map>
+#include <exception>
 
 namespace fow {
 
     struct TextureState {
         TextureState(std::shared_ptr<RTexture> basic = nullptr,
             std::shared_ptr<RTexture> hovered = nullptr,
-            std::shared_ptr<RTexture> fow = nullptr)
-            : basic(basic), hovered(hovered), fow(fow) {}
+            std::shared_ptr<RTexture> selected = nullptr)
+            : basic(basic), hovered(hovered), selected(selected) {}
 
         std::shared_ptr<RTexture> basic;
         std::shared_ptr<RTexture> hovered;
-        std::shared_ptr<RTexture> fow;
+        std::shared_ptr<RTexture> selected;
     };
 
     template <typename KeyType, typename ValueType>
@@ -52,8 +53,8 @@ namespace fow {
             auto base_name = texture_path + GetTextureName(key);
             auto texture = TextureState(
                 std::make_shared<RTexture>(base_name + format_suffix),
-                std::make_shared<RTexture>(base_name + hovered_suffix + format_suffix)
-                //std::make_shared<RTexture>(base_name + fow_suffix + format_suffix)
+                std::make_shared<RTexture>(base_name + hovered_suffix + format_suffix),
+                std::make_shared<RTexture>(base_name + selected_suffix + format_suffix)
             );
             textures_.emplace(key, texture);
             return texture;
@@ -65,7 +66,7 @@ namespace fow {
         std::string texture_path = "assets/";
         std::string format_suffix = ".png";
         std::string hovered_suffix = "_hovered";
-        std::string fow_suffix = "_fow";
+        std::string selected_suffix = "_selected";
 
         mutable std::unordered_map<KeyType, std::shared_ptr<ValueType>> resources_;
         mutable std::unordered_map<KeyType, TextureState> textures_;
