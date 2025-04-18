@@ -6,9 +6,7 @@
 #include <vector>
 
 #include <Camera2D.hpp>
-#include <Image.hpp>
 #include <Text.hpp>
-#include <Texture.hpp>
 
 #include "../../drawable/button/button.h"
 #include "../../drawable/drawable.h"
