@@ -10,13 +10,10 @@ namespace fow {
 	class Match {
 	public:
 		void InitMap(int rows, int columns);
-		void InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number = 2);
-
+		void InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number = 2);		
 		void EndTurn();
 
-		void UpdateRenderMap();
-
-		Map GetMap() const { return *map_; }
+		const std::unique_ptr<Map>& GetMap() const { return map_; }
 
 		Player& GetCurrentPlayer() { return players_.at(current_player_index_); }
 		const UnitManager& GetUnitManager() { return unit_manager_; }
