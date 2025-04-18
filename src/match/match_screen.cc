@@ -19,7 +19,9 @@ namespace fow {
         buttons_.clear();      
 
         auto& player = match_->GetCurrentPlayer();
-        player.MoveSelectedUnit();
+        player.MoveSelectedUnit(*match_->GetMap().get());
+        player.UpdateRenderMap();
+
         camera_ = player.GetCamera();
         PlacePlayerButtons(player);
 
@@ -52,18 +54,30 @@ namespace fow {
                 PlaceButton(button);
             }
         }
-        const auto& units = player.GetUnits();
+        auto& units = player.GetUnits();
         const auto& unit_manager = match_->GetUnitManager();
         for (auto& unit : units) {
             int position_width = unit->GetPositionWidth();
             int position_height = unit->GetPositionHeight(); 
             RRectangle area = buttons[position_width][position_height]->GetArea();
-            RVector2 ratio = { 1.0, 1.5 };
             RVector2 size = { area.GetSize()};
+            size.x *= 0.95;
+            RVector2 ratio = { 1.0, 1.5 };
             size /= ratio;
             RVector2 position = area.GetPosition();
             position += (area.GetSize() - size) / 2.f;
-            std::shared_ptr<TextureButton> button = std::make_shared<TextureButton>(position, size, [&player, &unit]() {player.SetSelectedUnit(unit); }, unit_manager.GetTexture(unit->GetType()));
+            auto lmb_action = [&player, &unit]() {
+                if (player.GetSelectedUnit() == nullptr) {
+                    player.SetSelectedUnit(unit);
+                    player.ClearSelectedTile();
+                } else {
+                    player.SetSelectedUnit(nullptr);
+                }
+            };
+            std::shared_ptr<TextureButton> button = std::make_shared<TextureButton>(position, size, lmb_action, unit_manager.GetTexture(unit->GetType()));
+
+            button->SetIsSelected(player.GetSelectedUnit() == unit);
+
             PlaceButton(button);
         }
     }
