@@ -79,6 +79,8 @@ namespace fow {
     };  
 
     class UnitManager : public TextureManager<UnitType, UnitModifiers>{
+    public: 
+        std::string GetName(UnitType unit_type) const override;
     private:
         std::string GetTextureName(UnitType unit_type) const override;
     };

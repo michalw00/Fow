@@ -30,6 +30,8 @@ namespace fow {
     };
 
     class TerrainManager : public TextureManager<TerrainType, Terrain>{
+    public:
+        std::string GetName(TerrainType terrain_type) const override;
     private:
         std::string GetTextureName(TerrainType terrain_type) const override;
     };

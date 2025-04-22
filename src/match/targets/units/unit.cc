@@ -275,16 +275,28 @@ namespace fow {
         movement_points_ = unit_modifiers_->start_movement_points;
     }
 
+    std::string UnitManager::GetName(UnitType unit_type) const {
+        switch (unit_type) {
+        case UnitType::kAntiTank: return "Anti-Tank";
+        case UnitType::kArtillery: return "Artillery";
+        case UnitType::kInfantry: return "Infantry";
+        case UnitType::kMechanizedInfantry: return "Mechanized Infantry";
+        case UnitType::kTank: return "Tank";
+        case UnitType::kTBM: return "Tactical Ballistic Missile";
+        case UnitType::kUCAV: return "UCAV";
+        }
+    }
+
     std::string UnitManager::GetTextureName(UnitType unit_type) const {
         
         switch (unit_type) {
             case UnitType::kAntiTank: return "units/at/at";
-            case UnitType::kArtillery: return "artillery";
+            case UnitType::kArtillery: return "units/artillery/artillery";
             case UnitType::kInfantry: return "units/infantry/infantry";
-            case UnitType::kMechanizedInfantry: return "mechinf";
-            case UnitType::kTank: return "tank";
-            case UnitType::kTBM: return "tbm";
-            case UnitType::kUCAV: return "ucav";
+            case UnitType::kMechanizedInfantry: return "units/mechinf/mechinf";
+            case UnitType::kTank: return "units/tank/tank";
+            case UnitType::kTBM: return "units/tbm/tbm";
+            case UnitType::kUCAV: return "units/ucav/ucav";
         }
        
     }

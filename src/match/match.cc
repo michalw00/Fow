@@ -13,7 +13,7 @@ namespace fow {
         }
         players_[0].AddUnit(1, 1, UnitType::kAntiTank, unit_manager_);
         players_[0].AddUnit(2, 2, UnitType::kInfantry, unit_manager_);
-        players_[1].AddUnit(2, 2, UnitType::kInfantry, unit_manager_);
+        players_[1].AddUnit(5, 2, UnitType::kInfantry, unit_manager_);
         current_player_index_ = 0;
     }
 

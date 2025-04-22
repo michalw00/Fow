@@ -42,6 +42,8 @@ namespace fow {
             }
         }
 
+        virtual std::string GetName(KeyType key) const = 0;
+
     protected:
         std::shared_ptr<ValueType> InitResource(KeyType key) const {
             std::shared_ptr<ValueType> resource = std::make_shared<ValueType>(key);
