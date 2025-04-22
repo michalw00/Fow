@@ -7,10 +7,10 @@ namespace fow {
     void Button::CheckMouse(RVector2 mouse_position) {
         is_hovered_ = area_.CheckCollision(mouse_position);
         if (is_hovered_) {
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
                 action_lmb_();
             }
-            if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+            if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) {
                 action_rmb_();
             }
         }
