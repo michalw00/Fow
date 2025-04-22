@@ -10,7 +10,10 @@ namespace fow {
 
         virtual void Draw() const = 0;
         virtual void Scale(RVector2 scale) = 0;
+
+        bool GetIsButton() { return is_button_; }
     protected:
         RVector2 position_;
+        bool is_button_ = false;
     };
 }
