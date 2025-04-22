@@ -54,6 +54,8 @@ src/core/screen/screen_controller.cc
 
 src/drawable/drawable.h
 src/drawable/drawable.cc
+src/drawable/complex_drawable.h
+src/drawable/complex_drawable.cc
 src/drawable/texture.h
 src/drawable/texture.cc
 src/drawable/text.h
