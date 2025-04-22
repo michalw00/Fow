@@ -31,10 +31,10 @@ namespace fow {
                 TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
                 TextureState tile_textures = terrain_manager.GetTexture(tile_type);
                 auto lmb_action = [this, i, j]() {
-                    if (selected_tile_width_ != i && selected_tile_height_ != j) {
+                    if (selected_tile_width_ != i || selected_tile_height_ != j) {
                         ClearSelectedTile();
 
-                        if (selected_unit_ != nullptr
+                        if (selected_unit_
                             && selected_unit_->GetPositionWidth() == i
                             && selected_unit_->GetPositionHeight() == j) {
                             return;
@@ -79,7 +79,7 @@ namespace fow {
 
         const auto& tiles = map.GetTiles();
 
-        if (selected_unit_ == nullptr) {
+        if (!selected_unit_) {
             return;
         }
 
@@ -139,7 +139,7 @@ namespace fow {
     } 
 
     void Player::SetMoveTilePosition(int width, int height) { 
-        if (selected_unit_ != nullptr) {
+        if (selected_unit_) {
             move_tile_width_ = width;
             move_tile_height_ = height;
         }
