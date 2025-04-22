@@ -10,30 +10,26 @@
 namespace fow {
 
     void MenuScreen::Init() {
-        AddRText("Title", RText("FOW", 120.0f));
-        AddRText("Start game", RText("Start game", 50.f));
-        AddRText("Leave", RText("Leave", 50.f));
 
         RVector2 title_position = { 0, -300 };
-        RVector2 start_game_position = { 0, 0 };
-        RVector2 leave_position = { 0, 100 };
-
-        std::shared_ptr<Text> title = std::make_shared<Text>(title_position, rtexts_.at("Title")); 
+        title = std::make_shared<Text>(title_position, RText("FOW", 120.0f));
         
-        std::shared_ptr<Button> start_game_button = std::make_shared<TextButton>(
-            start_game_position, [this]() { should_finish_ = true; }, rtexts_.at("Start game")
+        RVector2 start_game_position = { 0, 0 };
+        start_game_button = std::make_shared<TextButton>(
+            start_game_position, [this]() { should_finish_ = true; }, RText("Start game", 50.f)
         );       
         
-        std::shared_ptr<Button> leave_button = std::make_shared<TextButton>(
-            leave_position, [this]() { should_close_ = true; }, rtexts_.at("Leave")
+        RVector2 leave_position = { 0, 100 };
+        leave_button = std::make_shared<TextButton>(
+            leave_position, [this]() { should_close_ = true; }, RText("Leave", 50.f)
         );
-
-        PlaceText(title);
-        PlaceButton(start_game_button);
-        PlaceButton(leave_button);
     }
 
-    void MenuScreen::Update() {}
+    void MenuScreen::Update() {
+        PlaceDrawable(title);
+        PlaceDrawable(start_game_button);
+        PlaceDrawable(leave_button);
+    }
 
     ScreenType MenuScreen::Finish() {
         return ScreenType::kMatch;

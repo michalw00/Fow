@@ -11,5 +11,10 @@ namespace fow {
         void Init() override;
         void Update() override;
         ScreenType Finish() override;
+
+    private:
+        std::shared_ptr<Text> title;
+        std::shared_ptr<Button> start_game_button;
+        std::shared_ptr<Button> leave_button;
     };
 }
