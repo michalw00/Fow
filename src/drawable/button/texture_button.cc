@@ -27,7 +27,13 @@ namespace fow {
 
     void TextureButton::Scale(RVector2 scale) {
         position_ *= scale;
-        RVector2 area_size = area_.GetSize() * scale;
-        area_ = { position_, area_size };
+        RVector2 size = area_.GetSize() * scale;
+        area_ = { position_, size };   
+        texture_.basic->width = size.GetX();
+        texture_.basic->height = size.GetY();
+        texture_.hovered->width = size.GetX();
+        texture_.hovered->height = size.GetY();
+        texture_.selected->width = size.GetX();
+        texture_.selected->height = size.GetY();
     }
 }
