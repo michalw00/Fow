@@ -2,6 +2,13 @@
 
 namespace fow {
 
+    void Screen::Clear() {
+        drawables_.clear();
+        buttons_.clear();
+        drawables_static_.clear();
+        buttons_static_.clear();
+    }
+
     void Screen::Draw() const {  
         camera_->BeginMode();
         for (auto& drawable : drawables_) {
