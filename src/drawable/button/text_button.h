@@ -9,7 +9,7 @@
 
 namespace fow {
     struct TextStates {
-        TextStates(const RText& text, int hovered_font_size_increase = 3, int hovered_color_alpha_decrease = 30);
+        TextStates(const RText& text, int hovered_size_increase = 3, int hovered_alpha_decrease = 30);
 
         RText basic;
         RText hovered;

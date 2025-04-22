@@ -1,16 +1,18 @@
 #include "text_button.h"
 
 namespace fow {
-    TextStates::TextStates(const RText& text, int hovered_font_size_increase, int hovered_color_alpha_decrease) {
+    TextStates::TextStates(const RText& text, int hovered_size_increase, int hovered_alpha_decrease) {
         basic = text;
-        hovered = text;
-        hovered.fontSize += hovered_font_size_increase;
-        hovered.color.a -= hovered_color_alpha_decrease;
+        basic.SetSpacing(basic.GetFontSize()*0.1f);
+
+        hovered = basic;
+        hovered.fontSize += hovered_size_increase;
+        hovered.color.a -= hovered_alpha_decrease;
     }
 
     TextButton::TextButton(RVector2 position, std::function<void()> action, const RText& text, bool centered, std::function<void()> action_rmb)
         : Button(position, action, action_rmb), text_(text)  {
-        RVector2 size = text.MeasureEx();
+        RVector2 size = text_.basic.MeasureEx();
         if (centered) {
             position_ -= size / 2.0;
         }
