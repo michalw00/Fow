@@ -20,8 +20,10 @@ namespace fow {
 			if (draw_fps_) {
 				DrawFPS(0, 0);
 			}
-								
+			
+			current_screen_->Clear();
 			current_screen_->Update();
+			current_screen_->ScalePositions(window_width_, window_height_);
 			current_screen_->CheckButtons();	
 
 			window_->BeginDrawing();
@@ -31,6 +33,8 @@ namespace fow {
 			current_screen_->Draw();
 
 			window_->EndDrawing();
+
+			current_screen_->ScalePositions(window_width_, window_height_, true);
 
 			if (current_screen_->ShouldFinish()) {
 				ScreenType new_screen_type = current_screen_->Finish();
@@ -50,7 +54,6 @@ namespace fow {
 	void ScreenController::ChangeScreen(ScreenType screen_type, std::shared_ptr<RCamera2D> camera) {
 		current_screen_ = CreateScreen(screen_type, camera);
 		current_screen_->Init();
-		current_screen_->ScalePositions(window_width_, window_height_);
 	}
 
     std::shared_ptr<Screen> ScreenController::CreateScreen(ScreenType screen_type, std::shared_ptr<RCamera2D> camera) {
