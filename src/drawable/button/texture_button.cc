@@ -16,9 +16,9 @@ namespace fow {
     }
 
     void TextureButton::Draw() const {
-        if (is_selected_ && texture_.selected != nullptr) {
+        if (is_selected_ && texture_.selected) {
             texture_.selected->Draw(position_);
-        } else if (is_hovered_ && texture_.hovered != nullptr) {
+        } else if (is_hovered_ && texture_.hovered) {
             texture_.hovered->Draw(position_);
         } else {
             texture_.basic->Draw(position_);
