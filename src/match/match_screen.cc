@@ -91,9 +91,8 @@ namespace fow {
         auto& units = player.GetUnits();
         const auto& unit_manager = match_->GetUnitManager();
         for (auto& unit : units) {
-            int position_width = unit->GetPositionWidth();
-            int position_height = unit->GetPositionHeight(); 
-            RRectangle area = buttons[position_width][position_height]->GetArea();
+            Position unit_position = unit->GetPosition();
+            RRectangle area = buttons[unit_position.x][unit_position.y]->GetArea();
             RVector2 size = { area.GetSize()};
             size.x *= 0.95;
             RVector2 ratio = { 1.0, 1.5 };

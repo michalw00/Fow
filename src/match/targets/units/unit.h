@@ -57,8 +57,8 @@ namespace fow {
 
     class Unit : public Target {
     public:
-        Unit(int position_width, int position_height, UnitType unit_type, std::shared_ptr<UnitModifiers> unit_modifiers) 
-            : Target(position_width, position_height), unit_type_(unit_type), unit_modifiers_(unit_modifiers), 
+        Unit(Position position, UnitType unit_type, std::shared_ptr<UnitModifiers> unit_modifiers)
+            : Target(position), unit_type_(unit_type), unit_modifiers_(unit_modifiers),
             movement_points_(unit_modifiers->start_movement_points), health_points_(unit_modifiers->start_health_points) {}
 
         void Attack(std::shared_ptr<Target> other);
