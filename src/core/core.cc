@@ -13,6 +13,8 @@ namespace fow {
 
     void Core::Start() {
         // Initialization 
+        SetTraceLogLevel(log_level_);
+
         std::unique_ptr<RWindow> window = InitWindow(1600, 900, false);
         screen_controller_ = std::make_unique<ScreenController>(ScreenType::kMenu, std::move(window));
         // Main cycle

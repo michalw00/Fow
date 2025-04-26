@@ -18,6 +18,8 @@ namespace fow {
         
     private:
         Core() {};
+
+        TraceLogLevel log_level_ = TraceLogLevel::LOG_ALL;
         std::unique_ptr<RWindow> InitWindow(int width, int height, bool fullscreen);
 
         std::unique_ptr<ScreenController> screen_controller_;
