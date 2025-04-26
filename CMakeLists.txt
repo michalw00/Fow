@@ -61,7 +61,6 @@ src/drawable/texture.cc
 src/drawable/text.h
 src/drawable/text.cc
 src/drawable/texture_manager.h
-src/drawable/texture_manager.cc
 
 src/drawable/button/button.h
 src/drawable/button/button.cc
