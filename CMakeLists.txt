@@ -84,6 +84,7 @@ src/match/map/tile.h
 src/match/map/tile.cc
 src/match/map/terrain.h
 src/match/map/terrain.cc
+src/match/map/position.h
 
 src/match/targets/target.h
 src/match/targets/target.cc
