@@ -1,7 +1,5 @@
 #include "complex_drawable.h"
 
-#include <iostream>
-
 #include "text.h"
 
 namespace fow {
@@ -12,19 +10,14 @@ namespace fow {
 	}
 
 	void ComplexDrawable::EditText(std::string&& name, std::string&& new_text) {
-		try {
-			std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(parts_.at(name));
-			if (!text) {
-				throw std::runtime_error("EditText: part \"" + name + "\" is not a Text object");
-			}
-			text->ChangeText(std::move(new_text));
+
+		std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(parts_.at(name));
+
+		if (!text) {
+			throw std::runtime_error("EditText: part \"" + name + "\" is not a Text object");
 		}
-		catch (const std::out_of_range& e) {
-			std::cerr << "EditText: part \"" << name << "\" not found (std::out_of_range)\n";
-		}
-		catch (const std::exception& e) {
-			std::cerr << "EditText error: " << e.what() << "\n";
-		}
+
+		text->ChangeText(std::move(new_text));
 	}
 
 	std::vector<std::shared_ptr<Drawable>>& ComplexDrawable::GetDrawables() {
