@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "tile.h"
+#include "position.h"
 #include "terrain.h"
 
 namespace fow {
@@ -13,6 +14,8 @@ namespace fow {
 
         std::vector<std::vector<Tile>> GetTiles() const { return tiles_; }
         const TerrainManager& GetTerrainManager() const { return terrain_manager_; }
+
+        std::vector<Tile> GetNeighbors(Position position, bool itself = false) const ;
     private:
         void InitSize(int rows, int columns);
         void InitTiles();
