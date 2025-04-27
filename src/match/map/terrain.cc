@@ -6,11 +6,12 @@ namespace fow {
     std::string TerrainManager::GetName(TerrainType terrain_type) const {
         switch (terrain_type) {
         case TerrainType::kPlains: return "Plain";
-        case TerrainType::kHills: return "Hhills";
+        case TerrainType::kHills: return "Hills";
         case TerrainType::kMountains: return "Mountains";
         case TerrainType::kMarsh: return "Marsh";
         case TerrainType::kForest: return "Forest";
         case TerrainType::kWater: return "Water";
+        default: return "";
         }
     }
 
@@ -23,6 +24,7 @@ namespace fow {
             case TerrainType::kMarsh: return "terrain/marsh/marsh";
             case TerrainType::kForest: return "terrain/forest/forest";
             case TerrainType::kWater: return "terrain/water/water";
+            default: return "";
         }
     }
 }

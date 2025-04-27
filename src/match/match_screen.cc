@@ -21,7 +21,7 @@ namespace fow {
 
     void MatchScreen::InitMatch() {
         match_ = std::make_unique<Match>();
-        match_->InitMap(8, 15);
+        match_->InitMap(18, 32);
         match_->InitPlayers(basic_width_, basic_height_, *camera_.get());
     }
 
@@ -91,10 +91,10 @@ namespace fow {
         auto& units = player.GetUnits();
         const auto& unit_manager = match_->GetUnitManager();
         for (auto& unit : units) {
-            Position unit_position = unit->GetPosition();
+            Vector2I unit_position = unit->GetPosition();
             RRectangle area = buttons[unit_position.x][unit_position.y]->GetArea();
             RVector2 size = { area.GetSize()};
-            size.x *= 0.95;
+            size.x *= 0.95f;
             RVector2 ratio = { 1.0, 1.5 };
             size /= ratio;
             RVector2 position = area.GetPosition();

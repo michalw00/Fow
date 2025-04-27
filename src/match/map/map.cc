@@ -1,4 +1,5 @@
 #include "map.h"
+
 #include <time.h>
 
 namespace fow {
@@ -7,7 +8,7 @@ namespace fow {
         InitTiles();
     }
 
-    std::vector<Tile> Map::GetNeighbors(Position position, bool itself) const {      
+    std::vector<Tile> Map::GetNeighbors(Vector2I position, bool itself) const {      
        
         int x = position.x;
         int y = position.y;

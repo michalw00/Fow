@@ -1,6 +1,6 @@
 #include "player.h"
 
-#include "algorithm"
+#include <algorithm>
 
 namespace fow {
     void Player::InitRenderMap(const Map& map, float basic_width, float basic_height) {
@@ -68,7 +68,7 @@ namespace fow {
         ResetUnitsMovementPoints();
     }
 
-    void Player::AddUnit(Position position, UnitType unit_type, const UnitManager& unit_manager) {
+    void Player::AddUnit(Vector2I position, UnitType unit_type, const UnitManager& unit_manager) {
         units_.emplace_back(std::make_shared<Unit>(position, unit_type, unit_manager.GetResource(unit_type)));
     }
 
@@ -88,7 +88,7 @@ namespace fow {
         auto IsOtherUnitThere = [this](auto it) {
             return it->GetPosition() == move_tile_position_; };
 
-        Position distance = selected_unit_->GetPosition() - move_tile_position_;
+        Vector2I distance = selected_unit_->GetPosition() - move_tile_position_;
         distance.x = std::abs(distance.x);
         distance.y = std::abs(distance.y);
 
@@ -135,11 +135,11 @@ namespace fow {
         move_tile_position_ = { -1, -1 };
     }
 
-    void Player::SetSelectedTilePosition(Position position) {
+    void Player::SetSelectedTilePosition(Vector2I position) {
         selected_tile_position_ = position;
     } 
 
-    void Player::SetMoveTilePosition(Position position) {
+    void Player::SetMoveTilePosition(Vector2I position) {
         if (selected_unit_) {
             move_tile_position_ = position;
         }

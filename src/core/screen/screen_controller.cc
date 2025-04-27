@@ -1,14 +1,13 @@
 #include "screen_controller.h"
 
 #include "../../menu/menu_screen.h"
-#include "../../input/input.h"
 #include "../../match/match_screen.h"
 
 namespace fow {
 
 	ScreenController::ScreenController(ScreenType start_screen_type, std::unique_ptr<RWindow> window) : window_(std::move(window)) {
-		window_width_ = window_->GetWidth();
-		window_height_= window_->GetHeight();
+		window_width_ = static_cast<float>(window_->GetWidth());
+		window_height_= static_cast<float>(window_->GetHeight());
 		
 		ChangeScreen(start_screen_type, CreateCamera());
 	}
@@ -60,11 +59,12 @@ namespace fow {
 		switch (screen_type) {
 			case ScreenType::kMenu: {
 				return std::make_shared<MenuScreen>(camera);
-				break;
 			}
 			case ScreenType::kMatch: {
 				return std::make_shared<MatchScreen>(camera);
-				break;
+			}
+			default: {
+				return nullptr;
 			}
 		}
     }

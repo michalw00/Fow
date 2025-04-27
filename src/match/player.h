@@ -5,6 +5,7 @@
 
 #include "Camera2D.hpp"
 #include "Vector2.hpp"
+
 #include "../drawable/button/texture_button.h"
 #include "map/map.h"
 #include "targets/units/unit.h"
@@ -18,7 +19,7 @@ namespace fow {
           
         void StartTurn();
 
-        void AddUnit(Position position, UnitType unit_type, const UnitManager& unit_manager);
+        void AddUnit(Vector2I position, UnitType unit_type, const UnitManager& unit_manager);
         void SetSelectedUnit(std::shared_ptr<Unit> unit);
         const std::shared_ptr<Unit>& GetSelectedUnit() const { return selected_unit_; }                      
         void MoveSelectedUnit(const Map& map); 
@@ -29,13 +30,13 @@ namespace fow {
         std::vector<std::shared_ptr<Unit>>& GetUnits() { return units_; }
         const std::vector<std::vector<std::shared_ptr<TextureButton>>>& GetRenderMap() const { return render_map_; }
     private:    
-        void SetSelectedTilePosition(Position position);
-        void SetMoveTilePosition(Position position);
+        void SetSelectedTilePosition(Vector2I position);
+        void SetMoveTilePosition(Vector2I position);
         void ResetUnitsMovementPoints();
 
         std::shared_ptr<Unit> selected_unit_ = nullptr;
-        Position move_tile_position_ = { -1, -1 };
-        Position selected_tile_position_ = { -2, -2 };
+        Vector2I move_tile_position_ = { -1, -1 };
+        Vector2I selected_tile_position_ = { -2, -2 };
 
         std::shared_ptr<RCamera2D> camera_;
         std::vector<std::shared_ptr<Unit>> units_;

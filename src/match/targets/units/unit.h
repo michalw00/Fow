@@ -3,7 +3,6 @@
 #include "../target.h"
 #include "../../../drawable/button/texture_button.h"
 #include "../../../drawable/texture_manager.h"
-#include <unordered_map>
 
 namespace fow {
 
@@ -57,7 +56,7 @@ namespace fow {
 
     class Unit : public Target {
     public:
-        Unit(Position position, UnitType unit_type, std::shared_ptr<UnitModifiers> unit_modifiers)
+        Unit(Vector2I position, UnitType unit_type, std::shared_ptr<UnitModifiers> unit_modifiers)
             : Target(position), unit_type_(unit_type), unit_modifiers_(unit_modifiers),
             movement_points_(unit_modifiers->start_movement_points), health_points_(unit_modifiers->start_health_points) {}
 

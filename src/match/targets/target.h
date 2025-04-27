@@ -9,14 +9,14 @@ namespace fow {
 
     class Target {
     public:
-        Target(Position position) : position_(position) {}
+        Target(Vector2I position) : position_(position) {}
 
-        void SetPosition(Position position) { position_ = position; }
-        Position GetPosition() const { return position_; }
+        void SetPosition(Vector2I position) { position_ = position; }
+        Vector2I GetPosition() const { return position_; }
 
         void Defense(Unit* unit);
     private:
-        Position position_;
+        Vector2I position_;
     };
 
 }

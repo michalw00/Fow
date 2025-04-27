@@ -7,7 +7,7 @@
 #include <Texture.hpp>
 
 #include "button.h"
-#include "../texture_manager.h"
+#include "../../structs/texture_states.h"
 
 namespace fow {   
 

@@ -3,20 +3,20 @@
 #include <memory>
 
 #include "terrain.h"
-#include "position.h"
+#include "../../structs/vector2i.h"
 
 namespace fow {
     class Tile {
     public:
-        Tile(std::shared_ptr<Terrain> terrain = nullptr);
+        Tile(Vector2I position = { 0,0 }, std::shared_ptr<Terrain> terrain = nullptr);
 
         void SetTerrain(std::shared_ptr<Terrain> terrain) { terrain_ = terrain; }
         std::shared_ptr<Terrain> GetTerrain() const { return terrain_; }
 
-        void SetPosition(Position position) { position_ = position; }
-        Position GetPosition() const { return position_; }
+        void SetPosition(Vector2I position) { position_ = position; }
+        Vector2I GetPosition() const { return position_; }
     private:
-        Position position_;
+        Vector2I position_;
         std::shared_ptr<Terrain> terrain_;
     };
 

@@ -268,6 +268,38 @@ namespace fow {
                 bridge_damage = 0.0f;
                 road_damage = 0.0f;
                 break;
+            default:
+                start_movement_points = 2.0f;
+                start_health_points = 60.0f;
+                movement_cost_plains = 1.0f;
+                movement_cost_hills = 1.0f;
+                movement_cost_mountains = 1.0f;
+                movement_cost_marsh = 1.0f;
+                movement_cost_forest = 1.0f;
+
+                attack_on_bonus_plains = 0.1f;
+                attack_on_bonus_hills = 0.1f;
+                attack_on_bonus_mountains = 0.1f;
+                attack_on_bonus_marsh = 0.1f;
+                attack_on_bonus_forest = 0.1f;
+
+                attack_against_bonus_plains = -0.1f;
+                attack_against_bonus_hills = -0.1f;
+                attack_against_bonus_mountains = -0.1f;
+                attack_against_bonus_marsh = -0.1f;
+                attack_against_bonus_forest = -0.1f;
+
+                defense_bonus_plains = 0.0f;
+                defense_bonus_hills = 0.0f;
+                defense_bonus_mountains = 0.0f;
+                defense_bonus_marsh = 0.0f;
+                defense_bonus_forest = 0.0f;
+
+                attack_range = 6.0f;
+                sight_range = 10.0f;
+                bridge_damage = 0.0f;
+                road_damage = 0.0f;
+                break;
         }
     }
 
@@ -284,6 +316,7 @@ namespace fow {
         case UnitType::kTank: return "Tank";
         case UnitType::kTBM: return "Tactical Ballistic Missile";
         case UnitType::kUCAV: return "UCAV";
+        default: return "";
         }
     }
 
@@ -297,6 +330,7 @@ namespace fow {
             case UnitType::kTank: return "units/tank/tank";
             case UnitType::kTBM: return "units/tbm/tbm";
             case UnitType::kUCAV: return "units/ucav/ucav";
+            default: return "";
         }
        
     }

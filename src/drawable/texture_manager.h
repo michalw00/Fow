@@ -1,21 +1,14 @@
 #pragma once
-#include <Texture.hpp>
+
 #include <memory>
 #include <unordered_map>
 #include <exception>
 
+#include <Texture.hpp>
+
+#include "../structs/texture_states.h"
+
 namespace fow {
-
-    struct TextureState {
-        TextureState(std::shared_ptr<RTexture> basic = nullptr,
-            std::shared_ptr<RTexture> hovered = nullptr,
-            std::shared_ptr<RTexture> selected = nullptr)
-            : basic(basic), hovered(hovered), selected(selected) {}
-
-        std::shared_ptr<RTexture> basic;
-        std::shared_ptr<RTexture> hovered;
-        std::shared_ptr<RTexture> selected;
-    };
 
     template <typename KeyType, typename ValueType>
     class TextureManager {

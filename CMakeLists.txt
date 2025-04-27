@@ -84,7 +84,6 @@ src/match/map/tile.h
 src/match/map/tile.cc
 src/match/map/terrain.h
 src/match/map/terrain.cc
-src/match/map/position.h
 
 src/match/targets/target.h
 src/match/targets/target.cc
@@ -97,6 +96,9 @@ src/match/targets/units/unit.cc
 
 src/menu/menu_screen.h
 src/menu/menu_screen.cc
+
+src/structs/vector2i.h
+src/structs/texture_states.h
 
 )
 

@@ -25,7 +25,7 @@ namespace fow {
 		std::unique_ptr<Map> map_;
 		std::vector<Player> players_;
 
-		int current_player_index_;
+		int current_player_index_ = 0;
 	};
 
 }

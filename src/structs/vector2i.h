@@ -2,20 +2,20 @@
 
 namespace fow {
 
-    struct Position {
+    struct Vector2I {
         int x;
         int y;
 
-        auto operator<=>(const Position&) const = default;
-        bool operator==(const Position&) const = default;
+        auto operator<=>(const Vector2I&) const = default;
+        bool operator==(const Vector2I&) const = default;
 
         bool operator==(int number) const {
             return x == number && y == number;
         }
-        Position operator+(const Position& other) const {
+        Vector2I operator+(const Vector2I& other) const {
             return { this->x + other.x, this->y + other.y };
         }
-        Position operator-(const Position& other) const {
+        Vector2I operator-(const Vector2I& other) const {
             return { this->x - other.x, this->y - other.y };
         }
     };

@@ -1,12 +1,12 @@
 #pragma once 
 
+#include <Window.hpp>
+
 #include "../core/screen/screen.h"
 #include "../input/input.h"
 #include "match.h"
 #include "../drawable/complex_drawable.h"
 #include "../drawable/button/text_button.h"
-
-#include <Window.hpp>
 
 namespace fow {
 

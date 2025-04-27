@@ -23,8 +23,8 @@ namespace fow {
 
         std::unique_ptr<RWindow> window_; 
 
-        int window_width_;
-        int window_height_;
+        float window_width_;
+        float window_height_;
 
         bool draw_fps_ = true;
     };
