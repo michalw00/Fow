@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace fow {
     void Player::InitMaps(const Map& map, float basic_width, float basic_height) {
@@ -92,13 +93,33 @@ namespace fow {
 
         std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>> neighbors_cache;
 
+        std::unordered_set<Vector2I> scouted_positions;
+        for (const auto& tile : scouted_tiles) {
+            scouted_positions.insert(tile.first);
+        }
+
         for (auto& unit : other_players_units) {
             Vector2I unit_position = unit->GetPosition();
             for (auto& scouted_tile : scouted_tiles) {
-                if (!neighbors_cache.contains(scouted_tile.first)) {
-                    neighbors_cache.emplace(scouted_tile.first, map.GetNeighbors(scouted_tile.first));
+                if (unit_position == scouted_tile.first) {
+                    continue;
                 }
-                if (neighbors_cache[scouted_tile.first].contains(unit_position)) {
+
+                if (!neighbors_cache.contains(scouted_tile.first)) {
+                    auto raw_neighbors = map.GetNeighbors(scouted_tile.first);
+                    std::unordered_map<Vector2I, Tile> filtered_neighbors;
+
+                    for (const auto& [pos, tile] : raw_neighbors) {
+                        if (!scouted_positions.contains(pos)) {
+                            filtered_neighbors[pos] = tile;
+                        }
+                    }
+
+                    neighbors_cache.emplace(scouted_tile.first, std::move(filtered_neighbors));
+                }
+
+                auto& cache = neighbors_cache[scouted_tile.first];
+                if (cache.contains(unit_position)) {
                     scouted_tile.second.push_back(unit);
                 }
             }
@@ -108,10 +129,13 @@ namespace fow {
         ScoutTilesSymmetricDifference(scouted_tiles, neighbors_cache);
         FillProbabilityMap(scouted_tiles, neighbors_cache);
 
+        for (auto& scouted_tile : scouted_tiles) {
+            probability_map_[scouted_tile.first.x][scouted_tile.first.y] = 0.f;
+        }
         for (auto& unit : units_) {
             Vector2I unit_position = unit->GetPosition();
             probability_map_[unit_position.x][unit_position.y] = -1.f;
-        }
+        }        
     }
 
     void Player::ScoutTilesIntersections(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles,
