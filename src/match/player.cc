@@ -95,9 +95,6 @@ namespace fow {
         for (auto& unit : other_players_units) {
             Vector2I unit_position = unit->GetPosition();
             for (auto& scouted_tile : scouted_tiles) {
-                if (unit_position == scouted_tile.first) {
-                    break;
-                }
                 if (!neighbors_cache.contains(scouted_tile.first)) {
                     neighbors_cache.emplace(scouted_tile.first, map.GetNeighbors(scouted_tile.first));
                 }
@@ -153,6 +150,7 @@ namespace fow {
         std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache) {
         if (scouted_tiles.empty()) return;
 
+        std::unordered_map<Vector2I, std::vector<Vector2I>> all_keys_to_erase;
         for (auto it = scouted_tiles.begin(); it != std::prev(scouted_tiles.end()); ++it) {
             auto& it_cache = neighbors_cache[it->first];
             for (auto other = std::next(it); other != scouted_tiles.end(); ++other) {
@@ -166,16 +164,23 @@ namespace fow {
                     }
                 }
                 if (keys_to_erase.size() == it_cache.size()) {
-                    break;
-                } else {
-                    for (const auto& key : keys_to_erase) {
-                        it_cache.erase(key);
-                        other_cache.erase(key);
-                    }
+                    continue;
+                }
+                for (const auto& key : keys_to_erase) {
+                    all_keys_to_erase[it->first].insert(all_keys_to_erase[it->first].end(), keys_to_erase.begin(), keys_to_erase.end());
+                    all_keys_to_erase[other->first].insert(all_keys_to_erase[other->first].end(), keys_to_erase.begin(), keys_to_erase.end());
                 }
             }
         }
+        for (auto& keys : all_keys_to_erase) {
+            std::unique(keys.second.begin(), keys.second.end());
+            auto& cache = neighbors_cache[keys.first];
+            for (auto& key : keys.second) {
+                cache.erase(key);
+            }
+        }
     }
+
 
     void Player::FillProbabilityMap(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles,
         std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache) {
