@@ -1,5 +1,7 @@
 #include "map.h"
 
+#include <unordered_map>
+
 #include <time.h>
 
 namespace fow {
@@ -8,8 +10,7 @@ namespace fow {
         InitTiles();
     }
 
-    std::vector<Tile> Map::GetNeighbors(Vector2I position, bool itself) const {      
-       
+    std::unordered_map<Vector2I, Tile> Map::GetNeighbors(Vector2I position, bool itself) const {
         int x = position.x;
         int y = position.y;
 
@@ -18,7 +19,7 @@ namespace fow {
 
         if (x < 0 || x >= rows || y < 0 || y >= columns) {
             throw std::out_of_range("Tile coordinates are out of range.");
-        }       
+        }
 
         int i_min = -1;
         if (x == 0) { ++i_min; }
@@ -32,14 +33,15 @@ namespace fow {
         int j_max = 1;
         if (y == columns - 1) { --j_max; }
 
-        std::vector<Tile> neighbors;
+        std::unordered_map<Vector2I, Tile> neighbors;
 
         neighbors.reserve(9);
 
         for (int i = i_min; i <= i_max; ++i) {
             for (int j = j_min; j <= j_max; ++j) {
-                if (itself || i != x || j != y) {
-                    neighbors.push_back(tiles_[x + i][y + j]);
+                if (itself || i != 0 || j != 0) {
+                    Tile neighbor = tiles_[x + i][y + j];
+                    neighbors.emplace(neighbor.GetPosition(), neighbor);
                 }
             }
         }
