@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include <functional>
+
 namespace fow {
 
     struct Vector2I {
@@ -21,3 +24,16 @@ namespace fow {
     };
 
 }
+
+namespace std {
+    template <>
+    struct hash<fow::Vector2I> {
+        std::size_t operator()(const fow::Vector2I& v) const noexcept {
+            std::size_t hx = std::hash<int>{}(v.x);
+            std::size_t hy = std::hash<int>{}(v.y);
+
+            return hx ^ (hy << 1);
+        }
+    };
+}
+
