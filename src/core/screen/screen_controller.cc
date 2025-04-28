@@ -14,11 +14,7 @@ namespace fow {
 
 	void ScreenController::ProcessScreen() {
 		
-		while (!window_->ShouldClose() && !current_screen_->ShouldClose() ) {
-
-			if (draw_fps_) {
-				DrawFPS(0, 0);
-			}
+		while (!window_->ShouldClose() && !current_screen_->ShouldClose() ) {			
 			
 			current_screen_->Clear();
 			current_screen_->Update();
@@ -30,6 +26,10 @@ namespace fow {
 			window_->ClearBackground(RColor{});
 
 			current_screen_->Draw();
+
+			if (draw_fps_) {
+				DrawFPS(0, 0);
+			}
 
 			window_->EndDrawing();
 
