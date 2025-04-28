@@ -16,6 +16,7 @@ namespace fow {
 		const std::unique_ptr<Map>& GetMap() const { return map_; }
 
 		Player& GetCurrentPlayer() { return players_.at(current_player_index_); }
+		std::vector<Player> GetOtherPlayers();
 		const UnitManager& GetUnitManager() { return unit_manager_; }
 	private:
 		void NextPlayer();

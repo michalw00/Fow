@@ -9,17 +9,24 @@ namespace fow {
         players_.resize(number);
         for (auto& player : players_) {
             player.InitCamera(camera);
-            player.InitRenderMap(*map_, basic_width, basic_height);
+            player.InitMaps(*map_, basic_width, basic_height);
         }
         players_[0].AddUnit({ 1, 1 }, UnitType::kAntiTank, unit_manager_);
         players_[0].AddUnit({ 2, 2 }, UnitType::kInfantry, unit_manager_);
-        players_[1].AddUnit({ 5, 2 }, UnitType::kInfantry, unit_manager_);
+        players_[0].AddUnit({ 0, 0 }, UnitType::kInfantry, unit_manager_);
+        players_[1].AddUnit({ 2, 1 }, UnitType::kInfantry, unit_manager_);
         current_player_index_ = 0;
     }
 
     void Match::EndTurn() {
         NextPlayer();
         players_[current_player_index_].StartTurn();
+    }
+
+    std::vector<Player> Match::GetOtherPlayers() {
+        std::vector<Player> other_players = players_;
+        other_players.erase(other_players.begin() + current_player_index_);
+        return other_players;
     }
 
     void Match::NextPlayer() {
