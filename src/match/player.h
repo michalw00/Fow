@@ -14,22 +14,34 @@ namespace fow {
     class Player {
     public:
         void InitCamera(RCamera2D camera) {camera_ = std::make_shared<RCamera2D>(camera);}
-        void InitRenderMap(const Map& map, float basic_width, float basic_height);
-        void UpdateRenderMap();
+        void InitMaps(const Map& map, float basic_width, float basic_height);
+
+        void Update(const Map& map, std::vector<Player>&& other_players);
           
         void StartTurn();
 
         void AddUnit(Vector2I position, UnitType unit_type, const UnitManager& unit_manager);
         void SetSelectedUnit(std::shared_ptr<Unit> unit);
-        const std::shared_ptr<Unit>& GetSelectedUnit() const { return selected_unit_; }                      
-        void MoveSelectedUnit(const Map& map); 
+        const std::shared_ptr<Unit>& GetSelectedUnit() const { return selected_unit_; }                              
         void ClearSelectedTile();
         void ClearMoveTile();
 
         std::shared_ptr<RCamera2D> GetCamera() { return camera_; }
         std::vector<std::shared_ptr<Unit>>& GetUnits() { return units_; }
-        const std::vector<std::vector<std::shared_ptr<TextureButton>>>& GetRenderMap() const { return render_map_; }
-    private:    
+        const std::vector<std::vector<std::shared_ptr<Button>>>& GetRenderMap() const { return render_map_; }
+        const std::vector<std::vector<float>>& GetProbabilityMap() const { return probability_map_; }
+    private:
+        void ScoutTilesIntersections(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles, 
+            std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache);
+        void ScoutTilesSymmetricDifference(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles,
+            std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache);
+        void FillProbabilityMap(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles,
+            std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache);
+
+        void UpdateRenderMap();
+        void UpdateProbabilityMap(const Map& map, std::vector<Player>&& other_players);
+        void MoveSelectedUnit(const Map& map);
+
         void SetSelectedTilePosition(Vector2I position);
         void SetMoveTilePosition(Vector2I position);
         void ResetUnitsMovementPoints();
@@ -40,7 +52,10 @@ namespace fow {
 
         std::shared_ptr<RCamera2D> camera_;
         std::vector<std::shared_ptr<Unit>> units_;
-        std::vector<std::vector<std::shared_ptr<TextureButton>>> render_map_;
+        std::vector<std::vector<std::shared_ptr<Button>>> render_map_;
+        std::vector<Vector2I> recon_tiles_;
+        std::vector<std::vector<float>> probability_map_;
+        std::vector<std::vector<float>> prev_probability_map_;
     };
 
 }

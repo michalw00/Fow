@@ -46,8 +46,9 @@ namespace fow {
 
     void MatchScreen::Update() {
         auto& player = match_->GetCurrentPlayer();
-        player.MoveSelectedUnit(*match_->GetMap().get());
-        player.UpdateRenderMap();
+        player.Update(*match_->GetMap().get(), match_->GetOtherPlayers());
+
+        auto& probability_map = player.GetProbabilityMap();
 
         camera_ = player.GetCamera();
         PlacePlayerButtons(player);
@@ -81,19 +82,29 @@ namespace fow {
         }
     }
 
-    void MatchScreen::PlacePlayerButtons(Player& player) {
+    void MatchScreen::PlacePlayerButtons(Player& player) {     
+        PlaceRenderMap(player);
+        PlaceUnits(player);
+        PlaceProbabilityMap(player);       
+    }
+
+    void MatchScreen::PlaceRenderMap(Player& player) {
         auto& buttons = player.GetRenderMap();
         for (auto& row : buttons) {
             for (auto& button : row) {
                 PlaceDrawable(button);
             }
         }
+    }
+
+    void MatchScreen::PlaceUnits(Player& player) {
+        auto& buttons = player.GetRenderMap();
         auto& units = player.GetUnits();
         const auto& unit_manager = match_->GetUnitManager();
         for (auto& unit : units) {
             Vector2I unit_position = unit->GetPosition();
             RRectangle area = buttons[unit_position.x][unit_position.y]->GetArea();
-            RVector2 size = { area.GetSize()};
+            RVector2 size = { area.GetSize() };
             size.x *= 0.95f;
             RVector2 ratio = { 1.0, 1.5 };
             size /= ratio;
@@ -106,12 +117,35 @@ namespace fow {
                 } else {
                     player.SetSelectedUnit(nullptr);
                 }
-            };
+                };
             std::shared_ptr<TextureButton> button = std::make_shared<TextureButton>(position, size, lmb_action, unit_manager.GetTexture(unit->GetType()));
 
             button->SetIsSelected(player.GetSelectedUnit() == unit);
 
             PlaceDrawable(button);
+        }
+    }
+
+    void MatchScreen::PlaceProbabilityMap(Player& player) {
+        auto& buttons = player.GetRenderMap();
+        auto& probability_map = player.GetProbabilityMap();
+        for (int i = 0; i < probability_map.size(); ++i) {
+            for (int j = 0; j < probability_map[0].size(); ++j) {
+                Vector2I tile_position = { i, j };
+                RRectangle area = buttons[i][j]->GetArea();
+                RVector2 size = { area.GetSize() };
+                RVector2 position = area.GetPosition();
+                position += (area.GetSize() - size / 2.f);
+                float probability = probability_map[i][j];
+                std::string text_string = "";
+                if (probability > -0.01f) {
+                    text_string = std::format("{:.1f}", probability*100)+'%';
+                }
+                RText rtext(text_string, 15.f, RColor(255 * probability, 0, 0, 255));
+
+                std::shared_ptr<Text> text = std::make_shared<Text>(position, rtext);
+                PlaceDrawable(text);
+            }
         }
     }
 

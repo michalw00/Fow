@@ -21,6 +21,10 @@ namespace fow {
         void CheckInputs();     
     private:
         void PlacePlayerButtons(Player& player);
+        void PlaceRenderMap(Player& player);
+        void PlaceUnits(Player& player);
+        void PlaceProbabilityMap(Player& player);
+
         void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager);
 
         void InitMatch();
