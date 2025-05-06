@@ -100,6 +100,8 @@ src/menu/menu_screen.cc
 src/structs/vector2i.h
 src/structs/texture_states.h
 
+src/utils/set_operations.h
+
 )
 
 add_executable(Fow ${SOURCE_LIST})
