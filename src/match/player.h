@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <unordered_set>
 
 #include "Camera2D.hpp"
 #include "Vector2.hpp"
@@ -31,13 +32,6 @@ namespace fow {
         const std::vector<std::vector<std::shared_ptr<Button>>>& GetRenderMap() const { return render_map_; }
         const std::vector<std::vector<float>>& GetProbabilityMap() const { return probability_map_; }
     private:
-        void ScoutTilesIntersections(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles, 
-            std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache);
-        void ScoutTilesSymmetricDifference(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles,
-            std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache);
-        void FillProbabilityMap(std::unordered_map <Vector2I, std::vector<std::shared_ptr<Unit>>>& scouted_tiles,
-            std::unordered_map <Vector2I, std::unordered_map<Vector2I, Tile>>& neighbors_cache);
-
         void UpdateRenderMap();
         void UpdateProbabilityMap(const Map& map, std::vector<Player>&& other_players);
         void MoveSelectedUnit(const Map& map);
