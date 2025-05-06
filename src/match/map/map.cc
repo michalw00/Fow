@@ -10,7 +10,7 @@ namespace fow {
         InitTiles();
     }
 
-    std::unordered_map<Vector2I, Tile> Map::GetNeighbors(Vector2I position, bool itself) const {
+    std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) const {
         int x = position.x;
         int y = position.y;
 
@@ -33,15 +33,15 @@ namespace fow {
         int j_max = 1;
         if (y == columns - 1) { --j_max; }
 
-        std::unordered_map<Vector2I, Tile> neighbors;
+        std::unordered_set<Vector2I> neighbors;
 
-        neighbors.reserve(9);
+        neighbors.reserve(8);
 
         for (int i = i_min; i <= i_max; ++i) {
             for (int j = j_min; j <= j_max; ++j) {
                 if (itself || i != 0 || j != 0) {
-                    Tile neighbor = tiles_[x + i][y + j];
-                    neighbors.emplace(neighbor.GetPosition(), neighbor);
+                    Vector2I neighbor = { x + i, y + j };
+                    neighbors.insert(neighbor);
                 }
             }
         }
