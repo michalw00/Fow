@@ -141,7 +141,17 @@ namespace fow {
                 if (probability > -0.01f) {
                     text_string = std::format("{:.1f}", probability*100)+'%';
                 }
-                RText rtext(text_string, 15.f, RColor(255 * probability, 0, 0, 255));
+                float r = 255.f;
+                if (probability < 0.5f) {
+                    r *= probability+0.45f;
+                }
+                float g = 255.f;
+                if (probability > 0.5f) {
+                    g *= 1 - probability;
+                }
+                float b = 0.f;
+                RColor color(r, g, b);
+                RText rtext(text_string, size.GetX() * 0.3f, color);
 
                 std::shared_ptr<Text> text = std::make_shared<Text>(position, rtext);
                 PlaceDrawable(text);
