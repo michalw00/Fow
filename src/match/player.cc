@@ -25,11 +25,11 @@ namespace fow {
         RVector2 tile_size(step-step*spacing);
 
         render_map_.resize(columns);
-        probability_map_.resize(columns);
+        probabilities_map_.resize(columns);
 
         for (int i = 0; i < columns; ++i) {
             render_map_[i].reserve(rows);
-            probability_map_[i].resize(rows);
+            probabilities_map_[i].resize(rows);
             for (int j = 0; j < rows; ++j) {
                 RVector2 factor(i, j);
                 RVector2 position = start_position + (step * factor);
@@ -62,7 +62,7 @@ namespace fow {
     void Player::Update(const Map& map, std::vector<Player>&& other_players) {
         MoveSelectedUnit(map);
         UpdateRenderMap();
-        UpdateProbabilityMap(map, std::move(other_players));
+        UpdateProbabilitiesMap(map, std::move(other_players));
     }
 
     void Player::UpdateRenderMap() {
@@ -73,45 +73,65 @@ namespace fow {
         }
     }
 
-    void Player::UpdateProbabilityMap(const Map& map, std::vector<Player>&& other_players) {
-        for (auto& row : probability_map_) {
+    void Player::UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players) {
+        for (auto& row : probabilities_map_) {
             std::fill(row.begin(), row.end(), -1.f);
         }
 
-        std::vector<std::shared_ptr<Unit>> other_players_units;
-        for (const auto& player : other_players) {
-            for (auto& unit : player.units_) {
-                other_players_units.push_back(unit);
-            }
-        }
-
-        std::unordered_set<Vector2I> scouted_tiles;
-        
-        for (const auto& unit : units_) {
-            scouted_tiles.insert(unit->GetPosition());
-        }
-        for (const auto& recon_tile : recon_tiles_) {
-            scouted_tiles.insert(recon_tile);
-        }
+        std::vector<std::shared_ptr<Unit>> enemy_units = GetEnemyUnits(std::move(other_players));
+        std::unordered_set<Vector2I> scouted_tiles = GetScoutedTiles();
 
         std::unordered_map<Vector2I, std::unordered_set<Vector2I>> neighbors;
         std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> unit_related_tiles;
 
         for (auto& scouted_tile : scouted_tiles) {
             neighbors[scouted_tile] = map.GetNeighbors(scouted_tile);
-            for (auto& unit : other_players_units) {
+            for (auto& unit : enemy_units) {
                 if (neighbors.at(scouted_tile).contains(unit->GetPosition())) {
                     unit_related_tiles[unit].insert(scouted_tile);
                 }
             }
         }
 
+        std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> possible_tiles = GetPossibleTiles(unit_related_tiles, neighbors, scouted_tiles);
+        FillProbabilitiesMap(neighbors, possible_tiles, enemy_units);
+    }
+
+    std::vector <std::shared_ptr<Unit>> Player::GetEnemyUnits(std::vector<Player>&& other_players) const {
+        std::vector<std::shared_ptr<Unit>> enemy_units;
+        for (const auto& player : other_players) {
+            for (auto& unit : player.units_) {
+                enemy_units.push_back(unit);
+            }
+        }
+        return enemy_units;
+    }
+
+    std::unordered_set<Vector2I> Player::GetScoutedTiles() const {
+        std::unordered_set<Vector2I> scouted_tiles;
+        for (const auto& unit : units_) {
+            scouted_tiles.insert(unit->GetPosition());
+        }
+        for (const auto& tile : was_unit_tiles_) {
+            scouted_tiles.insert(tile);
+        }
+        for (const auto& tile : recon_tiles_) {
+            scouted_tiles.insert(tile);
+        }
+        return scouted_tiles;
+    }
+
+    std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> Player::GetPossibleTiles(
+        const std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& unit_related_tiles,
+        const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors, 
+        const std::unordered_set<Vector2I>& scouted_tiles) const {
+
         std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> possible_tiles;
 
         for (auto& unit : unit_related_tiles) {
             std::vector<std::unordered_set<Vector2I>> sets;
             for (auto& tile : unit.second) {
-                sets.emplace_back(neighbors[tile]);
+                sets.emplace_back(neighbors.at(tile));
             }
             possible_tiles.emplace(unit.first, SetIntersection(sets));
         }
@@ -120,31 +140,43 @@ namespace fow {
             std::unordered_set<Vector2I> not_related_tiles = SetDifference(scouted_tiles, unit.second);
             std::unordered_set<Vector2I> not_related_tiles_neighbors; 
             for (auto& not_related_tile : not_related_tiles) {
-                not_related_tiles_neighbors.insert(neighbors[not_related_tile].cbegin(), neighbors[not_related_tile].cend());
+                not_related_tiles_neighbors.insert(neighbors.at(not_related_tile).cbegin(), neighbors.at(not_related_tile).cend());
             }
             std::vector<std::unordered_set<Vector2I>> exclude{ possible_tiles[unit.first], not_related_tiles_neighbors, scouted_tiles };
             possible_tiles[unit.first] = SetDifference(exclude);
-        }       
+        }   
+        return possible_tiles;
+    }
 
+    void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors, 
+        const std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
+        const std::vector<std::shared_ptr<Unit>>& enemy_units) {
         for (auto& tile : neighbors) {
             for (auto& neighbor : tile.second) {  
                 auto is_unit = [neighbor](std::shared_ptr<Unit> unit) { return unit->GetPosition() == neighbor; };
-                    if (std::none_of(units_.begin(), units_.end(), is_unit)) {
-                        probability_map_[neighbor.x][neighbor.y] = 0.0f;
-                    }
+                if (std::none_of(units_.begin(), units_.end(), is_unit)) {
+                    probabilities_map_[neighbor.x][neighbor.y] = 0.0f;
+                }
             }
         }
-
         for (auto& unit : possible_tiles) {
             for (auto& tile : unit.second) {
-                probability_map_[tile.x][tile.y] += 1.f / unit.second.size();
+                probabilities_map_[tile.x][tile.y] += 1.f / unit.second.size();
+            }
+        }
+        for (auto& tile : recon_tiles_) {
+            auto is_enemy_there = [tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == tile; };
+            if (std::any_of(enemy_units.cbegin(), enemy_units.cend(), is_enemy_there)) {
+                probabilities_map_[tile.x][tile.y] = 1.f;
+            } else {
+                probabilities_map_[tile.x][tile.y] = 0.f;
             }
         }
     }
 
     void Player::StartTurn() {
         selected_unit_ = nullptr;
-        prev_probability_map_ = probability_map_;
+        prev_probabilities_map_ = probabilities_map_;
         recon_tiles_.clear();
         ClearMoveTile();
         ClearSelectedTile();
@@ -186,14 +218,14 @@ namespace fow {
             if (distance.x == 1 && distance.y == 1
                 && selected_unit_->GetMovementPoints()+0.1f >= diagonal_movement_cost) {
                 selected_unit_->SubstractMovementPoints(diagonal_movement_cost);
-            } else if (distance.x != 1 || distance.y != 1
+            } else if ((distance.x != 1 || distance.y != 1)
                 && selected_unit_->GetMovementPoints()+0.1f >= basic_movement_cost) {
                 selected_unit_->SubstractMovementPoints(basic_movement_cost);
             } else {
                 return;
             }
 
-            recon_tiles_.push_back(selected_unit_->GetPosition());
+            was_unit_tiles_.emplace(selected_unit_->GetPosition());
             selected_unit_->SetPosition(move_tile_position_);           
 
             if (!(selected_unit_->GetMovementPoints() + 0.1f >= basic_movement_cost)) {

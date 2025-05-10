@@ -30,12 +30,22 @@ namespace fow {
         std::shared_ptr<RCamera2D> GetCamera() { return camera_; }
         std::vector<std::shared_ptr<Unit>>& GetUnits() { return units_; }
         const std::vector<std::vector<std::shared_ptr<Button>>>& GetRenderMap() const { return render_map_; }
-        const std::vector<std::vector<float>>& GetProbabilityMap() const { return probability_map_; }
+        const std::vector<std::vector<float>>& GetProbabilityMap() const { return probabilities_map_; }
     private:
         void UpdateRenderMap();
-        void UpdateProbabilityMap(const Map& map, std::vector<Player>&& other_players);
-        void MoveSelectedUnit(const Map& map);
 
+        void UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players);
+        std::vector<std::shared_ptr<Unit>> GetEnemyUnits(std::vector<Player>&& other_players) const;
+        std::unordered_set<Vector2I> GetScoutedTiles() const;
+        std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> GetPossibleTiles(
+            const std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& unit_related_tiles,
+            const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors,
+            const std::unordered_set<Vector2I>& scouted_tiles) const;
+        void FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors, 
+            const std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
+            const std::vector<std::shared_ptr<Unit>>& enemy_units);
+
+        void MoveSelectedUnit(const Map& map);
         void SetSelectedTilePosition(Vector2I position);
         void SetMoveTilePosition(Vector2I position);
         void ResetUnitsMovementPoints();
@@ -47,9 +57,10 @@ namespace fow {
         std::shared_ptr<RCamera2D> camera_;
         std::vector<std::shared_ptr<Unit>> units_;
         std::vector<std::vector<std::shared_ptr<Button>>> render_map_;
-        std::vector<Vector2I> recon_tiles_;
-        std::vector<std::vector<float>> probability_map_;
-        std::vector<std::vector<float>> prev_probability_map_;
+        std::unordered_set<Vector2I> was_unit_tiles_;
+        std::unordered_set<Vector2I> recon_tiles_;
+        std::vector<std::vector<float>> probabilities_map_;
+        std::vector<std::vector<float>> prev_probabilities_map_;
     };
 
 }
