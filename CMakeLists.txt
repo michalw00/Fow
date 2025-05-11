@@ -58,6 +58,8 @@ src/drawable/complex_drawable.h
 src/drawable/complex_drawable.cc
 src/drawable/texture.h
 src/drawable/texture.cc
+src/drawable/rectangle.h
+src/drawable/rectangle.cc
 src/drawable/text.h
 src/drawable/text.cc
 src/drawable/texture_manager.h
