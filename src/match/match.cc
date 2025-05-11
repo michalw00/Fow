@@ -11,6 +11,7 @@ namespace fow {
             player.InitCamera(camera);
             player.InitMaps(*map_, basic_width, basic_height);
         }
+        players_[0].StartTurn();
         players_[0].AddUnit({ 1, 1 }, UnitType::kAntiTank, unit_manager_);
         players_[0].AddUnit({ 2, 2 }, UnitType::kInfantry, unit_manager_);
         players_[0].AddUnit({ 0, 0 }, UnitType::kInfantry, unit_manager_);
