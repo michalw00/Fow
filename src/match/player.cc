@@ -74,6 +74,14 @@ namespace fow {
     }
 
     void Player::UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players) {
+
+        if (show_prev_map_ && turn != 0) {
+            return;
+        }
+        if (!should_update_probabilities_map_) {
+            return;
+        }        
+
         for (auto& row : probabilities_map_) {
             std::fill(row.begin(), row.end(), -1.f);
         }
@@ -95,6 +103,8 @@ namespace fow {
 
         std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> possible_tiles = GetPossibleTiles(unit_related_tiles, neighbors, scouted_tiles);
         FillProbabilitiesMap(neighbors, possible_tiles, enemy_units);
+
+        should_update_probabilities_map_ = false;
     }
 
     std::vector <std::shared_ptr<Unit>> Player::GetEnemyUnits(std::vector<Player>&& other_players) const {
@@ -175,8 +185,20 @@ namespace fow {
     }
 
     void Player::StartTurn() {
+        ++turn;
+        should_update_probabilities_map_ = true;
         selected_unit_ = nullptr;
+        prev_units_.clear();
+        prev_units_.reserve(units_.size());
+        std::transform(
+            units_.begin(), units_.end(),
+            std::back_inserter(prev_units_),
+            [](const std::shared_ptr<Unit>& src) {
+            return src ? std::make_shared<Unit>(*src) : nullptr;
+        }
+        );
         prev_probabilities_map_ = probabilities_map_;
+        was_unit_tiles_.clear();
         recon_tiles_.clear();
         ClearMoveTile();
         ClearSelectedTile();
@@ -232,6 +254,7 @@ namespace fow {
                 selected_unit_ = nullptr;
             }
             ClearMoveTile();
+            should_update_probabilities_map_ = true;
         } else {
             return;
         }
@@ -251,6 +274,23 @@ namespace fow {
         move_tile_position_ = { -1, -1 };
     }
 
+    std::vector<std::shared_ptr<Unit>>& Player::GetUnits() { 
+        if (show_prev_map_ && turn != 0) {
+            return prev_units_;
+        } else {
+            return units_;
+        }
+    }
+
+    const std::vector<std::vector<float>>& Player::GetProbabilitiesMap() const {
+        if (show_prev_map_ && turn != 0) {
+            return prev_probabilities_map_;
+        } else {
+            return probabilities_map_;
+        }
+    }
+
+
     void Player::SetSelectedTilePosition(Vector2I position) {
         selected_tile_position_ = position;
     } 
@@ -259,7 +299,6 @@ namespace fow {
         if (selected_unit_) {
             move_tile_position_ = position;
         }
-
     }       
 
     void Player::ResetUnitsMovementPoints() {

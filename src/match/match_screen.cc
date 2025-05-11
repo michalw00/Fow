@@ -8,15 +8,23 @@
 
 #include "../drawable/button/texture_button.h"
 #include "../drawable/button/text_button.h"
+#include "../drawable/rectangle.h"
 
 namespace fow {
     void MatchScreen::Init() {
         InitMatch();
         InitSelectedUnitHud();    
 
-        RVector2 end_turn_position = { basic_width_ - 140.f, basic_height_ - 50.f };
+        RVector2 prev_probabilities_position = { basic_width_ - 160.f, basic_height_ - 100.f };
+        RText prev_probabilities_text("PREV MAP", 45.f);
+        auto InvertMaps = [&]() {
+            auto& player = match_->GetCurrentPlayer();
+            player.InvertShowPrevMap();
+        };
+        prev_probabilities_button_ = std::make_shared<TextButton>(prev_probabilities_position, InvertMaps, prev_probabilities_text, true);
+        RVector2 end_turn_position = { basic_width_ - 160.f, basic_height_ - 50.f };
         RText end_turn_text("END TURN", 45.f);
-        end_turn_button = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
+        end_turn_button_ = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
     }
 
     void MatchScreen::InitMatch() {
@@ -45,10 +53,8 @@ namespace fow {
     }
 
     void MatchScreen::Update() {
-        auto& player = match_->GetCurrentPlayer();
+        auto& player = match_->GetCurrentPlayer();    
         player.Update(*match_->GetMap().get(), match_->GetOtherPlayers());
-
-        auto& probability_map = player.GetProbabilityMap();
 
         camera_ = player.GetCamera();
         PlacePlayerButtons(player);
@@ -56,9 +62,15 @@ namespace fow {
 
         if (unit) {
             ShowSelectedUnitHud(unit, match_->GetUnitManager());
+        } 
+
+        if (player.GetShowPrevMap()) {
+            auto layer = std::make_shared<Rectangle>(RVector2(0, 0), RVector2(10000.f, 10000), RColor::Gray().Alpha(0.2f));
+            PlaceDrawable(layer, true);
         }
 
-        PlaceDrawable(end_turn_button, true);
+        PlaceDrawable(end_turn_button_, true);
+        PlaceDrawable(prev_probabilities_button_, true);
 
         CheckInputs();              
     }
@@ -71,11 +83,9 @@ namespace fow {
         if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE)) {
             input.DragScreen(camera_.get());
         }
-        {
-            float mouse_wheel = GetMouseWheelMove();
-            if (std::abs(mouse_wheel) > 0.0f) {
-                input.Zoom(camera_.get(), mouse_wheel * 0.05f, 0.5f, 4.f);
-            }
+        if (float mouse_wheel = GetMouseWheelMove(); std::abs(mouse_wheel) > 0.0f) {
+            input.Zoom(camera_.get(), mouse_wheel * 0.05f, 0.5f, 4.f);
+
         }
         if (IsKeyPressed(KEY_ENTER)) {
             match_->EndTurn();
@@ -111,13 +121,13 @@ namespace fow {
             RVector2 position = area.GetPosition();
             position += (area.GetSize() - size) / 2.f;
             auto lmb_action = [&player, &unit]() {
-                if (!player.GetSelectedUnit()) {
+                if (!player.GetSelectedUnit() && !player.GetShowPrevMap()) {
                     player.SetSelectedUnit(unit);
                     player.ClearSelectedTile();
                 } else {
                     player.SetSelectedUnit(nullptr);
                 }
-                };
+            };
             std::shared_ptr<TextureButton> button = std::make_shared<TextureButton>(position, size, lmb_action, unit_manager.GetTexture(unit->GetType()));
 
             button->SetIsSelected(player.GetSelectedUnit() == unit);
@@ -128,14 +138,16 @@ namespace fow {
 
     void MatchScreen::PlaceProbabilityMap(Player& player) {
         auto& buttons = player.GetRenderMap();
-        auto& probability_map = player.GetProbabilityMap();
+
+        auto& probability_map = player.GetProbabilitiesMap();
+        
         for (int i = 0; i < probability_map.size(); ++i) {
             for (int j = 0; j < probability_map[0].size(); ++j) {
                 Vector2I tile_position = { i, j };
                 RRectangle area = buttons[i][j]->GetArea();
                 RVector2 size = { area.GetSize() };
                 RVector2 position = area.GetPosition();
-                position += (area.GetSize() - size / 2.f);
+                position += size / 2.f;
                 float probability = probability_map[i][j];
                 std::string text_string = "";
                 if (probability > -0.01f) {

@@ -28,12 +28,15 @@ namespace fow {
         void ClearMoveTile();
 
         std::shared_ptr<RCamera2D> GetCamera() { return camera_; }
-        std::vector<std::shared_ptr<Unit>>& GetUnits() { return units_; }
+        std::vector<std::shared_ptr<Unit>>& GetUnits();
         const std::vector<std::vector<std::shared_ptr<Button>>>& GetRenderMap() const { return render_map_; }
-        const std::vector<std::vector<float>>& GetProbabilityMap() const { return probabilities_map_; }
+        const std::vector<std::vector<float>>& GetProbabilitiesMap() const;
+        void InvertShowPrevMap() { if (turn != 0) show_prev_map_ = !show_prev_map_;  }
+        bool GetShowPrevMap() const { return show_prev_map_; }
+        
     private:
         void UpdateRenderMap();
-
+        
         void UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players);
         std::vector<std::shared_ptr<Unit>> GetEnemyUnits(std::vector<Player>&& other_players) const;
         std::unordered_set<Vector2I> GetScoutedTiles() const;
@@ -56,11 +59,18 @@ namespace fow {
 
         std::shared_ptr<RCamera2D> camera_;
         std::vector<std::shared_ptr<Unit>> units_;
+        std::vector<std::shared_ptr<Unit>> prev_units_;
+
         std::vector<std::vector<std::shared_ptr<Button>>> render_map_;
         std::unordered_set<Vector2I> was_unit_tiles_;
         std::unordered_set<Vector2I> recon_tiles_;
         std::vector<std::vector<float>> probabilities_map_;
         std::vector<std::vector<float>> prev_probabilities_map_;
+
+        bool show_prev_map_ = false;
+        bool should_update_probabilities_map_ = true;
+
+        int turn = -1;
     };
 
 }

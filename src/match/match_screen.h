@@ -31,9 +31,12 @@ namespace fow {
         void InitSelectedUnitHud();  
 
         std::unique_ptr<ComplexDrawable> selected_unit_hud_;
-        std::shared_ptr<TextButton> end_turn_button;
+        std::shared_ptr<TextButton> end_turn_button_;
+        std::shared_ptr<TextButton> prev_probabilities_button_;
 
         std::unique_ptr<Match> match_;
         Input input;
+
+        bool show_prev_map_ = false;
     };
 }
