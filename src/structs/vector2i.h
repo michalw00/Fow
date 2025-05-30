@@ -1,5 +1,8 @@
 #pragma once
 
+#include <compare>
+#include <type_traits>
+
 namespace fow {
 
 struct Vector2I {
@@ -32,5 +35,6 @@ struct hash<fow::Vector2I> {
     return hx ^ (hy << 1);
   }
 };
-}
+
+} // namespace std
 
