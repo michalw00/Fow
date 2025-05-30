@@ -1,42 +1,46 @@
 #pragma once 
 
-#include <Window.hpp>
+#include <memory>
 
 #include "../core/screen/screen.h"
+#include "../drawable/button/text_button.h"
+#include "../drawable/complex_drawable.h"
 #include "../input/input.h"
 #include "match.h"
-#include "../drawable/complex_drawable.h"
-#include "../drawable/button/text_button.h"
+#include "player.h"
+#include "targets/units/unit.h"
+#include <Camera2D.hpp>
 
 namespace fow {
 
-    class MatchScreen : public Screen {
-    public:
-        MatchScreen(std::shared_ptr<RCamera2D> camera) : Screen(camera) {}
+class MatchScreen : public Screen {
+  public:
+  MatchScreen(std::shared_ptr<RCamera2D> camera) : Screen(camera) {}
 
-        void Init() override;
-        void Update() override;
-        ScreenType Finish() override;
+  void Init() override;
+  void Update() override;
+  ScreenType Finish() override;
 
-        void CheckInputs();     
-    private:
-        void PlacePlayerButtons(Player& player);
-        void PlaceRenderMap(Player& player);
-        void PlaceUnits(Player& player);
-        void PlaceProbabilityMap(Player& player);
+  void CheckInputs();
+  private:
+  void PlacePlayerButtons(Player& player);
+  void PlaceRenderMap(Player& player);
+  void PlaceUnits(Player& player);
+  void PlaceProbabilityMap(Player& player);
 
-        void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager);
+  void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager);
 
-        void InitMatch();
-        void InitSelectedUnitHud();  
+  void InitMatch();
+  void InitSelectedUnitHud();
 
-        std::unique_ptr<ComplexDrawable> selected_unit_hud_;
-        std::shared_ptr<TextButton> end_turn_button_;
-        std::shared_ptr<TextButton> prev_probabilities_button_;
+  std::unique_ptr<ComplexDrawable> selected_unit_hud_;
+  std::shared_ptr<TextButton> end_turn_button_;
+  std::shared_ptr<TextButton> prev_probabilities_button_;
 
-        std::unique_ptr<Match> match_;
-        Input input;
+  std::unique_ptr<Match> match_;
+  Input input;
 
-        bool show_prev_map_ = false;
-    };
-}
+  bool show_prev_map_ = false;
+};
+
+} // namespace fow

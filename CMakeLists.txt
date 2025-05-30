@@ -42,65 +42,62 @@ add_custom_target(raylib_cpp_sources SOURCES ${RAYLIB_CPP_HEADERS})
 # Adding source files
 set(SOURCE_LIST
 
-src/main.cc
-
-src/core/core.h
 src/core/core.cc
-
-src/core/screen/screen.h
+src/core/core.h
 src/core/screen/screen.cc
-src/core/screen/screen_controller.h
+src/core/screen/screen.h
 src/core/screen/screen_controller.cc
+src/core/screen/screen_controller.h
 
-src/drawable/drawable.h
-src/drawable/drawable.cc
-src/drawable/complex_drawable.h
+src/drawable/button/button.cc
+src/drawable/button/button.h
+src/drawable/button/text_button.cc
+src/drawable/button/text_button.h
+src/drawable/button/texture_button.cc
+src/drawable/button/texture_button.h
 src/drawable/complex_drawable.cc
-src/drawable/texture.h
-src/drawable/texture.cc
-src/drawable/rectangle.h
+src/drawable/complex_drawable.h
+src/drawable/drawable.cc
+src/drawable/drawable.h
 src/drawable/rectangle.cc
-src/drawable/text.h
+src/drawable/rectangle.h
 src/drawable/text.cc
+src/drawable/text.h
+src/drawable/texture.cc
+src/drawable/texture.h
 src/drawable/texture_manager.h
 
-src/drawable/button/button.h
-src/drawable/button/button.cc
-src/drawable/button/texture_button.h
-src/drawable/button/texture_button.cc
-src/drawable/button/text_button.h
-src/drawable/button/text_button.cc
-
-src/input/input.h
 src/input/input.cc
+src/input/input.h
 
-src/match/match.h
-src/match/match.cc
-src/match/match_screen.h
-src/match/match_screen.cc
-src/match/player.h
-src/match/player.cc
-src/match/map/map.h
+src/main.cc
+
 src/match/map/map.cc
-src/match/map/tile.h
-src/match/map/tile.cc
-src/match/map/terrain.h
+src/match/map/map.h
 src/match/map/terrain.cc
-
-src/match/targets/target.h
-src/match/targets/target.cc
-src/match/targets/bridge.h
+src/match/map/terrain.h
+src/match/map/tile.cc
+src/match/map/tile.h
+src/match/match.cc
+src/match/match.h
+src/match/match_screen.cc
+src/match/match_screen.h
+src/match/player.cc
+src/match/player.h
 src/match/targets/bridge.cc
-src/match/targets/road.h
+src/match/targets/bridge.h
 src/match/targets/road.cc
-src/match/targets/units/unit.h
+src/match/targets/road.h
+src/match/targets/target.cc
+src/match/targets/target.h
 src/match/targets/units/unit.cc
+src/match/targets/units/unit.h
 
-src/menu/menu_screen.h
 src/menu/menu_screen.cc
+src/menu/menu_screen.h
 
-src/structs/vector2i.h
 src/structs/texture_states.h
+src/structs/vector2i.h
 
 src/utils/set_operations.h
 

@@ -4,8 +4,7 @@
 
 namespace fow {
 
-    void Target::Defense(Unit* unit) {
-
-    }
-
+void Target::Defense(Unit* unit) {
 }
+
+} // namespace fow
