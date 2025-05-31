@@ -13,20 +13,21 @@
 #include "targets/units/unit.h"
 
 namespace fow {
+
 class Player {
   public:
   void InitCamera(RCamera2D camera) { camera_ = std::make_shared<RCamera2D>(camera); }
-  void InitMaps(const Map& map, float basic_width, float basic_height);
+  void InitMaps(const std::unique_ptr<Map>& map, float basic_width, float basic_height);
 
-  void Update(const Map& map, std::vector<Player>&& other_players);
+  void Update(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players);
 
   void StartTurn();
 
   void AddUnit(Vector2I position, UnitType unit_type, const UnitManager& unit_manager);
-  void SetSelectedUnit(std::shared_ptr<Unit> unit);
+  void SetSelectedUnit(std::shared_ptr<Unit> unit, const std::unique_ptr<Map>& map = nullptr);
   const std::shared_ptr<Unit>& GetSelectedUnit() const { return selected_unit_; }
   void ClearSelectedTile();
-  void ClearMoveTile();
+  void ClearActionTile();
 
   std::shared_ptr<RCamera2D> GetCamera() { return camera_; }
   std::vector<std::shared_ptr<Unit>>& GetUnits();
@@ -38,7 +39,7 @@ class Player {
   private:
   void UpdateRenderMap();
 
-  void UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players);
+  void UpdateProbabilitiesMap(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players);
   std::vector<std::shared_ptr<Unit>> GetEnemyUnits(std::vector<Player>&& other_players) const;
   std::unordered_set<Vector2I> GetScoutedTiles() const;
   std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> GetPossibleTiles(
@@ -46,16 +47,18 @@ class Player {
       const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors,
       const std::unordered_set<Vector2I>& scouted_tiles) const;
   void FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors,
-      const std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
+      std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
       const std::vector<std::shared_ptr<Unit>>& enemy_units);
 
-  void MoveSelectedUnit(const Map& map);
+  void MoveSelectedUnit(const std::unique_ptr<Map>& map);
+  void ReconTile();
+
   void SetSelectedTilePosition(Vector2I position);
-  void SetMoveTilePosition(Vector2I position);
+  void SetActionTilePosition(Vector2I position);
   void ResetUnitsMovementPoints();
 
   std::shared_ptr<Unit> selected_unit_ = nullptr;
-  Vector2I move_tile_position_ = { -1, -1 };
+  Vector2I action_tile_position_ = { -1, -1 };
   Vector2I selected_tile_position_ = { -2, -2 };
 
   std::shared_ptr<RCamera2D> camera_;

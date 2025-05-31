@@ -20,7 +20,7 @@ class Match {
   const std::unique_ptr<Map>& GetMap() const { return map_; }
 
   Player& GetCurrentPlayer() { return players_.at(current_player_index_); }
-  std::vector<Player> GetOtherPlayers();
+  std::vector<Player> GetOtherPlayers() const;
   const UnitManager& GetUnitManager() { return unit_manager_; }
   private:
   void NextPlayer();

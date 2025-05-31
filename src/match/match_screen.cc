@@ -134,9 +134,11 @@ void MatchScreen::PlaceUnits(Player& player) {
     size /= ratio;
     RVector2 position = area.GetPosition();
     position += (area.GetSize() - size) / 2.f;
-    auto lmb_action = [&player, &unit]() {
-      if (!player.GetSelectedUnit()) {
-        player.SetSelectedUnit(unit);
+    auto lmb_action = [this, &player, &unit]() {
+      if (player.GetSelectedUnit() == unit) {
+        player.SetSelectedUnit(nullptr);
+      } else {
+        player.SetSelectedUnit(unit, match_->GetMap());
         player.ClearSelectedTile();
       } else {
         player.SetSelectedUnit(nullptr);

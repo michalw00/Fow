@@ -1,7 +1,6 @@
 #include "player.h"
 
 #include <algorithm>
-#include <cmath>
 #include <iterator>
 #include <memory>
 #include <type_traits>
@@ -20,9 +19,10 @@
 #include "targets/units/unit.h"
 
 namespace fow {
-void Player::InitMaps(const Map& map, float basic_width, float basic_height) {
-  auto&& tiles = map.GetTiles();
-  auto& terrain_manager = map.GetTerrainManager();
+
+void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float basic_height) {
+  auto&& tiles = map->GetTiles();
+  auto& terrain_manager = map->GetTerrainManager();
 
   size_t columns = tiles.size();
   size_t rows = tiles[0].size();
@@ -49,6 +49,7 @@ void Player::InitMaps(const Map& map, float basic_width, float basic_height) {
       auto& tile = tiles[i][j];
       TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
       TextureState tile_textures = terrain_manager.GetTexture(tile_type);
+
       auto lmb_action = [this, i, j]() {
         if (selected_tile_position_.x != i || selected_tile_position_.y != j) {
           ClearSelectedTile();
@@ -67,9 +68,10 @@ void Player::InitMaps(const Map& map, float basic_width, float basic_height) {
       };
       auto rmb_action = [this, i, j]() {
         if (!show_prev_map_) {
-          SetMoveTilePosition({ i, j });
+          SetActionTilePosition({ i, j });
         }
       };
+
       auto&& button = std::make_shared<TextureButton>(position, tile_size, lmb_action, tile_textures, rmb_action);
       render_map_[i].emplace_back(button);
     }
@@ -90,7 +92,7 @@ void Player::UpdateRenderMap() {
   }
 }
 
-void Player::UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players) {
+void Player::UpdateProbabilitiesMap(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
   if (show_prev_map_ && turn != 0) {
     return;
   }
@@ -109,7 +111,7 @@ void Player::UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_
   std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> unit_related_tiles;
 
   for (auto& scouted_tile : scouted_tiles) {
-    neighbors[scouted_tile] = map.GetNeighbors(scouted_tile);
+    neighbors[scouted_tile] = map->GetNeighbors(scouted_tile);
     for (auto& unit : enemy_units) {
       if (neighbors.at(scouted_tile).contains(unit->GetPosition())) {
         unit_related_tiles[unit].insert(scouted_tile);
@@ -175,7 +177,7 @@ std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>> Player::
 }
 
 void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unordered_set<Vector2I>>& neighbors,
-    const std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
+    std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
     const std::vector<std::shared_ptr<Unit>>& enemy_units) {
   for (auto& tile : neighbors) {
     for (auto& neighbor : tile.second) {
@@ -185,18 +187,25 @@ void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unorde
       }
     }
   }
-  for (auto& unit : possible_tiles) {
-    for (auto& tile : unit.second) {
-      probabilities_map_[tile.x][tile.y] += 1.f / unit.second.size();
-    }
-  }
   for (auto& tile : recon_tiles_) {
-    auto is_enemy_there = [tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == tile; };
+    auto is_enemy_there = [tile, &possible_tiles](std::shared_ptr<Unit> unit) { 
+      if (unit->GetPosition() == tile) {
+        possible_tiles[unit].clear();
+        return true;
+      } else {
+        return false;
+      };
+    };
     if (std::any_of(enemy_units.cbegin(), enemy_units.cend(), is_enemy_there)) {
       probabilities_map_[tile.x][tile.y] = 1.f;
     } else {
       probabilities_map_[tile.x][tile.y] = 0.f;
     }
+  }
+  for (auto& unit : possible_tiles) {
+    for (auto& tile : unit.second) {
+      probabilities_map_[tile.x][tile.y] += 1.f / unit.second.size();
+}
   }
 }
 
@@ -205,6 +214,9 @@ void Player::StartTurn() {
   show_prev_map_ = false;
   should_update_probabilities_map_ = true;
   selected_unit_ = nullptr;
+  ClearPossibleTiles();
+
+  show_prev_map_ = false;
   prev_units_.clear();
   prev_units_.reserve(units_.size());
   std::transform(
@@ -214,7 +226,9 @@ void Player::StartTurn() {
     return src ? std::make_shared<Unit>(*src) : nullptr;
   }
   );
-  prev_probabilities_map_ = probabilities_map_;
+
+  should_update_probabilities_map_ = true;
+  prev_map_ = probabilities_map_;
   was_unit_tiles_.clear();
   recon_tiles_.clear();
   ClearMoveTile();

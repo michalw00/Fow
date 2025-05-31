@@ -19,14 +19,14 @@ void Match::InitPlayers(float basic_width, float basic_height, RCamera2D camera,
   players_.resize(number);
   for (auto& player : players_) {
     player.InitCamera(camera);
-    player.InitMaps(*map_, basic_width, basic_height);
+    player.InitMaps(map_, basic_width, basic_height);
   }
   players_[0].StartTurn();
-  players_[0].AddUnit({ 1, 1 }, UnitType::kAntiTank, unit_manager_);
-  players_[0].AddUnit({ 2, 2 }, UnitType::kInfantry, unit_manager_);
-  players_[0].AddUnit({ 0, 0 }, UnitType::kInfantry, unit_manager_);
-  players_[1].AddUnit({ 2, 1 }, UnitType::kInfantry, unit_manager_);
-  players_[1].AddUnit({ 2, 3 }, UnitType::kInfantry, unit_manager_);
+  players_[0].AddUnit({ 1, 4 }, UnitType::kAntiTank, unit_manager_);
+  players_[0].AddUnit({ 1, 3 }, UnitType::kInfantry, unit_manager_);
+  players_[0].AddUnit({ 2, 1 }, UnitType::kInfantry, unit_manager_);
+  players_[1].AddUnit({ 3, 2 }, UnitType::kInfantry, unit_manager_);
+  players_[1].AddUnit({ 3, 4 }, UnitType::kInfantry, unit_manager_);
   current_player_index_ = 0;
 }
 
@@ -35,7 +35,7 @@ void Match::EndTurn() {
   players_[current_player_index_].StartTurn();
 }
 
-std::vector<Player> Match::GetOtherPlayers() {
+std::vector<Player> Match::GetOtherPlayers() const {
   std::vector<Player> other_players = players_;
   other_players.erase(other_players.begin() + current_player_index_);
   return other_players;
