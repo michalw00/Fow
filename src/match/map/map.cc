@@ -17,6 +17,10 @@ Map::Map(int rows, int columns) {
 }
 
 std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) const {
+  if (neighbors_cache_.contains(position)) {
+    return neighbors_cache_.at(position);
+  }
+
   int x = position.x;
   int y = position.y;
 
@@ -51,6 +55,7 @@ std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) c
       }
     }
   }
+  neighbors_cache_[position] = neighbors;
   return neighbors;
 }
 

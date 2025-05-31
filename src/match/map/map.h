@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -10,16 +11,18 @@
 namespace fow {
 
 class Map {
-  public:
+public:
   Map(int rows, int columns);
 
   std::vector<std::vector<Tile>> GetTiles() const { return tiles_; }
   const TerrainManager& GetTerrainManager() const { return terrain_manager_; }
 
   std::unordered_set<Vector2I> GetNeighbors(Vector2I position, bool itself = false) const;
-  private:
+private:
   void InitSize(int rows, int columns);
   void InitTiles();
+
+  mutable std::unordered_map<Vector2I, std::unordered_set<Vector2I>> neighbors_cache_;
 
   TerrainManager terrain_manager_;
   std::vector<std::vector<Tile>> tiles_;
