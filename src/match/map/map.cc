@@ -10,6 +10,7 @@
 #include "terrain.h"
 
 namespace fow {
+
 Map::Map(int rows, int columns) {
   InitSize(rows, columns);
   InitTiles();
@@ -50,7 +51,6 @@ std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) c
       }
     }
   }
-
   return neighbors;
 }
 
@@ -82,9 +82,7 @@ void Map::InitTiles() {
           terrain = terrain_manager_.GetResource(TerrainType::kWater);
         }
       }
-
       tile.SetTerrain(terrain);
-
     }
   }
 }

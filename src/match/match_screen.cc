@@ -25,6 +25,7 @@
 #include "targets/units/unit.h"
 
 namespace fow {
+
 void MatchScreen::Init() {
   InitMatch();
   InitSelectedUnitHud();

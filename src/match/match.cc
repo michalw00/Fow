@@ -10,6 +10,7 @@
 #include "targets/units/unit.h"
 
 namespace fow {
+
 void Match::InitMap(int rows, int columns) {
   map_ = std::make_unique<Map>(rows, columns);
 }

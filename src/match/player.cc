@@ -28,7 +28,7 @@ void Player::InitMaps(const Map& map, float basic_width, float basic_height) {
   size_t rows = tiles[0].size();
 
   float edge_space = 0.f;
-  basic_width -= edge_space * (columns / rows);
+  basic_width -= edge_space * (static_cast<float>(columns) / rows);
   basic_height -= edge_space;
 
   RVector2 start_position(-basic_width / 2.f, -basic_height / 2.f);
@@ -87,7 +87,6 @@ void Player::UpdateRenderMap() {
 }
 
 void Player::UpdateProbabilitiesMap(const Map& map, std::vector<Player>&& other_players) {
-
   if (show_prev_map_ && turn != 0) {
     return;
   }
@@ -199,6 +198,7 @@ void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unorde
 
 void Player::StartTurn() {
   ++turn;
+  show_prev_map_ = false;
   should_update_probabilities_map_ = true;
   selected_unit_ = nullptr;
   prev_units_.clear();
