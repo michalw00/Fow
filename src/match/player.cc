@@ -51,17 +51,10 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
       TextureState tile_textures = terrain_manager.GetTexture(tile_type);
 
       auto lmb_action = [this, i, j]() {
-        if (selected_tile_position_.x != i || selected_tile_position_.y != j) {
+        if ((selected_tile_position_.x != i || selected_tile_position_.y != j)
+          && !selected_unit_) {
           ClearSelectedTile();
-
-          if (selected_unit_
-              && selected_unit_->GetPosition().x == i
-              && selected_unit_->GetPosition().y == j) {
-            return;
-          }
-
           SetSelectedTilePosition({ i, j });
-          SetSelectedUnit(nullptr);
         } else {
           ClearSelectedTile();
         }
@@ -78,10 +71,30 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
   }
 }
 
-void Player::Update(const Map& map, std::vector<Player>&& other_players) {
-  MoveSelectedUnit(map);
+void Player::Update(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
+  DoUnitAction(map);
   UpdateRenderMap();
   UpdateProbabilitiesMap(map, std::move(other_players));
+}
+
+void Player::DoUnitAction(const std::unique_ptr<Map>& map) {
+  if (!selected_unit_) {
+    return;
+  }
+  switch (current_action_) {
+    case fow::UnitAction::kMove:
+      MoveSelectedUnit(map);
+      break;
+    case fow::UnitAction::kRecon:
+      ReconTile();
+      break;
+    case fow::UnitAction::kAttack:
+      break;
+    case fow::UnitAction::kReinforce:
+      break;
+    default:
+      break;
+  }
 }
 
 void Player::UpdateRenderMap() {
@@ -205,14 +218,12 @@ void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unorde
   for (auto& unit : possible_tiles) {
     for (auto& tile : unit.second) {
       probabilities_map_[tile.x][tile.y] += 1.f / unit.second.size();
-}
+    }
   }
 }
 
 void Player::StartTurn() {
   ++turn;
-  show_prev_map_ = false;
-  should_update_probabilities_map_ = true;
   selected_unit_ = nullptr;
   ClearPossibleTiles();
 
@@ -231,63 +242,64 @@ void Player::StartTurn() {
   prev_map_ = probabilities_map_;
   was_unit_tiles_.clear();
   recon_tiles_.clear();
-  ClearMoveTile();
+
+  ClearActionTile();
   ClearSelectedTile();
   ResetUnitsMovementPoints();
+  current_action_ = UnitAction::kMove;
 }
 
 void Player::AddUnit(Vector2I position, UnitType unit_type, const UnitManager& unit_manager) {
   units_.emplace_back(std::make_shared<Unit>(position, unit_type, unit_manager.GetResource(unit_type)));
 }
 
-void Player::SetSelectedUnit(std::shared_ptr<Unit> unit) {
+void Player::SetSelectedUnit(std::shared_ptr<Unit> unit, const std::unique_ptr<Map>& map) {
   selected_unit_ = unit;
-  ClearMoveTile();
+  if (unit) {
+    UpdatePossibleTiles(map);
+  } else {
+    ClearPossibleTiles();
+  }
+  ClearActionTile();
 }
 
-void Player::MoveSelectedUnit(const Map& map) {
-  const auto& tiles = map.GetTiles();
+void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map) {
+  const auto& tiles = map->GetTiles();
 
-  if (!selected_unit_) {
+  if (!possible_move_tiles_.contains(action_tile_position_)) {
     return;
   }
 
-  auto IsOtherUnitThere = [this](std::shared_ptr<Unit> unit) {
-    return unit->GetPosition() == move_tile_position_; };
+  float diagonal_movement_cost = 1.5f;
+  float basic_movement_cost = 1.f;
 
-  Vector2I distance = selected_unit_->GetPosition() - move_tile_position_;
-  distance.x = std::abs(distance.x);
-  distance.y = std::abs(distance.y);
-
-  if (move_tile_position_.x >= 0 && move_tile_position_.y >= 0
-      && tiles[move_tile_position_.x][move_tile_position_.y].GetTerrain()->GetType() != TerrainType::kWater
-      && !std::any_of(units_.cbegin(), units_.cend(), IsOtherUnitThere)
-      && distance.x <= 1 && distance.y <= 1) {
-
-    float diagonal_movement_cost = 1.5f;
-    float basic_movement_cost = 1.f;
-
-    if (distance.x == 1 && distance.y == 1
-        && selected_unit_->GetMovementPoints() + 0.1f >= diagonal_movement_cost) {
-      selected_unit_->SubstractMovementPoints(diagonal_movement_cost);
-    } else if ((distance.x != 1 || distance.y != 1)
-        && selected_unit_->GetMovementPoints() + 0.1f >= basic_movement_cost) {
-      selected_unit_->SubstractMovementPoints(basic_movement_cost);
-    } else {
-      return;
-    }
-
-    was_unit_tiles_.emplace(selected_unit_->GetPosition());
-    selected_unit_->SetPosition(move_tile_position_);
-
-    if (!(selected_unit_->GetMovementPoints() + 0.1f >= basic_movement_cost)) {
-      selected_unit_ = nullptr;
-    }
-    ClearMoveTile();
-    should_update_probabilities_map_ = true;
+  Vector2I unit_position = selected_unit_->GetPosition();
+  if (unit_position.x != action_tile_position_.x && unit_position.y != action_tile_position_.y) {
+    selected_unit_->SubstractMovementPoints(diagonal_movement_cost);
   } else {
+    selected_unit_->SubstractMovementPoints(basic_movement_cost);
+  }
+
+  was_unit_tiles_.emplace(unit_position);
+  selected_unit_->SetPosition(action_tile_position_);
+  UpdatePossibleTiles(map);
+
+  if (selected_unit_->GetMovementPoints() + 0.1f < basic_movement_cost) {
+    selected_unit_ = nullptr;
+    ClearPossibleTiles();
+  }
+  ClearActionTile();
+  should_update_probabilities_map_ = true;
+}
+
+void Player::ReconTile() {
+  if (!possible_recon_tiles_.contains(action_tile_position_)) {
     return;
   }
+  
+  recon_tiles_.emplace(action_tile_position_);
+  ClearActionTile();
+  should_update_probabilities_map_ = true;
 }
 
 void Player::ClearSelectedTile() {
@@ -300,8 +312,8 @@ void Player::ClearSelectedTile() {
   }
 }
 
-void Player::ClearMoveTile() {
-  move_tile_position_ = { -1, -1 };
+void Player::ClearActionTile() {
+  action_tile_position_ = { -1, -1 };
 }
 
 std::vector<std::shared_ptr<Unit>>& Player::GetUnits() {
@@ -314,7 +326,7 @@ std::vector<std::shared_ptr<Unit>>& Player::GetUnits() {
 
 const std::vector<std::vector<float>>& Player::GetProbabilitiesMap() const {
   if (show_prev_map_ && turn != 0) {
-    return prev_probabilities_map_;
+    return prev_map_;
   } else {
     return probabilities_map_;
   }
@@ -324,9 +336,9 @@ void Player::SetSelectedTilePosition(Vector2I position) {
   selected_tile_position_ = position;
 }
 
-void Player::SetMoveTilePosition(Vector2I position) {
+void Player::SetActionTilePosition(Vector2I position) {
   if (selected_unit_) {
-    move_tile_position_ = position;
+    action_tile_position_ = position;
   }
 }
 
@@ -334,6 +346,64 @@ void Player::ResetUnitsMovementPoints() {
   for (auto& unit : units_) {
     unit->ResetMovementPoints();
   }
+}
+
+void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
+  const auto& tiles = map->GetTiles();
+
+  Vector2I unit_position = selected_unit_->GetPosition();
+  auto closest_neighbors = map->GetNeighbors(unit_position);
+
+  possible_move_tiles_ = closest_neighbors;
+  auto IsWater = [unit_position, &tiles](Vector2I tile) {
+    return tiles[tile.x][tile.y].GetTerrain()->GetType() == TerrainType::kWater;
+  };
+  std::erase_if(possible_move_tiles_, IsWater);
+
+  auto IsOtherUnitsThere = [this, unit_position](Vector2I tile) {
+    auto IsUnitThere = [tile](std::shared_ptr<Unit> unit) {
+      return unit->GetPosition() == tile; };
+
+    return std::any_of(units_.cbegin(), units_.cend(), IsUnitThere);
+  };
+  std::erase_if(possible_move_tiles_, IsOtherUnitsThere);
+
+  auto NotEnoughMovementPoints = [this, unit_position](Vector2I tile) {
+    float diagonal_movement_cost = 1.5f;
+    float basic_movement_cost = 1.f;
+    if (unit_position.x != tile.x && unit_position.y != tile.y) {
+      return selected_unit_->GetMovementPoints() + 0.1f < diagonal_movement_cost;
+    } else {
+      return selected_unit_->GetMovementPoints() + 0.1f < basic_movement_cost;
+    }
+  };
+  std::erase_if(possible_move_tiles_, NotEnoughMovementPoints);
+  
+  auto unit_recon_range = selected_unit_->GetUnitModifiers()->recon_range;
+  possible_recon_tiles_.clear();
+
+  std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
+  std::unordered_set<Vector2I> next_neighbors;
+
+  for (int i = 0; i < unit_recon_range; ++i) {
+    for (auto& neighbor : current_neighbors) {
+      auto neighbor_neighbors = map->GetNeighbors(neighbor);
+      next_neighbors.insert(neighbor_neighbors.cbegin(), neighbor_neighbors.cend());
+    }
+    next_neighbors = SetDifference(next_neighbors, current_neighbors);
+    possible_recon_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
+    current_neighbors = next_neighbors;
+  }
+
+  std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
+  possible_recon_tiles_ = SetDifference(possible_recon_tiles_, recon_tiles_);
+  possible_recon_tiles_ = SetDifference(possible_recon_tiles_, was_unit_tiles_);
+}
+
+void Player::ClearPossibleTiles() {
+  possible_move_tiles_.clear();
+  possible_recon_tiles_.clear();
+  possible_attack_tiles_.clear();
 }
 
 } // namespace fow

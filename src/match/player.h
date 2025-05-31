@@ -15,7 +15,7 @@
 namespace fow {
 
 class Player {
-  public:
+public:
   void InitCamera(RCamera2D camera) { camera_ = std::make_shared<RCamera2D>(camera); }
   void InitMaps(const std::unique_ptr<Map>& map, float basic_width, float basic_height);
 
@@ -35,8 +35,17 @@ class Player {
   const std::vector<std::vector<float>>& GetProbabilitiesMap() const;
   void InvertShowPrevMap() { if (turn != 0) show_prev_map_ = !show_prev_map_; }
   bool GetShowPrevMap() const { return show_prev_map_; }
+  std::unordered_set<Vector2I> GetPossibleMoveTiles() const { return possible_move_tiles_; }
+  std::unordered_set<Vector2I> GetPossibleReconTiles() const { return possible_recon_tiles_; }
+  UnitAction GetCurrentAction() const { return current_action_; }
+  // TODO: Separate methods 
+  void SwapAction() { 
+    if (current_action_ == UnitAction::kMove) current_action_ = UnitAction::kRecon;
+    else current_action_ = UnitAction::kMove;
+  }
 
-  private:
+  void DoUnitAction(const std::unique_ptr<Map>& map);
+private:
   void UpdateRenderMap();
 
   void UpdateProbabilitiesMap(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players);
@@ -57,6 +66,9 @@ class Player {
   void SetActionTilePosition(Vector2I position);
   void ResetUnitsMovementPoints();
 
+  void UpdatePossibleTiles(const std::unique_ptr<Map>& map);
+  void ClearPossibleTiles();
+
   std::shared_ptr<Unit> selected_unit_ = nullptr;
   Vector2I action_tile_position_ = { -1, -1 };
   Vector2I selected_tile_position_ = { -2, -2 };
@@ -69,10 +81,16 @@ class Player {
   std::unordered_set<Vector2I> was_unit_tiles_;
   std::unordered_set<Vector2I> recon_tiles_;
   std::vector<std::vector<float>> probabilities_map_;
-  std::vector<std::vector<float>> prev_probabilities_map_;
+  std::vector<std::vector<float>> prev_map_;
+
+  std::unordered_set<Vector2I> possible_move_tiles_;
+  std::unordered_set<Vector2I> possible_recon_tiles_;
+  std::unordered_set<Vector2I> possible_attack_tiles_;
 
   bool show_prev_map_ = false;
   bool should_update_probabilities_map_ = true;
+
+  UnitAction current_action_ = UnitAction::kMove;
 
   int turn = -1;
 };

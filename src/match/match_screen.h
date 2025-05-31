@@ -27,15 +27,16 @@ class MatchScreen : public Screen {
   void PlaceRenderMap(Player& player);
   void PlaceUnits(Player& player);
   void PlaceProbabilityMap(Player& player);
+  void PlacePossibleTiles(Player& player);
 
   void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager);
 
   void InitMatch();
+  void InitPanelHud();
   void InitSelectedUnitHud();
 
   std::unique_ptr<ComplexDrawable> selected_unit_hud_;
-  std::shared_ptr<TextButton> end_turn_button_;
-  std::shared_ptr<TextButton> prev_probabilities_button_;
+  std::unique_ptr<ComplexDrawable> panel_hud_;
 
   std::unique_ptr<Match> match_;
   Input input;

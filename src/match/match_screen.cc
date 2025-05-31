@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <unordered_set>
 
 #include <Color.hpp>
 #include <Rectangle.hpp>
@@ -29,17 +30,7 @@ namespace fow {
 void MatchScreen::Init() {
   InitMatch();
   InitSelectedUnitHud();
-
-  RVector2 prev_probabilities_position = { basic_width_ - 160.f, basic_height_ - 100.f };
-  RText prev_probabilities_text("PREV MAP", 45.f);
-  auto InvertMaps = [&]() {
-    auto& player = match_->GetCurrentPlayer();
-    player.InvertShowPrevMap();
-  };
-  prev_probabilities_button_ = std::make_shared<TextButton>(prev_probabilities_position, InvertMaps, prev_probabilities_text, true);
-  RVector2 end_turn_position = { basic_width_ - 160.f, basic_height_ - 50.f };
-  RText end_turn_text("END TURN", 45.f);
-  end_turn_button_ = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
+  InitPanelHud();
 }
 
 void MatchScreen::InitMatch() {
@@ -48,28 +39,71 @@ void MatchScreen::InitMatch() {
   match_->InitPlayers(basic_width_, basic_height_, *camera_.get());
 }
 
+void MatchScreen::InitPanelHud() {
+  RVector2 origin = { basic_width_, basic_height_ };
+  float shift = 130.f;
+
+  RColor background_color = RColor::Black().Alpha(0.875f);
+  RVector2 background_shift = { shift, 80.f };
+  background_shift *= 2.f;
+  RVector2 background_position = origin - background_shift;
+  std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_shift, background_color);
+  ComplexDrawablePart background("BG", background_rectangle);
+
+  float font_size = 40.f;
+
+  RVector2 prev_map_position = origin - RVector2(shift, 100.f);
+  RText prev_map_text("PREV MAP", font_size);
+  auto InvertMaps = [&]() {
+    auto& player = match_->GetCurrentPlayer();
+    player.InvertShowPrevMap();
+  };
+  auto prev_map_button = std::make_shared<TextButton>(prev_map_position, InvertMaps, prev_map_text, true);
+  ComplexDrawablePart prev_map("PREV_MAP", prev_map_button);
+
+  RVector2 end_turn_position = origin - RVector2(shift, 50.f);
+  RText end_turn_text("END TURN", font_size);
+  auto end_turn_button = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
+  ComplexDrawablePart end_turn("END_TURN", end_turn_button);
+
+  std::initializer_list<ComplexDrawablePart> parts = { background, prev_map, end_turn  };
+  panel_hud_ = std::make_unique<ComplexDrawable>(parts);
+}
+
 void MatchScreen::InitSelectedUnitHud() {
-  RVector2 origin(basic_width_ / 2.f, basic_height_ - 120.f);
+  float shift = 120.f;
+  RVector2 origin(basic_width_ / 2.f, basic_height_ - shift);
 
-  std::string unit_type_name = "UNIT_TYPE";
+  RColor background_color = RColor::Black().Alpha(0.875f);
+  // RVector2 background_shift(130.f, 40.f); // during swap action button
+  RVector2 background_shift(130.f, 80.f);
+  RVector2 background_position = origin - background_shift;
+  RVector2 background_size = background_shift * 2.f;
+  background_size.y += shift;
+  std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_size, background_color);
+  ComplexDrawablePart background("BG", background_rectangle);
+
   std::shared_ptr<Text> unit_type_text = std::make_shared<Text>(origin, RText("", 40.f));
-  ComplexDrawablePart unit_type(unit_type_name, unit_type_text);
+  ComplexDrawablePart unit_type("UNIT_TYPE", unit_type_text);
 
-  std::string hp_name = "HP";
   std::shared_ptr<Text> hp_text = std::make_shared<Text>(origin + RVector2(0.f, 40.f), RText("", 25.f), true);
-  ComplexDrawablePart hp(hp_name, hp_text);
+  ComplexDrawablePart hp("HP", hp_text);
 
-  std::string mp_name = "MP";
   std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + RVector2(0.f, 80.f), RText("", 25.f), true);
-  ComplexDrawablePart mp(mp_name, mp_text);
+  ComplexDrawablePart mp("MP", mp_text);
+  
+  // TODO: Separate buttons
+  auto SwapAction = [this]() { match_->GetCurrentPlayer().SwapAction(); };
+  std::shared_ptr<TextButton> swap_action_button = std::make_shared<TextButton>(origin - RVector2(0.f, 60.f), SwapAction, RText("SWAP ACTION", 30.f));
+  ComplexDrawablePart swap_action("SWAP_ACTION", swap_action_button);
 
-  std::initializer_list<ComplexDrawablePart> parts = { unit_type, hp, mp };
+  std::initializer_list<ComplexDrawablePart> parts = { background, unit_type, hp, mp, swap_action };
   selected_unit_hud_ = std::make_unique<ComplexDrawable>(parts);
 }
 
 void MatchScreen::Update() {
   auto& player = match_->GetCurrentPlayer();
-  player.Update(*match_->GetMap().get(), match_->GetOtherPlayers());
+  player.Update(match_->GetMap(), match_->GetOtherPlayers());
 
   camera_ = player.GetCamera();
   PlacePlayerButtons(player);
@@ -79,12 +113,14 @@ void MatchScreen::Update() {
   }
 
   if (player.GetShowPrevMap()) {
-    auto layer = std::make_shared<Rectangle>(RVector2(0, 0), RVector2(10000.f, 10000), RColor::Gray().Alpha(0.2f));
+    auto layer = std::make_shared<Rectangle>(RVector2(0.f, 0.f), RVector2(10000.f, 10000.f), RColor::Gray().Alpha(0.2f));
     PlaceDrawable(layer, true);
   }
 
-  PlaceDrawable(end_turn_button_, true);
-  PlaceDrawable(prev_probabilities_button_, true);
+  auto& hud_drawables = panel_hud_->GetDrawables();
+  for (auto& hud_drawable : hud_drawables) {
+    PlaceDrawable(hud_drawable, true);
+  }
 
   CheckInputs();
 }
@@ -109,6 +145,7 @@ void MatchScreen::CheckInputs() {
 void MatchScreen::PlacePlayerButtons(Player& player) {
   PlaceRenderMap(player);
   PlaceUnits(player);
+  PlacePossibleTiles(player);
   PlaceProbabilityMap(player);
 }
 
@@ -140,8 +177,6 @@ void MatchScreen::PlaceUnits(Player& player) {
       } else {
         player.SetSelectedUnit(unit, match_->GetMap());
         player.ClearSelectedTile();
-      } else {
-        player.SetSelectedUnit(nullptr);
       }
     };
     std::shared_ptr<TextureButton> button = std::make_shared<TextureButton>(position, size, lmb_action, unit_manager.GetTexture(unit->GetType()));
@@ -154,7 +189,6 @@ void MatchScreen::PlaceUnits(Player& player) {
 
 void MatchScreen::PlaceProbabilityMap(Player& player) {
   auto& buttons = player.GetRenderMap();
-
   auto& probability_map = player.GetProbabilitiesMap();
 
   for (int i = 0; i < probability_map.size(); ++i) {
@@ -185,6 +219,43 @@ void MatchScreen::PlaceProbabilityMap(Player& player) {
       PlaceDrawable(text);
     }
   }
+}
+
+void MatchScreen::PlacePossibleTiles(Player& player) {
+  if (player.GetShowPrevMap()) {
+    return;
+  }
+  auto& buttons = player.GetRenderMap();
+
+  UnitAction current_action = player.GetCurrentAction();
+
+  std::unordered_set<Vector2I> tiles;
+  RColor color;
+  switch (current_action) {
+    case fow::UnitAction::kMove:
+      tiles = player.GetPossibleMoveTiles();
+      color = RColor::Green();
+      break;
+    case fow::UnitAction::kRecon:
+      tiles = player.GetPossibleReconTiles();
+      color = RColor::Yellow();
+      break;
+    case fow::UnitAction::kAttack:
+      break;
+    case fow::UnitAction::kReinforce:
+      break;
+    default:
+      break;
+  }
+
+  for (const auto& tile : tiles) {
+    RRectangle area = buttons[tile.x][tile.y]->GetArea();
+    RVector2 size = { area.GetSize() };
+    RVector2 position = area.GetPosition();
+
+    std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(position, size, color.Alpha(0.3));
+    PlaceDrawable(rectangle);
+  }  
 }
 
 void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager) {
