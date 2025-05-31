@@ -73,9 +73,8 @@ void MatchScreen::Update() {
 
   camera_ = player.GetCamera();
   PlacePlayerButtons(player);
-  auto& unit = player.GetSelectedUnit();
 
-  if (unit) {
+  if (auto& unit = player.GetSelectedUnit(); unit) {
     ShowSelectedUnitHud(unit, match_->GetUnitManager());
   }
 
@@ -136,7 +135,7 @@ void MatchScreen::PlaceUnits(Player& player) {
     RVector2 position = area.GetPosition();
     position += (area.GetSize() - size) / 2.f;
     auto lmb_action = [&player, &unit]() {
-      if (!player.GetSelectedUnit() && !player.GetShowPrevMap()) {
+      if (!player.GetSelectedUnit()) {
         player.SetSelectedUnit(unit);
         player.ClearSelectedTile();
       } else {

@@ -65,7 +65,11 @@ void Player::InitMaps(const Map& map, float basic_width, float basic_height) {
           ClearSelectedTile();
         }
       };
-      auto rmb_action = [this, i, j]() {SetMoveTilePosition({ i, j }); };
+      auto rmb_action = [this, i, j]() {
+        if (!show_prev_map_) {
+          SetMoveTilePosition({ i, j });
+        }
+      };
       auto&& button = std::make_shared<TextureButton>(position, tile_size, lmb_action, tile_textures, rmb_action);
       render_map_[i].emplace_back(button);
     }
