@@ -76,12 +76,12 @@ void Map::InitTiles() {
     for (auto& tile : row) {
       // Hardcoded map generation
 
-      int random = rand() % 20;
+      int random = rand() % 30;
       int random_change = random % 2;
       if (!random_change) {
-        if (5 <= random && random <= 19) {
+        if (10 <= random && random <= 29) {
           terrain = terrain_manager_.GetResource(TerrainType::kPlains);
-        } else if (1 <= random && random <= 4) {
+        } else if (1 <= random && random <= 9) {
           terrain = terrain_manager_.GetResource(TerrainType::kForest);
         } else {
           terrain = terrain_manager_.GetResource(TerrainType::kWater);
