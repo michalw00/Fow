@@ -1,8 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "../../../drawable/texture_manager.h"
+#include "../../../structs/vector2i.h"
 #include "../target.h"
 
 namespace fow {
@@ -16,6 +18,13 @@ enum class UnitType {
   kTank,
   kTBM,
   kUCAV
+};
+
+enum class UnitAction {
+  kMove,
+  kRecon,
+  kAttack,
+  kReinforce
 };
 
 struct UnitModifiers {
