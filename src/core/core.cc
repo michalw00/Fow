@@ -3,8 +3,8 @@
 #include <memory>
 #include <type_traits>
 
-#include <raylib.h>
 #include <Window.hpp>
+#include <raylib.h>
 
 #include "screen/screen.h"
 #include "screen/screen_controller.h"
