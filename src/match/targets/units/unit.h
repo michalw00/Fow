@@ -49,7 +49,7 @@ struct UnitModifiers {
   float defense_bonus_forest;
 
   float attack_range;
-  float sight_range;
+  float recon_range;
 
   float bridge_damage;
   float road_damage;
@@ -68,6 +68,7 @@ class Unit : public Target {
   float GetHealthPoints() const { return health_points_; }
 
   UnitType GetType() const { return unit_type_; }
+  const std::shared_ptr<UnitModifiers> GetUnitModifiers() const { return unit_modifiers_; }
   private:
 
   UnitType unit_type_;

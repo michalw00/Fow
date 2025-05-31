@@ -41,7 +41,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = 0.1f;
 
       attack_range = 3.0f;
-      sight_range = 5.0f;
+      recon_range = 2.0f;
       bridge_damage = 0.5f;
       road_damage = 0.2f;
       break;
@@ -74,7 +74,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = -0.05f;
 
       attack_range = 5.0f;
-      sight_range = 6.0f;
+      recon_range = 1.0f;
       bridge_damage = 0.1f;
       road_damage = 0.05f;
       break;
@@ -106,7 +106,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = 0.0f;
 
       attack_range = 0.0f;
-      sight_range = 8.0f;
+      recon_range = 1.0f;
       bridge_damage = 0.0f;
       road_damage = 0.0f;
       break;
@@ -139,7 +139,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = 0.2f;
 
       attack_range = 1.0f;
-      sight_range = 4.0f;
+      recon_range = 2.0f;
       bridge_damage = 0.0f;
       road_damage = 0.0f;
       break;
@@ -172,7 +172,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = 0.0f;
 
       attack_range = 2.0f;
-      sight_range = 5.0f;
+      recon_range = 1.0f;
       bridge_damage = 0.1f;
       road_damage = 0.1f;
       break;
@@ -205,7 +205,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = -0.15f;
 
       attack_range = 2.0f;
-      sight_range = 4.0f;
+      recon_range = 1.0f;
       bridge_damage = 0.3f;
       road_damage = 0.2f;
       break;
@@ -237,7 +237,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = -0.1f;
 
       attack_range = 4.0f;
-      sight_range = 6.0f;
+      recon_range = 1.0f;
       bridge_damage = 0.2f;
       road_damage = 0.1f;
       break;
@@ -269,7 +269,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = 0.0f;
 
       attack_range = 6.0f;
-      sight_range = 10.0f;
+      recon_range = 6.0f;
       bridge_damage = 0.0f;
       road_damage = 0.0f;
       break;
@@ -301,7 +301,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       defense_bonus_forest = 0.0f;
 
       attack_range = 6.0f;
-      sight_range = 10.0f;
+      recon_range = 1.0f;
       bridge_damage = 0.0f;
       road_damage = 0.0f;
       break;
