@@ -79,9 +79,7 @@ class Unit : public Target {
   UnitType GetType() const { return unit_type_; }
   const std::shared_ptr<UnitModifiers> GetUnitModifiers() const { return unit_modifiers_; }
   private:
-
   UnitType unit_type_;
-
   std::shared_ptr<UnitModifiers> unit_modifiers_;
 
   float movement_points_;
