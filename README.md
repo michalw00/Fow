@@ -1,19 +1,14 @@
 # Fow
-
-![image](https://github.com/user-attachments/assets/f1c449d6-07e9-43d4-96b9-f271bed0b3fb)
-
 ## Current features in the game
-
 ### Probabilities map
-![image](https://github.com/user-attachments/assets/9b37fdaf-9ac0-4dbb-9a5e-d66ac0ac1d68)
-#### Other player perspective
-![image](https://github.com/user-attachments/assets/e58e14e7-4f1d-4013-9546-da286e7a27e2)
+![2025-06-04 00-23-33 (1)](https://github.com/user-attachments/assets/ab6bf976-a1be-4154-9b54-ddf8e348334f)
+### Previous turn map
+![2025-06-04 00-22-42 (1)](https://github.com/user-attachments/assets/9a69c1c9-5ca9-4df2-a0a6-da3bf2f1845c)
+### Recon tiles
+![2025-06-04 00-21-56](https://github.com/user-attachments/assets/99f82cae-01cc-4ff2-bb15-cc67fdc1a559)
+### Attack Tiles
+![2025-06-04 00-22-23](https://github.com/user-attachments/assets/fbcef7ca-c029-4951-99c4-6553922fafaa)
 
-### Selected unit HUD
-### Move camera (MMB)
-### Move units (LMB to select, RMB on tile to move) on any tile except water
-### Select tiles (LMB)
-### End turn (Enter or button on screen), which saves player's camera
 
 ## Build instruction 
 
