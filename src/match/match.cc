@@ -22,9 +22,14 @@ void Match::InitPlayers(float basic_width, float basic_height, RCamera2D camera,
     player.InitMaps(map_, basic_width, basic_height);
   }
   players_[0].StartTurn();
-  players_[0].AddUnit({ 1, 4 }, UnitType::kAntiTank, unit_manager_);
-  players_[0].AddUnit({ 1, 3 }, UnitType::kInfantry, unit_manager_);
-  players_[0].AddUnit({ 2, 1 }, UnitType::kInfantry, unit_manager_);
+  players_[0].AddUnit({ 3, 3 }, UnitType::kAntiTank, unit_manager_);
+  players_[0].AddUnit({ 3, 7 }, UnitType::kArtillery, unit_manager_);
+  players_[0].AddUnit({ 3, 5 }, UnitType::kEW, unit_manager_);
+  players_[0].AddUnit({ 2, 4 }, UnitType::kInfantry, unit_manager_);
+  players_[0].AddUnit({ 3, 11 }, UnitType::kMechanizedInfantry, unit_manager_);
+  players_[0].AddUnit({ 3, 13 }, UnitType::kTank, unit_manager_);
+  players_[0].AddUnit({ 2, 8 }, UnitType::kTBM, unit_manager_);
+  players_[0].AddUnit({ 3, 9 }, UnitType::kUCAV, unit_manager_);
   players_[1].AddUnit({ 3, 2 }, UnitType::kInfantry, unit_manager_);
   players_[1].AddUnit({ 3, 4 }, UnitType::kInfantry, unit_manager_);
   current_player_index_ = 0;
