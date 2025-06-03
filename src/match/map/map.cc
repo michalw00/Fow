@@ -31,21 +31,31 @@ std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) c
     throw std::out_of_range("Tile coordinates are out of range.");
   }
 
-  int i_min = -1;
-  if (x == 0) { ++i_min; }
+  int edge = 2;
 
+  int i_min = -1;
   int i_max = 1;
-  if (x == rows - 1) { --i_max; }
+  if (x == 0) ++i_min;
+  else if (x == rows - 1) --i_max;
+  else --edge;
 
   int j_min = -1;
-  if (y == 0) { ++j_min; }
-
   int j_max = 1;
-  if (y == columns - 1) { --j_max; }
+  if (y == 0) ++j_min;
+  else if (y == columns - 1) --j_max;
+  else --edge;
 
   std::unordered_set<Vector2I> neighbors;
 
-  neighbors.reserve(8);
+  int size = 0;
+  switch (edge) {
+    case (0): { size = 8; break; }
+    case (1): { size = 5; break; }
+    case (2): { size = 3; break; }
+    default: break;
+  }
+
+  neighbors.reserve(size);
 
   for (int i = i_min; i <= i_max; ++i) {
     for (int j = j_min; j <= j_max; ++j) {
