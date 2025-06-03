@@ -49,10 +49,17 @@ std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) c
 
   int size = 0;
   switch (edge) {
-    case (0): { size = 8; break; }
-    case (1): { size = 5; break; }
-    case (2): { size = 3; break; }
-    default: break;
+    case (0): 
+      size = 8; 
+      break;
+    case (1): 
+      size = 5; 
+      break;
+    case (2): 
+      size = 3; 
+      break;
+    default: 
+      break;
   }
 
   neighbors.reserve(size);
