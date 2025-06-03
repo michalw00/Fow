@@ -35,7 +35,7 @@ void MatchScreen::Init() {
 
 void MatchScreen::InitMatch() {
   match_ = std::make_unique<Match>();
-  match_->InitMap(18, 32);
+  match_->InitMap(20, 32);
   match_->InitPlayers(basic_width_, basic_height_, *camera_.get());
 }
 
@@ -204,14 +204,17 @@ void MatchScreen::PlaceProbabilityMap(Player& player) {
         text_string = std::format("{:.1f}", probability * 100) + '%';
       }
       float r = 255.f;
-      if (probability < 0.5f) {
-        r *= probability + 0.45f;
-      }
       float g = 255.f;
-      if (probability > 0.5f) {
+      float b = 0.f;
+      if (probability < 0.01) {
+        r = 200.f;
+        b = 200.f;
+      } else if (probability < 0.5f) {
+        r *= probability + 0.45f;
+      } else {
         g *= 1 - probability;
       }
-      float b = 0.f;
+      
       RColor color(r, g, b);
       RText rtext(text_string, size.GetX() * 0.3f, color);
 
@@ -232,17 +235,19 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
   std::unordered_set<Vector2I> tiles;
   RColor color;
   switch (current_action) {
-    case fow::UnitAction::kMove:
+    case UnitAction::kMove:
       tiles = player.GetPossibleMoveTiles();
       color = RColor::Green();
       break;
-    case fow::UnitAction::kRecon:
+    case UnitAction::kRecon:
       tiles = player.GetPossibleReconTiles();
       color = RColor::Yellow();
       break;
-    case fow::UnitAction::kAttack:
+    case UnitAction::kAttack:
+      tiles = player.GetPossibleAttackTiles();
+      color = RColor::Red();
       break;
-    case fow::UnitAction::kReinforce:
+    case UnitAction::kReinforce:
       break;
     default:
       break;
