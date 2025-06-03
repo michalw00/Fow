@@ -94,7 +94,7 @@ void MatchScreen::InitSelectedUnitHud() {
   
   // TODO: Separate buttons
   auto SwapAction = [this]() { match_->GetCurrentPlayer().SwapAction(); };
-  std::shared_ptr<TextButton> swap_action_button = std::make_shared<TextButton>(origin - RVector2(0.f, 60.f), SwapAction, RText("SWAP ACTION", 30.f));
+  std::shared_ptr<TextButton> swap_action_button = std::make_shared<TextButton>(origin - RVector2(0.f, 60.f), SwapAction, RText("SWITCH ACTION", 25.f));
   ComplexDrawablePart swap_action("SWAP_ACTION", swap_action_button);
 
   std::initializer_list<ComplexDrawablePart> parts = { background, unit_type, hp, mp, swap_action };
