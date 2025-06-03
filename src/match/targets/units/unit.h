@@ -12,7 +12,7 @@ namespace fow {
 enum class UnitType {
   kAntiTank,
   kArtillery,
-  kElectronicWarfare,
+  kEW,
   kInfantry,
   kMechanizedInfantry,
   kTank,
@@ -29,39 +29,12 @@ enum class UnitAction {
 
 struct UnitModifiers {
   UnitModifiers(UnitType unit_type);
-
   float start_movement_points;
   float start_health_points;
-
-  float movement_cost_plains;
-  float movement_cost_hills;
-  float movement_cost_mountains;
-  float movement_cost_marsh;
-  float movement_cost_forest;
-
-  float attack_on_bonus_plains;
-  float attack_on_bonus_hills;
-  float attack_on_bonus_mountains;
-  float attack_on_bonus_marsh;
-  float attack_on_bonus_forest;
-
-  float attack_against_bonus_plains;
-  float attack_against_bonus_hills;
-  float attack_against_bonus_mountains;
-  float attack_against_bonus_marsh;
-  float attack_against_bonus_forest;
-
-  float defense_bonus_plains;
-  float defense_bonus_hills;
-  float defense_bonus_mountains;
-  float defense_bonus_marsh;
-  float defense_bonus_forest;
-
-  float attack_range;
-  float recon_range;
-
-  float bridge_damage;
-  float road_damage;
+  float bridge_damage = 0.f;
+  int min_attack_range = 0;
+  int attack_range;
+  int recon_range;
 };
 
 class Unit : public Target {
