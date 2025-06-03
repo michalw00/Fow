@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <Vector2.hpp>
@@ -27,29 +28,33 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
   size_t columns = tiles.size();
   size_t rows = tiles[0].size();
 
-  float edge_space = 0.f;
-  basic_width -= edge_space * (static_cast<float>(columns) / rows);
+  float edge_space = 50.f;
+  basic_width -= edge_space;
   basic_height -= edge_space;
 
-  RVector2 start_position(-basic_width / 2.f, -basic_height / 2.f);
+  float step_x = basic_width / columns;
+  float step_y = basic_height / rows;
+  float actual_step_size = std::min(step_x, step_y); 
 
-  RVector2 step(basic_width / columns, basic_height / rows);
+  float grid_total_width = columns * actual_step_size;
+  float grid_total_height = rows * actual_step_size;
+  RVector2 start_position(-grid_total_width / 2.f, -grid_total_height / 2.f);
+
   float spacing = 0.035f;
+  RVector2 step(actual_step_size, actual_step_size);
   RVector2 tile_size(step - step * spacing);
 
   render_map_.resize(columns);
   probabilities_map_.resize(columns);
-
   for (int i = 0; i < columns; ++i) {
     render_map_[i].reserve(rows);
     probabilities_map_[i].resize(rows);
     for (int j = 0; j < rows; ++j) {
-      RVector2 factor(i, j);
+      RVector2 factor(static_cast<float>(i), static_cast<float>(j));
       RVector2 position = start_position + (step * factor);
       auto& tile = tiles[i][j];
       TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
       TextureState tile_textures = terrain_manager.GetTexture(tile_type);
-
       auto lmb_action = [this, i, j]() {
         if ((selected_tile_position_.x != i || selected_tile_position_.y != j)
           && !selected_unit_) {
@@ -64,13 +69,11 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
           SetActionTilePosition({ i, j });
         }
       };
-
       auto&& button = std::make_shared<TextureButton>(position, tile_size, lmb_action, tile_textures, rmb_action);
       render_map_[i].emplace_back(button);
     }
   }
 }
-
 void Player::Update(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
   DoUnitAction(map);
   UpdateRenderMap();
@@ -82,19 +85,20 @@ void Player::DoUnitAction(const std::unique_ptr<Map>& map) {
     return;
   }
   switch (current_action_) {
-    case fow::UnitAction::kMove:
+    case UnitAction::kMove:
       MoveSelectedUnit(map);
       break;
-    case fow::UnitAction::kRecon:
-      ReconTile();
+    case UnitAction::kRecon:
+      ReconTile(map);
       break;
-    case fow::UnitAction::kAttack:
+    case UnitAction::kAttack:
       break;
-    case fow::UnitAction::kReinforce:
+    case UnitAction::kReinforce:
       break;
     default:
       break;
   }
+  ClearActionTile();
 }
 
 void Player::UpdateRenderMap() {
@@ -285,24 +289,18 @@ void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map) {
 
   was_unit_tiles_.emplace(unit_position);
   selected_unit_->SetPosition(action_tile_position_);
-  UpdatePossibleTiles(map);
-
-  if (selected_unit_->GetMovementPoints() + 0.1f < basic_movement_cost) {
-    selected_unit_ = nullptr;
-    ClearPossibleTiles();
-  }
-  ClearActionTile();
   should_update_probabilities_map_ = true;
+  UpdatePossibleTiles(map);
 }
 
-void Player::ReconTile() {
+void Player::ReconTile(const std::unique_ptr<Map>& map) {
   if (!possible_recon_tiles_.contains(action_tile_position_)) {
     return;
   }
   
   recon_tiles_.emplace(action_tile_position_);
-  ClearActionTile();
   should_update_probabilities_map_ = true;
+  UpdatePossibleTiles(map);
 }
 
 void Player::ClearSelectedTile() {
@@ -351,26 +349,23 @@ void Player::ResetUnitsMovementPoints() {
   }
 }
 
-void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
-  const auto& tiles = map->GetTiles();
+void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) { 
+  ClearPossibleTiles();
 
+  const auto& tiles = map->GetTiles();
   Vector2I unit_position = selected_unit_->GetPosition();
   auto closest_neighbors = map->GetNeighbors(unit_position);
 
-  possible_move_tiles_ = closest_neighbors;
   auto IsWater = [unit_position, &tiles](Vector2I tile) {
     return tiles[tile.x][tile.y].GetTerrain()->GetType() == TerrainType::kWater;
   };
-  std::erase_if(possible_move_tiles_, IsWater);
-
   auto IsOtherUnitsThere = [this, unit_position](Vector2I tile) {
     auto IsUnitThere = [tile](std::shared_ptr<Unit> unit) {
       return unit->GetPosition() == tile; };
-
     return std::any_of(units_.cbegin(), units_.cend(), IsUnitThere);
   };
-  std::erase_if(possible_move_tiles_, IsOtherUnitsThere);
 
+  // Move tiles
   auto NotEnoughMovementPoints = [this, unit_position](Vector2I tile) {
     float diagonal_movement_cost = 1.5f;
     float basic_movement_cost = 1.f;
@@ -380,27 +375,56 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
       return selected_unit_->GetMovementPoints() + 0.1f < basic_movement_cost;
     }
   };
+
+  possible_move_tiles_ = closest_neighbors;
+  std::erase_if(possible_move_tiles_, IsWater);
+  std::erase_if(possible_move_tiles_, IsOtherUnitsThere); 
   std::erase_if(possible_move_tiles_, NotEnoughMovementPoints);
-  
-  auto unit_recon_range = selected_unit_->GetUnitModifiers()->recon_range;
-  possible_recon_tiles_.clear();
+  // Recon tiles
+  {
+    int recon_range = selected_unit_->GetUnitModifiers()->recon_range;
 
-  std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
-  std::unordered_set<Vector2I> next_neighbors;
-
-  for (int i = 0; i < unit_recon_range; ++i) {
-    for (auto& neighbor : current_neighbors) {
-      auto neighbor_neighbors = map->GetNeighbors(neighbor);
-      next_neighbors.insert(neighbor_neighbors.cbegin(), neighbor_neighbors.cend());
-    }
-    next_neighbors = SetDifference(next_neighbors, current_neighbors);
+    std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
+    std::unordered_set<Vector2I> next_neighbors;
     possible_recon_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
-    current_neighbors = next_neighbors;
+    for (int i = 1; i < recon_range; ++i) {
+      for (auto& neighbor : current_neighbors) {
+        auto neighbor_neighbors = map->GetNeighbors(neighbor);
+        next_neighbors.insert(neighbor_neighbors.cbegin(), neighbor_neighbors.cend());
+      }
+      next_neighbors = SetDifference(next_neighbors, current_neighbors);
+      possible_recon_tiles_.insert(next_neighbors.cbegin(), next_neighbors.cend());
+      current_neighbors = next_neighbors;
+    }
+    std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
+    possible_recon_tiles_ = SetDifference(possible_recon_tiles_, recon_tiles_);
+    possible_recon_tiles_ = SetDifference(possible_recon_tiles_, was_unit_tiles_);
   }
+  // Attack tiles
+  {
+    int min_attack_range = selected_unit_->GetUnitModifiers()->min_attack_range;
+    int attack_range = selected_unit_->GetUnitModifiers()->attack_range;
 
-  std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
-  possible_recon_tiles_ = SetDifference(possible_recon_tiles_, recon_tiles_);
-  possible_recon_tiles_ = SetDifference(possible_recon_tiles_, was_unit_tiles_);
+    std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
+    std::unordered_set<Vector2I> next_neighbors;
+    std::unordered_set<Vector2I> less_min_range;
+    possible_attack_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
+    for (int i = 1; i < attack_range; ++i) {
+      if (min_attack_range == i) {
+        less_min_range = possible_attack_tiles_;
+      }
+      for (auto& neighbor : current_neighbors) {
+        auto neighbor_neighbors = map->GetNeighbors(neighbor);
+        next_neighbors.insert(neighbor_neighbors.cbegin(), neighbor_neighbors.cend());
+      }
+      next_neighbors = SetDifference(next_neighbors, current_neighbors);
+      possible_attack_tiles_.insert(next_neighbors.cbegin(), next_neighbors.cend());
+      current_neighbors = next_neighbors;
+    }
+    std::erase_if(possible_attack_tiles_, IsOtherUnitsThere);
+    possible_attack_tiles_ = SetDifference(possible_attack_tiles_, was_unit_tiles_);
+    possible_attack_tiles_ = SetDifference(possible_attack_tiles_, less_min_range);
+  }
 }
 
 void Player::ClearPossibleTiles() {

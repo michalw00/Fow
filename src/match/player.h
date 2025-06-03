@@ -37,10 +37,12 @@ public:
   bool GetShowPrevMap() const { return show_prev_map_; }
   std::unordered_set<Vector2I> GetPossibleMoveTiles() const { return possible_move_tiles_; }
   std::unordered_set<Vector2I> GetPossibleReconTiles() const { return possible_recon_tiles_; }
+  std::unordered_set<Vector2I> GetPossibleAttackTiles() const { return possible_attack_tiles_; }
   UnitAction GetCurrentAction() const { return current_action_; }
   // TODO: Separate methods 
   void SwapAction() { 
     if (current_action_ == UnitAction::kMove) current_action_ = UnitAction::kRecon;
+    else if (current_action_ == UnitAction::kRecon) current_action_ = UnitAction::kAttack;
     else current_action_ = UnitAction::kMove;
   }
 
@@ -60,7 +62,7 @@ private:
       const std::vector<std::shared_ptr<Unit>>& enemy_units);
 
   void MoveSelectedUnit(const std::unique_ptr<Map>& map);
-  void ReconTile();
+  void ReconTile(const std::unique_ptr<Map>& map);
 
   void SetSelectedTilePosition(Vector2I position);
   void SetActionTilePosition(Vector2I position);
