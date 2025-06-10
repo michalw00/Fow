@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include <raylib.h>
 #include <Window.hpp>
+#include <raylib.h>
 
 #include "screen/screen_controller.h"
 
