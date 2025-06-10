@@ -4,7 +4,34 @@
 
 namespace fow {
 
-Terrain::Terrain(TerrainType terrain_type) : terrain_type_(terrain_type) {}
+TerrainModifiers::TerrainModifiers(TerrainType terrain_type) {
+  switch (terrain_type) {
+    case TerrainType::kPlains:
+      break;
+    case TerrainType::kHills:
+      range_extend = 1;
+      movement_cost = 1.5f;
+      break;
+    case TerrainType::kMountains:
+      range_extend = 2;
+      movement_cost = 2.f;
+      break;
+    case TerrainType::kMarsh:
+      movement_cost = 2.f;
+      break;
+    case TerrainType::kForest:
+      movement_cost = 1.5f;
+      break;
+    case TerrainType::kWater:
+      range_extend = -100;
+      movement_cost = 2.0f;
+      break;
+    default:
+      break;
+  }
+}
+
+Terrain::Terrain(TerrainType terrain_type) : terrain_type_(terrain_type), terrain_modifiers_(terrain_type) {}
 
 std::string TerrainManager::GetName(TerrainType terrain_type) const {
   switch (terrain_type) {

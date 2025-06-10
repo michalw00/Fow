@@ -15,13 +15,23 @@ enum class TerrainType {
   kWater
 };
 
+struct TerrainModifiers {
+  TerrainModifiers(TerrainType terrain_type);
+  int range_extend = 0;
+  float attack_bonus = 0.f;
+  float defense_bonus = 0.f;
+  float movement_cost = 1.f;
+};
+
 class Terrain {
   public:
   Terrain(TerrainType terrain_type);
 
   TerrainType GetType() const { return terrain_type_; }
+  TerrainModifiers GetModifiers() const { return terrain_modifiers_; }
   private:
   TerrainType terrain_type_;
+  TerrainModifiers terrain_modifiers_;
 };
 
 class TerrainManager : public TextureManager<TerrainType, Terrain> {
