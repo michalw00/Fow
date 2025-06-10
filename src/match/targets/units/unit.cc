@@ -64,7 +64,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
     case UnitType::kUCAV:
       start_movement_points = 3.f;
       start_health_points = 70.0f;
-      min_attack_range = 2;
+      min_attack_range = 1;
       attack_range = 6;
       recon_range = 6;
       bridge_damage = 0.2f;
