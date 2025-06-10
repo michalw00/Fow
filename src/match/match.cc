@@ -12,7 +12,20 @@
 namespace fow {
 
 void Match::InitMap(int rows, int columns) {
-  map_ = std::make_unique<Map>(rows, columns);
+  // hills mountains marsh forest water plains  
+  // Hill-mount map
+  TerrainDistribution distribution { 0.2f, 0.1f, 0.f, 0.1f, 0.05f, 0.5f };
+  // Forest-swamp map
+  // TerrainDistribution distribution{ 0.f, 0.f, 0.175f, 0.225f, 0.1f, 0.5f };
+
+  int k = 30;
+  // k clustering iterations per tile
+  // k = 0: random map
+  // 1 <= k <= 20: low clusterization
+  // 21 <= k <= 40: normal clusterization
+  // 41 <= k <= 60: high clusterization
+  // k >= 61: very high clusterization
+  map_ = std::make_unique<Map>(rows, columns, distribution, k);
 }
 
 void Match::InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number) {
