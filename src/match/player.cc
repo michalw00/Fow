@@ -28,7 +28,7 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
   size_t columns = tiles.size();
   size_t rows = tiles[0].size();
 
-  float edge_space = 50.f;
+  float edge_space = 250.f;
   basic_width -= edge_space;
   basic_height -= edge_space;
 
@@ -277,8 +277,9 @@ void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map) {
     return;
   }
 
-  float diagonal_movement_cost = 1.5f;
-  float basic_movement_cost = 1.f;
+  float movement_cost = tiles[action_tile_position_.x][action_tile_position_.y].GetTerrain()->GetModifiers().movement_cost;
+  float diagonal_movement_cost = 1.5f * movement_cost;
+  float basic_movement_cost = 1.f * movement_cost;
 
   Vector2I unit_position = selected_unit_->GetPosition();
   if (unit_position.x != action_tile_position_.x && unit_position.y != action_tile_position_.y) {
@@ -354,11 +355,9 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
 
   const auto& tiles = map->GetTiles();
   Vector2I unit_position = selected_unit_->GetPosition();
+  TerrainModifiers terrain_modifiers = tiles[unit_position.x][unit_position.y].GetTerrain()->GetModifiers();
   auto closest_neighbors = map->GetNeighbors(unit_position);
 
-  auto IsWater = [unit_position, &tiles](Vector2I tile) {
-    return tiles[tile.x][tile.y].GetTerrain()->GetType() == TerrainType::kWater;
-  };
   auto IsOtherUnitsThere = [this, unit_position](Vector2I tile) {
     auto IsUnitThere = [tile](std::shared_ptr<Unit> unit) {
       return unit->GetPosition() == tile; };
@@ -366,9 +365,10 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   };
 
   // Move tiles
-  auto NotEnoughMovementPoints = [this, unit_position](Vector2I tile) {
-    float diagonal_movement_cost = 1.5f;
-    float basic_movement_cost = 1.f;
+  auto NotEnoughMovementPoints = [this, &tiles, unit_position](Vector2I tile) {
+    float movement_cost = tiles[tile.x][tile.y].GetTerrain()->GetModifiers().movement_cost;
+    float diagonal_movement_cost = 1.5f * movement_cost;
+    float basic_movement_cost = 1.f * movement_cost;
     if (unit_position.x != tile.x && unit_position.y != tile.y) {
       return selected_unit_->GetMovementPoints() + 0.1f < diagonal_movement_cost;
     } else {
@@ -377,16 +377,15 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   };
 
   possible_move_tiles_ = closest_neighbors;
-  std::erase_if(possible_move_tiles_, IsWater);
   std::erase_if(possible_move_tiles_, IsOtherUnitsThere); 
   std::erase_if(possible_move_tiles_, NotEnoughMovementPoints);
   // Recon tiles
   {
-    int recon_range = selected_unit_->GetUnitModifiers()->recon_range;
+    int recon_range = selected_unit_->GetUnitModifiers()->recon_range + terrain_modifiers.range_extend;
 
     std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
     std::unordered_set<Vector2I> next_neighbors;
-    possible_recon_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
+    if (recon_range > 0) possible_recon_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
     for (int i = 1; i < recon_range; ++i) {
       for (auto& neighbor : current_neighbors) {
         auto neighbor_neighbors = map->GetNeighbors(neighbor);
@@ -403,12 +402,12 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   // Attack tiles
   {
     int min_attack_range = selected_unit_->GetUnitModifiers()->min_attack_range;
-    int attack_range = selected_unit_->GetUnitModifiers()->attack_range;
+    int attack_range = selected_unit_->GetUnitModifiers()->attack_range + terrain_modifiers.range_extend;
 
     std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
     std::unordered_set<Vector2I> next_neighbors;
     std::unordered_set<Vector2I> less_min_range;
-    possible_attack_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
+    if (attack_range > 0) possible_attack_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
     for (int i = 1; i < attack_range; ++i) {
       if (min_attack_range == i) {
         less_min_range = possible_attack_tiles_;
