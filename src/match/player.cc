@@ -382,19 +382,8 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   // Recon tiles
   {
     int recon_range = selected_unit_->GetUnitModifiers()->recon_range + terrain_modifiers.range_extend;
+    possible_recon_tiles_ = RangeCircle(unit_position, recon_range, 0, map);
 
-    std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
-    std::unordered_set<Vector2I> next_neighbors;
-    if (recon_range > 0) possible_recon_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
-    for (int i = 1; i < recon_range; ++i) {
-      for (auto& neighbor : current_neighbors) {
-        auto neighbor_neighbors = map->GetNeighbors(neighbor);
-        next_neighbors.insert(neighbor_neighbors.cbegin(), neighbor_neighbors.cend());
-      }
-      next_neighbors = SetDifference(next_neighbors, current_neighbors);
-      possible_recon_tiles_.insert(next_neighbors.cbegin(), next_neighbors.cend());
-      current_neighbors = next_neighbors;
-    }
     std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
     possible_recon_tiles_ = SetDifference(possible_recon_tiles_, recon_tiles_);
     possible_recon_tiles_ = SetDifference(possible_recon_tiles_, was_unit_tiles_);
@@ -404,26 +393,34 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
     int min_attack_range = selected_unit_->GetUnitModifiers()->min_attack_range;
     int attack_range = selected_unit_->GetUnitModifiers()->attack_range + terrain_modifiers.range_extend;
 
-    std::unordered_set<Vector2I> current_neighbors = closest_neighbors;
-    std::unordered_set<Vector2I> next_neighbors;
-    std::unordered_set<Vector2I> less_min_range;
-    if (attack_range > 0) possible_attack_tiles_.insert(current_neighbors.cbegin(), current_neighbors.cend());
-    for (int i = 1; i < attack_range; ++i) {
-      if (min_attack_range == i) {
-        less_min_range = possible_attack_tiles_;
-      }
-      for (auto& neighbor : current_neighbors) {
-        auto neighbor_neighbors = map->GetNeighbors(neighbor);
-        next_neighbors.insert(neighbor_neighbors.cbegin(), neighbor_neighbors.cend());
-      }
-      next_neighbors = SetDifference(next_neighbors, current_neighbors);
-      possible_attack_tiles_.insert(next_neighbors.cbegin(), next_neighbors.cend());
-      current_neighbors = next_neighbors;
-    }
+    possible_attack_tiles_ = RangeCircle(unit_position, attack_range, min_attack_range, map);
+    
     std::erase_if(possible_attack_tiles_, IsOtherUnitsThere);
     possible_attack_tiles_ = SetDifference(possible_attack_tiles_, was_unit_tiles_);
-    possible_attack_tiles_ = SetDifference(possible_attack_tiles_, less_min_range);
   }
+}
+
+std::unordered_set<Vector2I> Player::RangeCircle(Vector2I origin, int range, int min_range, const std::unique_ptr<Map>& map) {
+  std::unordered_set<Vector2I> tiles;
+
+  auto map_tiles = map->GetTiles();
+
+  int max_x = map_tiles.size();
+  int max_y = map_tiles[0].size();
+
+  for (int y = -range; y <= range; ++y) {
+    for (int x = -range; x <= range; ++x) {
+      int distance_sq = (x * x + y * y) - 1; // -1 for smooth diagonal tiles
+      if (distance_sq <= range * range && (distance_sq > min_range * min_range || !min_range)) {
+        Vector2I tile = origin + Vector2I(x, y);
+        if (tile.x >= 0 && tile.x < max_x && tile.y >= 0 && tile.y < max_y) {
+          tiles.emplace(tile);
+        }
+      }
+    }
+  }
+
+  return tiles;
 }
 
 void Player::ClearPossibleTiles() {

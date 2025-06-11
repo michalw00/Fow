@@ -69,6 +69,7 @@ private:
   void ResetUnitsMovementPoints();
 
   void UpdatePossibleTiles(const std::unique_ptr<Map>& map);
+  std::unordered_set<Vector2I> RangeCircle(Vector2I origin, int range, int min_range, const std::unique_ptr<Map>& map);
   void ClearPossibleTiles();
 
   std::shared_ptr<Unit> selected_unit_ = nullptr;
