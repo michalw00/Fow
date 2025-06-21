@@ -1,7 +1,7 @@
 # Fow
 ## Current features in the game
 ### Probabilities map
-![Screenshot_3210](https://github.com/user-attachments/assets/2f229319-2e58-4234-ad96-16856b627524)
+![image](https://github.com/user-attachments/assets/930a28d9-4459-4c68-ba12-2cca8b7141ec)
 ### Recon tiles
 ![2025-06-04 00-21-56](https://github.com/user-attachments/assets/99f82cae-01cc-4ff2-bb15-cc67fdc1a559)
 ### Attack Tiles
