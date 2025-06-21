@@ -17,6 +17,7 @@ enum class TerrainType {
 
 struct TerrainModifiers {
   TerrainModifiers(TerrainType terrain_type);
+
   int range_extend = 0;
   float attack_bonus = 0.f;
   float defense_bonus = 0.f;

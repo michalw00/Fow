@@ -29,12 +29,14 @@ enum class UnitAction {
 
 struct UnitModifiers {
   UnitModifiers(UnitType unit_type);
-  float start_movement_points;
-  float start_health_points;
+
+  float start_movement_points = 0.f;
+  float start_health_points = 0.f;
   float bridge_damage = 0.f;
   int min_attack_range = 0;
-  int attack_range;
-  int recon_range;
+  int attack_range = 0;
+  int recon_range = 0;
+  bool is_vehicle = false;
 };
 
 class Unit : public Target {

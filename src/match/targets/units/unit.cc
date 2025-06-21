@@ -25,11 +25,11 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       start_health_points = 70.f;
       bridge_damage = 0.2f;
       min_attack_range = 3;
-      attack_range = 10;
+      attack_range = 12;
       recon_range = 1;
       break;
     case UnitType::kEW:
-      start_movement_points = 3.0f;
+      start_movement_points = 3.f;
       start_health_points = 85.f;
       attack_range = 1;
       recon_range = 2;
@@ -41,23 +41,25 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       recon_range = 2;
       break;
     case UnitType::kMechanizedInfantry:
-      start_movement_points = 6.f;
+      start_movement_points = 8.f;
       start_health_points = 120.0f;
       attack_range = 1;
       recon_range = 2;
+      is_vehicle = true;
       break;
     case UnitType::kTank:
-      start_movement_points = 4.5f;
+      start_movement_points = 6.0f;
       start_health_points = 150.0f;
       attack_range = 1;
       recon_range = 1;
       bridge_damage = 0.2f;
+      is_vehicle = true;
       break;
     case UnitType::kTBM:
       start_movement_points = 3.f;
       start_health_points = 70.0f;
-      min_attack_range = 5;
-      attack_range = 14;
+      min_attack_range = 4;
+      attack_range = 16;
       recon_range = 1;
       bridge_damage = 0.5f;
       break;
@@ -65,17 +67,9 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       start_movement_points = 3.f;
       start_health_points = 70.0f;
       min_attack_range = 1;
-      attack_range = 6;
-      recon_range = 6;
+      attack_range = 8;
+      recon_range = 8;
       bridge_damage = 0.2f;
-      break;
-    default:
-      start_movement_points = 0.f;
-      start_health_points = 0.f;
-      bridge_damage = 0.f;
-      min_attack_range = 0;
-      attack_range = 0;
-      recon_range = 0;
       break;
   }
 }
