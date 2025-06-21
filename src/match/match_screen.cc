@@ -44,13 +44,23 @@ void MatchScreen::InitPanelHud() {
   float shift = 130.f;
 
   RColor background_color = RColor::Black().Alpha(0.875f);
-  RVector2 background_shift = { shift, 80.f };
+  RVector2 background_shift = { shift, 120.f };
   background_shift *= 2.f;
   RVector2 background_position = origin - background_shift;
   std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_shift, background_color);
   ComplexDrawablePart background("BG", background_rectangle);
 
   float font_size = 40.f;
+
+  RVector2 show_fow_position = origin - RVector2(shift, 200.f);
+  RText show_fow_text("SHOW FOW", font_size);
+  auto show_fow_button = std::make_shared<TextButton>(show_fow_position, [&]() { show_fow = !show_fow; }, show_fow_text, true);
+  ComplexDrawablePart show_fow("SHOW_FOW", show_fow_button);
+
+  RVector2 show_zeros_position = origin - RVector2(shift, 150.f);
+  RText show_zeros_text("SHOW 0.0%", font_size);
+  auto show_zeros_button = std::make_shared<TextButton>(show_zeros_position, [&]() { show_zero = !show_zero; }, show_zeros_text, true);
+  ComplexDrawablePart show_zeros("SHOW_ZEROS", show_zeros_button);
 
   RVector2 prev_map_position = origin - RVector2(shift, 100.f);
   RText prev_map_text("PREV MAP", font_size);
@@ -66,7 +76,7 @@ void MatchScreen::InitPanelHud() {
   auto end_turn_button = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
   ComplexDrawablePart end_turn("END_TURN", end_turn_button);
 
-  std::initializer_list<ComplexDrawablePart> parts = { background, prev_map, end_turn  };
+  std::initializer_list<ComplexDrawablePart> parts = { background, show_fow, show_zeros, prev_map, end_turn  };
   panel_hud_ = std::make_unique<ComplexDrawable>(parts);
 }
 
@@ -144,9 +154,9 @@ void MatchScreen::CheckInputs() {
 
 void MatchScreen::PlacePlayerButtons(Player& player) {
   PlaceRenderMap(player);
+  PlaceProbabilityMap(player);
   PlaceUnits(player);
   PlacePossibleTiles(player);
-  PlaceProbabilityMap(player);
 }
 
 void MatchScreen::PlaceRenderMap(Player& player) {
@@ -197,16 +207,26 @@ void MatchScreen::PlaceProbabilityMap(Player& player) {
       RRectangle area = buttons[i][j]->GetArea();
       RVector2 size = { area.GetSize() };
       RVector2 position = area.GetPosition();
-      position += size / 2.f;
       float probability = probability_map[i][j];
       std::string text_string = "";
-      if (probability > -0.01f) {
+      if (probability == 0.f && !show_zero) {
+        continue;
+      }
+      if (probability < 0.f) {
+        if (show_fow) {
+          std::shared_ptr<Rectangle> fow = std::make_shared<Rectangle>(position, size, RColor::Black().Alpha(0.25));
+          PlaceDrawable(fow);
+        }
+        continue;
+      }
+      position += size / 2.f;     
+      if (probability >= 0.f) {
         text_string = std::format("{:.1f}", probability * 100) + '%';
       }
       float r = 255.f;
       float g = 255.f;
       float b = 0.f;
-      if (probability < 0.01) {
+      if (probability == 0.f) {
         r = 200.f;
         b = 200.f;
       } else if (probability < 0.5f) {
@@ -258,7 +278,7 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
     RVector2 size = { area.GetSize() };
     RVector2 position = area.GetPosition();
 
-    std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(position, size, color.Alpha(0.3));
+    std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(position, size, color.Alpha(0.35));
     PlaceDrawable(rectangle);
   }  
 }

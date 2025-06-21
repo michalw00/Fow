@@ -42,6 +42,8 @@ class MatchScreen : public Screen {
   Input input;
 
   bool show_prev_map_ = false;
+  bool show_fow = true;
+  bool show_zero = false;
 };
 
 } // namespace fow
