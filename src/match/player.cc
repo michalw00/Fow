@@ -198,11 +198,12 @@ void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unorde
     const std::vector<std::shared_ptr<Unit>>& enemy_units) {
   for (auto& tile : neighbors) {
     for (auto& neighbor : tile.second) {
-      auto is_unit = [neighbor](std::shared_ptr<Unit> unit) { return unit->GetPosition() == neighbor; };
-      if (std::none_of(units_.begin(), units_.end(), is_unit)) {
-        probabilities_map_[neighbor.x][neighbor.y] = 0.0f;
-      } 
+      probabilities_map_[neighbor.x][neighbor.y] = 0.0f;    
     }
+  }
+  for (auto& unit : units_) {
+    auto position = unit->GetPosition();
+    probabilities_map_[position.x][position.y] = 0.0f;
   }
   for (auto& tile : recon_tiles_) {
     auto is_unit = [tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == tile; };
@@ -277,7 +278,11 @@ void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map) {
     return;
   }
 
-  float movement_cost = tiles[action_tile_position_.x][action_tile_position_.y].GetTerrain()->GetModifiers().movement_cost;
+  auto tile_terrain = tiles[action_tile_position_.x][action_tile_position_.y].GetTerrain();
+  float movement_cost = tile_terrain->GetModifiers().movement_cost;
+  if (selected_unit_->GetUnitModifiers()->is_vehicle && tile_terrain->GetType() != TerrainType::kPlains) {
+    movement_cost *= 2.f;
+  }
   float diagonal_movement_cost = 1.5f * movement_cost;
   float basic_movement_cost = 1.f * movement_cost;
 
@@ -364,9 +369,14 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
     return std::any_of(units_.cbegin(), units_.cend(), IsUnitThere);
   };
 
+  auto unit_modifiers = selected_unit_->GetUnitModifiers();
   // Move tiles
-  auto NotEnoughMovementPoints = [this, &tiles, unit_position](Vector2I tile) {
-    float movement_cost = tiles[tile.x][tile.y].GetTerrain()->GetModifiers().movement_cost;
+  auto NotEnoughMovementPoints = [this, &unit_modifiers, &tiles, unit_position](Vector2I tile) {
+    auto tile_terrain = tiles[tile.x][tile.y].GetTerrain();
+    float movement_cost = tile_terrain->GetModifiers().movement_cost;
+    if (unit_modifiers->is_vehicle && tile_terrain->GetType() != TerrainType::kPlains) {
+      movement_cost *= 2.f;
+    }
     float diagonal_movement_cost = 1.5f * movement_cost;
     float basic_movement_cost = 1.f * movement_cost;
     if (unit_position.x != tile.x && unit_position.y != tile.y) {
@@ -381,7 +391,7 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   std::erase_if(possible_move_tiles_, NotEnoughMovementPoints);
   // Recon tiles
   {
-    int recon_range = selected_unit_->GetUnitModifiers()->recon_range + terrain_modifiers.range_extend;
+    int recon_range = unit_modifiers->recon_range + terrain_modifiers.range_extend;
     possible_recon_tiles_ = RangeCircle(unit_position, recon_range, 0, map);
 
     std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
@@ -390,8 +400,8 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   }
   // Attack tiles
   {
-    int min_attack_range = selected_unit_->GetUnitModifiers()->min_attack_range;
-    int attack_range = selected_unit_->GetUnitModifiers()->attack_range + terrain_modifiers.range_extend;
+    int min_attack_range = unit_modifiers->min_attack_range;
+    int attack_range = unit_modifiers->attack_range + terrain_modifiers.range_extend;
 
     possible_attack_tiles_ = RangeCircle(unit_position, attack_range, min_attack_range, map);
     
