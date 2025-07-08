@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include <raylib.h>
 #include <Vector2.hpp>
+#include <raylib.h>
 
 #include "../../drawable/button/button.h"
 #include "../../drawable/drawable.h"
@@ -53,15 +53,16 @@ void Screen::ScalePositions(float window_width, float window_height, bool invers
 }
 
 void Screen::PlaceDrawable(std::shared_ptr<Drawable> drawable, bool is_static) {
+  auto button = std::dynamic_pointer_cast<Button>(drawable);
   if (is_static) {
     drawables_static_.push_back(drawable);
-    if (drawable->GetIsButton()) {
-      buttons_static_.push_back(std::static_pointer_cast<Button>(drawable));
+    if (button) {
+      buttons_static_.push_back(button);
     }
   } else {
     drawables_.push_back(drawable);
-    if (drawable->GetIsButton()) {
-      buttons_.push_back(std::static_pointer_cast<Button>(drawable));
+    if (button) {
+      buttons_.push_back(button);
     }
   }
 }

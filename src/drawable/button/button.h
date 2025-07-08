@@ -8,6 +8,7 @@
 #include "../drawable.h"
 
 namespace fow {
+
 class Button : public Drawable {
   public:
   Button(RVector2 position, std::function<void()> action_lmb, std::function<void()> action_rmb);
