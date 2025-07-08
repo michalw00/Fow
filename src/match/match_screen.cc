@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 
 #include <Color.hpp>
@@ -254,10 +255,11 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
 
   std::unordered_set<Vector2I> tiles;
   RColor color;
+  
   switch (current_action) {
     case UnitAction::kMove:
       tiles = player.GetPossibleMoveTiles();
-      color = RColor::Green();
+      color = RColor::Green();    
       break;
     case UnitAction::kRecon:
       tiles = player.GetPossibleReconTiles();
@@ -277,9 +279,17 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
     RRectangle area = buttons[tile.x][tile.y]->GetArea();
     RVector2 size = { area.GetSize() };
     RVector2 position = area.GetPosition();
-
     std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(position, size, color.Alpha(0.35));
     PlaceDrawable(rectangle);
+    if (current_action == UnitAction::kMove) {
+      const std::unordered_map<Vector2I, float>& movement_costs = player.GetMovementCosts();
+      position += size / 2.f;
+      position.y += size.y / 3.f;
+      std::string move_cost_str = std::format("{:.1f}", movement_costs.at(tile));
+      RText rtext(move_cost_str, size.GetX() * 0.3f);
+      std::shared_ptr<Text> move_cost = std::make_shared<Text>(position, rtext);
+      PlaceDrawable(move_cost);
+    }
   }  
 }
 

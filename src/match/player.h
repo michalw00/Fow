@@ -35,9 +35,10 @@ public:
   const std::vector<std::vector<float>>& GetProbabilitiesMap() const;
   void InvertShowPrevMap() { if (turn != 0) show_prev_map_ = !show_prev_map_; }
   bool GetShowPrevMap() const { return show_prev_map_; }
-  std::unordered_set<Vector2I> GetPossibleMoveTiles() const { return possible_move_tiles_; }
-  std::unordered_set<Vector2I> GetPossibleReconTiles() const { return possible_recon_tiles_; }
-  std::unordered_set<Vector2I> GetPossibleAttackTiles() const { return possible_attack_tiles_; }
+  const std::unordered_set<Vector2I>& GetPossibleMoveTiles() const { return possible_move_tiles_; }
+  const std::unordered_map<Vector2I, float>& GetMovementCosts() const { return movement_costs_; }
+  const std::unordered_set<Vector2I>& GetPossibleReconTiles() const { return possible_recon_tiles_; }
+  const std::unordered_set<Vector2I>& GetPossibleAttackTiles() const { return possible_attack_tiles_; }
   UnitAction GetCurrentAction() const { return current_action_; }
   // TODO: Separate methods 
   void SwapAction() { 
@@ -87,6 +88,7 @@ private:
   std::vector<std::vector<float>> prev_map_;
 
   std::unordered_set<Vector2I> possible_move_tiles_;
+  std::unordered_map<Vector2I, float> movement_costs_;
   std::unordered_set<Vector2I> possible_recon_tiles_;
   std::unordered_set<Vector2I> possible_attack_tiles_;
 

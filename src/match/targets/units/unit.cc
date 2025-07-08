@@ -56,12 +56,13 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       is_vehicle = true;
       break;
     case UnitType::kTBM:
-      start_movement_points = 3.f;
+      start_movement_points = 5.f;
       start_health_points = 70.0f;
       min_attack_range = 4;
       attack_range = 16;
       recon_range = 1;
       bridge_damage = 0.5f;
+      is_vehicle = true;
       break;
     case UnitType::kUCAV:
       start_movement_points = 3.f;

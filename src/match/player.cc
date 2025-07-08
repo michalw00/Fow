@@ -277,23 +277,9 @@ void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map) {
   if (!possible_move_tiles_.contains(action_tile_position_)) {
     return;
   }
-
-  auto tile_terrain = tiles[action_tile_position_.x][action_tile_position_.y].GetTerrain();
-  float movement_cost = tile_terrain->GetModifiers().movement_cost;
-  if (selected_unit_->GetUnitModifiers()->is_vehicle && tile_terrain->GetType() != TerrainType::kPlains) {
-    movement_cost *= 2.f;
-  }
-  float diagonal_movement_cost = 1.5f * movement_cost;
-  float basic_movement_cost = 1.f * movement_cost;
-
   Vector2I unit_position = selected_unit_->GetPosition();
-  if (unit_position.x != action_tile_position_.x && unit_position.y != action_tile_position_.y) {
-    selected_unit_->SubstractMovementPoints(diagonal_movement_cost);
-  } else {
-    selected_unit_->SubstractMovementPoints(basic_movement_cost);
-  }
-
   was_unit_tiles_.emplace(unit_position);
+  selected_unit_->SubstractMovementPoints(movement_costs_.at(action_tile_position_));
   selected_unit_->SetPosition(action_tile_position_);
   should_update_probabilities_map_ = true;
   UpdatePossibleTiles(map);
@@ -355,7 +341,7 @@ void Player::ResetUnitsMovementPoints() {
   }
 }
 
-void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) { 
+void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   ClearPossibleTiles();
 
   const auto& tiles = map->GetTiles();
@@ -374,40 +360,39 @@ void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {
   auto NotEnoughMovementPoints = [this, &unit_modifiers, &tiles, unit_position](Vector2I tile) {
     auto tile_terrain = tiles[tile.x][tile.y].GetTerrain();
     float movement_cost = tile_terrain->GetModifiers().movement_cost;
-    if (unit_modifiers->is_vehicle && tile_terrain->GetType() != TerrainType::kPlains) {
+    if (unit_modifiers->is_vehicle
+      && (tile_terrain->GetType() != TerrainType::kPlains && tile_terrain->GetType() != TerrainType::kUrban)) {
       movement_cost *= 2.f;
     }
-    float diagonal_movement_cost = 1.5f * movement_cost;
-    float basic_movement_cost = 1.f * movement_cost;
     if (unit_position.x != tile.x && unit_position.y != tile.y) {
-      return selected_unit_->GetMovementPoints() + 0.1f < diagonal_movement_cost;
+      movement_cost *= 1.5f;
+    }
+    if (selected_unit_->GetMovementPoints() + 0.1f < movement_cost) {
+      return true;
     } else {
-      return selected_unit_->GetMovementPoints() + 0.1f < basic_movement_cost;
+      movement_costs_[tile] = movement_cost;
+      return false;
     }
   };
-
   possible_move_tiles_ = closest_neighbors;
-  std::erase_if(possible_move_tiles_, IsOtherUnitsThere); 
+  std::erase_if(possible_move_tiles_, IsOtherUnitsThere);
   std::erase_if(possible_move_tiles_, NotEnoughMovementPoints);
   // Recon tiles
-  {
-    int recon_range = unit_modifiers->recon_range + terrain_modifiers.range_extend;
-    possible_recon_tiles_ = RangeCircle(unit_position, recon_range, 0, map);
+  int recon_range = unit_modifiers->recon_range + terrain_modifiers.range_extend;
+  possible_recon_tiles_ = RangeCircle(unit_position, recon_range, 0, map);
 
-    std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
-    possible_recon_tiles_ = SetDifference(possible_recon_tiles_, recon_tiles_);
-    possible_recon_tiles_ = SetDifference(possible_recon_tiles_, was_unit_tiles_);
-  }
+  std::erase_if(possible_recon_tiles_, IsOtherUnitsThere);
+  possible_recon_tiles_ = SetDifference(possible_recon_tiles_, recon_tiles_);
+  possible_recon_tiles_ = SetDifference(possible_recon_tiles_, was_unit_tiles_);
+
   // Attack tiles
-  {
-    int min_attack_range = unit_modifiers->min_attack_range;
-    int attack_range = unit_modifiers->attack_range + terrain_modifiers.range_extend;
+  int min_attack_range = unit_modifiers->min_attack_range;
+  int attack_range = unit_modifiers->attack_range + terrain_modifiers.range_extend;
 
-    possible_attack_tiles_ = RangeCircle(unit_position, attack_range, min_attack_range, map);
-    
-    std::erase_if(possible_attack_tiles_, IsOtherUnitsThere);
-    possible_attack_tiles_ = SetDifference(possible_attack_tiles_, was_unit_tiles_);
-  }
+  possible_attack_tiles_ = RangeCircle(unit_position, attack_range, min_attack_range, map);
+
+  std::erase_if(possible_attack_tiles_, IsOtherUnitsThere);
+  possible_attack_tiles_ = SetDifference(possible_attack_tiles_, was_unit_tiles_);
 }
 
 std::unordered_set<Vector2I> Player::RangeCircle(Vector2I origin, int range, int min_range, const std::unique_ptr<Map>& map) {
@@ -435,6 +420,7 @@ std::unordered_set<Vector2I> Player::RangeCircle(Vector2I origin, int range, int
 
 void Player::ClearPossibleTiles() {
   possible_move_tiles_.clear();
+  movement_costs_.clear();
   possible_recon_tiles_.clear();
   possible_attack_tiles_.clear();
 }
