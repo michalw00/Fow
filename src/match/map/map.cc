@@ -104,7 +104,8 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kMountains, {}},
     {TerrainType::kMarsh, {}},
     {TerrainType::kForest, {}},
-    {TerrainType::kWater, {}}
+    {TerrainType::kWater, {}},
+    {TerrainType::kUrban, {}}
   };
 
   terrain_compatibility[TerrainType::kPlains] = {
@@ -113,7 +114,8 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kMountains, 0.2},
     {TerrainType::kMarsh, 0.3},
     {TerrainType::kForest, 0.5},
-    {TerrainType::kWater, 0.3}
+    {TerrainType::kWater, 0.3},
+    {TerrainType::kUrban, 0.0 }
   };
 
   terrain_compatibility[TerrainType::kHills] = {
@@ -131,7 +133,8 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kHills, 0.8},
     {TerrainType::kMarsh, 0.05},
     {TerrainType::kForest, 0.3},
-    {TerrainType::kWater, 0.5}
+    {TerrainType::kWater, 0.5},
+    {TerrainType::kUrban, 0.0 }
   };
 
   terrain_compatibility[TerrainType::kMarsh] = {
@@ -140,7 +143,8 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kHills, 0.1},
     {TerrainType::kMountains, 0.05},
     {TerrainType::kForest, 0.7},
-    {TerrainType::kWater, 0.7}
+    {TerrainType::kWater, 0.7},
+    {TerrainType::kUrban, 0.0 }
   };
 
   terrain_compatibility[TerrainType::kForest] = {
@@ -149,7 +153,8 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kHills, 0.4},
     {TerrainType::kMountains, 0.3},
     {TerrainType::kMarsh, 0.7},
-    {TerrainType::kWater, 0.3}
+    {TerrainType::kWater, 0.3},
+    {TerrainType::kUrban, 0.0 }
   };
 
   terrain_compatibility[TerrainType::kWater] = {
@@ -158,7 +163,18 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kHills, 0.4},
     {TerrainType::kMountains, 0.5},
     {TerrainType::kMarsh, 0.7},
-    {TerrainType::kForest, 0.3}
+    {TerrainType::kForest, 0.3},
+    {TerrainType::kUrban, 0.0 }
+  };
+
+  terrain_compatibility[TerrainType::kUrban] = {
+    {TerrainType::kUrban, 1.0},
+    {TerrainType::kPlains, 0.0},
+    {TerrainType::kHills, 0.0},
+    {TerrainType::kMountains, 0.0},
+    {TerrainType::kMarsh, 0.0},
+    {TerrainType::kForest, 0.0},
+    {TerrainType::kWater, 0.0}
   };
 }
 
@@ -181,7 +197,8 @@ void Map::RandomFillMap(TerrainDistribution distribution, std::mt19937 gen) {
   int marsh_amount = distribution.marsh * n;
   int mountains_amount = distribution.mountains * n;
   int water_amount = distribution.water * n;
-  int plains_amount = n - (forest_amount + hills_amount + marsh_amount + mountains_amount + water_amount);
+  int urban_amount = distribution.urban * n;
+  int plains_amount = n - (forest_amount + hills_amount + marsh_amount + mountains_amount + water_amount + urban_amount);
 
   std::vector<std::shared_ptr<Terrain>> terrains;
   terrains.insert(terrains.end(), forest_amount, terrain_manager_.GetResource(TerrainType::kForest));
@@ -189,6 +206,7 @@ void Map::RandomFillMap(TerrainDistribution distribution, std::mt19937 gen) {
   terrains.insert(terrains.end(), marsh_amount, terrain_manager_.GetResource(TerrainType::kMarsh));
   terrains.insert(terrains.end(), mountains_amount, terrain_manager_.GetResource(TerrainType::kMountains));
   terrains.insert(terrains.end(), water_amount, terrain_manager_.GetResource(TerrainType::kWater));
+  terrains.insert(terrains.end(), urban_amount, terrain_manager_.GetResource(TerrainType::kUrban));
   terrains.insert(terrains.end(), plains_amount, terrain_manager_.GetResource(TerrainType::kPlains));
 
   std::shuffle(terrains.begin(), terrains.end(), gen);

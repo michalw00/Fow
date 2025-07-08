@@ -17,6 +17,7 @@ struct TerrainDistribution {
   float marsh;
   float forest;
   float water;
+  float urban;
   float plains;
 };
 

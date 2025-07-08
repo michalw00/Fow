@@ -12,13 +12,13 @@
 namespace fow {
 
 void Match::InitMap(int rows, int columns) {
-  // hills mountains marsh forest water plains  
+  // hills mountains marsh forest water urban plains  
   // Hill-mount map
-  TerrainDistribution distribution { 0.2f, 0.1f, 0.f, 0.1f, 0.05f, 0.5f };
+  // TerrainDistribution distribution { 0.15f, 0.1f, 0.f, 0.1f, 0.05f, 0.05f, 0.5f };
   // Forest-swamp map
-  // TerrainDistribution distribution{ 0.f, 0.f, 0.175f, 0.225f, 0.1f, 0.5f };
+  TerrainDistribution distribution{ 0.f, 0.f, 0.15f, 0.2f, 0.1f, 0.05f, 0.5f };
 
-  int k = 30;
+  int k = 25;
   // k clustering iterations per tile
   // k = 0: random map
   // 1 <= k <= 20: low clusterization

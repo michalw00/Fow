@@ -26,6 +26,8 @@ TerrainModifiers::TerrainModifiers(TerrainType terrain_type) {
       range_extend = -100;
       movement_cost = 2.f;
       break;
+    case TerrainType::kUrban:
+      break;
   }
 }
 
@@ -39,6 +41,7 @@ std::string TerrainManager::GetName(TerrainType terrain_type) const {
     case TerrainType::kMarsh: return "Marsh";
     case TerrainType::kForest: return "Forest";
     case TerrainType::kWater: return "Water";
+    case TerrainType::kUrban: return "Urban";
   }
 }
 
@@ -50,6 +53,7 @@ std::string TerrainManager::GetTextureName(TerrainType terrain_type) const {
     case TerrainType::kMarsh: return "terrain/marsh/marsh";
     case TerrainType::kForest: return "terrain/forest/forest";
     case TerrainType::kWater: return "terrain/water/water";
+    case TerrainType::kUrban: return "terrain/urban/urban";
   }
 }
 
