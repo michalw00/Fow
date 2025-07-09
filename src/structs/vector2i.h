@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <compare>
 #include <type_traits>
 
 #include "../utils/math_utils.h"
