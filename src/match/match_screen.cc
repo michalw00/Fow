@@ -18,6 +18,7 @@
 #include "../drawable/button/text_button.h"
 #include "../drawable/button/texture_button.h"
 #include "../drawable/complex_drawable.h"
+#include "../drawable/drawable.h"
 #include "../drawable/rectangle.h"
 #include "../drawable/text.h"
 #include "../drawable/texture_manager.h"
@@ -273,6 +274,7 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
       break;
   }
 
+  std::vector<std::shared_ptr<Drawable>> draw_later;
   for (const auto& tile : tiles) {
     auto& button = buttons[tile.x][tile.y];
     RRectangle area = button->GetArea();
@@ -299,18 +301,21 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
           auto& attacked_button = buttons[attacked_tile.x][attacked_tile.y];
           RRectangle attacked_area = attacked_button->GetArea();
           RVector2 attacked_position = attacked_area.GetPosition();
-          std::shared_ptr<Rectangle> attacked = std::make_shared<Rectangle>(attacked_position, size, RColor(136, 8, 8).Alpha(0.65));
-          PlaceDrawable(attacked);
+          std::shared_ptr<Rectangle> attacked = std::make_shared<Rectangle>(attacked_position, size, RColor(136, 8, 8).Alpha(0.6));
+          draw_later.emplace_back(attacked);
           attacked_position += size / 2.f;
           attacked_position.y -= size.y / 3.f;
           std::string hit_chance_str = std::format("{:.0f}", hit_chance*100.0);
           RText rtext(hit_chance_str+'%', size.GetX() * 0.33f, RColor::Black());
-          std::shared_ptr<Text> hit_chance = std::make_shared<Text>(attacked_position, rtext);
-          PlaceDrawable(hit_chance);
+          std::shared_ptr<Text> hit_chance = std::make_shared<Text>(attacked_position, rtext);     
+          draw_later.emplace_back(hit_chance);
         }
       }
     }
-  }  
+  } 
+  for (auto& drawable : draw_later) {
+    PlaceDrawable(drawable);
+  }
 }
 
 void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager) {
