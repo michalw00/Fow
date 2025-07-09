@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "../../../drawable/texture_manager.h"
 #include "../../../structs/vector2i.h"
@@ -37,6 +38,10 @@ struct UnitModifiers {
   int attack_range = 0;
   int recon_range = 0;
   bool is_vehicle = false;
+  int range_deviation = 0;
+  int direction_deviation = 0;
+  std::vector<double> hit_chances;
+  std::vector<double> diag_hit_chances;
 };
 
 class Unit : public Target {

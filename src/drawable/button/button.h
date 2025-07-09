@@ -17,6 +17,7 @@ class Button : public Drawable {
 
   RRectangle GetArea() const { return area_; }
   void SetIsSelected(bool is_selected) { is_selected_ = is_selected; }
+  bool GetIsHovered() const { return is_hovered_; }
   protected:
   bool is_selected_ = false;
   bool is_hovered_ = false;

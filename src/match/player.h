@@ -39,6 +39,7 @@ public:
   const std::unordered_map<Vector2I, float>& GetMovementCosts() const { return movement_costs_; }
   const std::unordered_set<Vector2I>& GetPossibleReconTiles() const { return possible_recon_tiles_; }
   const std::unordered_set<Vector2I>& GetPossibleAttackTiles() const { return possible_attack_tiles_; }
+  const std::unordered_map<Vector2I, double>& GetPossibleAttackedTiles(Vector2I attacked_tile) const;
   UnitAction GetCurrentAction() const { return current_action_; }
   // TODO: Separate methods 
   void SwapAction() { 
@@ -96,6 +97,8 @@ private:
   bool should_update_probabilities_map_ = true;
 
   UnitAction current_action_ = UnitAction::kMove;
+  mutable Vector2I attacked_tile_ = { -1, -1 };
+  mutable std::unordered_map<Vector2I, double> possible_attacked_tiles_;
 
   int turn = -1;
 };

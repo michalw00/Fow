@@ -325,6 +325,65 @@ const std::vector<std::vector<float>>& Player::GetProbabilitiesMap() const {
   }
 }
 
+const std::unordered_map<Vector2I, double>& Player::GetPossibleAttackedTiles(Vector2I attacked_tile) const {
+  if (attacked_tile == attacked_tile_) {
+    return possible_attacked_tiles_;
+  }
+  attacked_tile_ = attacked_tile;
+  possible_attacked_tiles_.clear();
+  const auto& unit_modifiers = selected_unit_->GetUnitModifiers();
+  int range_deviation = unit_modifiers->range_deviation;
+  int direction_deviation = unit_modifiers->direction_deviation;
+  if (range_deviation == 0 && direction_deviation == 0) {
+    possible_attacked_tiles_[attacked_tile_] = 1.0;
+    return possible_attacked_tiles_;
+  }
+  Vector2I closest_direction = (attacked_tile_ - selected_unit_->GetPosition()).GetClosestDirection();  
+  if (closest_direction.x != 0 && closest_direction.y != 0) { // Direction is diagonal
+    int n = range_deviation * 2 + 1;
+    const auto& hit_chances = unit_modifiers->diag_hit_chances;
+    for (int i = 0; i < n; ++i) {
+      auto tile = attacked_tile + Vector2I(i * closest_direction.x -(n-1)/2 * closest_direction.x, i * closest_direction.y - (n - 1) / 2 * closest_direction.y);
+      // No better solution has been found yet than hardcoding each case, since the diagonals are of different lengths
+      // and that would require a complex iterative algorithm.
+      // For now, when the direction deviation is only 0 or 1 (even hardcoding 2 wouldn't be too bad)
+      // this seems to be the best way to solve this problem.
+      if (direction_deviation == 0) {
+        possible_attacked_tiles_[tile] = hit_chances[i];
+      } else if (direction_deviation == 1) {
+        int i_l = i;
+        Vector2I tile_l = tile + Vector2I(0, closest_direction.y);
+        int i_m = i + 4;
+        int i_r = i + 9;
+        Vector2I tile_r = tile + Vector2I(closest_direction.x, 0);
+        possible_attacked_tiles_[tile] = hit_chances[i_m];
+        if (i < n-1) {
+          possible_attacked_tiles_[tile_l] = hit_chances[i_l];
+          possible_attacked_tiles_[tile_r] = hit_chances[i_r];
+        }
+      }
+    }    
+  } else { // Direction isn't diagonal 
+    int n = range_deviation * 2 + 1;
+    int m = direction_deviation * 2 + 1;
+    bool swap_index = false;
+    if (closest_direction.y == 0) {
+      std::swap(n, m);
+      swap_index = true;
+    }
+    const auto& hit_chances = unit_modifiers->hit_chances;
+    for (int i = 0; i < n; ++i) {
+      for (int j = 0; j < m; ++j) {
+        auto tile = attacked_tile + Vector2I(j - (m-1)/2, i - (n-1)/2);
+        int index;
+        swap_index ? index = i * m + j : index = j * n + i;
+        possible_attacked_tiles_[tile] = hit_chances[index];
+      }
+    }
+  }
+  return possible_attacked_tiles_;
+}
+
 void Player::SetSelectedTilePosition(Vector2I position) {
   selected_tile_position_ = position;
 }
@@ -423,6 +482,7 @@ void Player::ClearPossibleTiles() {
   movement_costs_.clear();
   possible_recon_tiles_.clear();
   possible_attack_tiles_.clear();
+  attacked_tile_ = { -1, -1 };
 }
 
 } // namespace fow

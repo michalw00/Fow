@@ -17,16 +17,27 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       start_movement_points = 3.f;
       start_health_points = 100.f;
       bridge_damage = 0.1f;
-      attack_range = 1;
+      attack_range = 2;
       recon_range = 2;
       break;
     case UnitType::kArtillery:
       start_movement_points = 3.f;
       start_health_points = 70.f;
       bridge_damage = 0.2f;
-      min_attack_range = 3;
+      min_attack_range = 4;
       attack_range = 12;
       recon_range = 1;
+      range_deviation = 2;
+      direction_deviation = 1;
+      hit_chances = { 
+        0.02, 0.04, 0.08, 0.04, 0.02, 
+        0.06, 0.12, 0.24, 0.12, 0.06,
+        0.02, 0.04, 0.08, 0.04, 0.02
+      };
+      diag_hit_chances = {
+        0.03, 0.07, 0.07, 0.03, 
+         0.06, 0.12, 0.24, 0.12, 0.06,
+        0.03, 0.07, 0.07, 0.03 };
       break;
     case UnitType::kEW:
       start_movement_points = 3.f;
@@ -50,7 +61,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
     case UnitType::kTank:
       start_movement_points = 6.0f;
       start_health_points = 150.0f;
-      attack_range = 1;
+      attack_range = 2;
       recon_range = 1;
       bridge_damage = 0.2f;
       is_vehicle = true;
@@ -58,11 +69,15 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
     case UnitType::kTBM:
       start_movement_points = 5.f;
       start_health_points = 70.0f;
-      min_attack_range = 4;
+      min_attack_range = 6;
       attack_range = 16;
       recon_range = 1;
       bridge_damage = 0.5f;
       is_vehicle = true;
+      range_deviation = 1;
+      direction_deviation = 0;
+      hit_chances = { 0.15, 0.7, 0.15 };
+      diag_hit_chances = hit_chances;
       break;
     case UnitType::kUCAV:
       start_movement_points = 3.f;

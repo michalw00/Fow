@@ -271,12 +271,11 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
       break;
     case UnitAction::kReinforce:
       break;
-    default:
-      break;
   }
 
   for (const auto& tile : tiles) {
-    RRectangle area = buttons[tile.x][tile.y]->GetArea();
+    auto& button = buttons[tile.x][tile.y];
+    RRectangle area = button->GetArea();
     RVector2 size = { area.GetSize() };
     RVector2 position = area.GetPosition();
     std::shared_ptr<Rectangle> rectangle = std::make_shared<Rectangle>(position, size, color.Alpha(0.35));
@@ -286,9 +285,30 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
       position += size / 2.f;
       position.y += size.y / 3.f;
       std::string move_cost_str = std::format("{:.1f}", movement_costs.at(tile));
-      RText rtext(move_cost_str, size.GetX() * 0.3f);
+      RText rtext(move_cost_str, size.GetX() * 0.33f);
       std::shared_ptr<Text> move_cost = std::make_shared<Text>(position, rtext);
       PlaceDrawable(move_cost);
+    } else if (current_action == UnitAction::kAttack) {
+      if (button->GetIsHovered()) {
+        const auto& attacked_tiles = player.GetPossibleAttackedTiles(tile);
+        for (const auto& [attacked_tile, hit_chance] : attacked_tiles) {
+          if (attacked_tile.x < 0 || attacked_tile.x >= buttons.size()
+            || attacked_tile.y < 0 || attacked_tile.y >= buttons[0].size()) {
+            continue;
+          }
+          auto& attacked_button = buttons[attacked_tile.x][attacked_tile.y];
+          RRectangle attacked_area = attacked_button->GetArea();
+          RVector2 attacked_position = attacked_area.GetPosition();
+          std::shared_ptr<Rectangle> attacked = std::make_shared<Rectangle>(attacked_position, size, RColor(136, 8, 8).Alpha(0.65));
+          PlaceDrawable(attacked);
+          attacked_position += size / 2.f;
+          attacked_position.y -= size.y / 3.f;
+          std::string hit_chance_str = std::format("{:.0f}", hit_chance*100.0);
+          RText rtext(hit_chance_str+'%', size.GetX() * 0.33f, RColor::Black());
+          std::shared_ptr<Text> hit_chance = std::make_shared<Text>(attacked_position, rtext);
+          PlaceDrawable(hit_chance);
+        }
+      }
     }
   }  
 }
