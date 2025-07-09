@@ -35,9 +35,9 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
         0.02, 0.04, 0.08, 0.04, 0.02
       };
       diag_hit_chances = {
-        0.03, 0.07, 0.07, 0.03, 
+        0.02, 0.08, 0.08, 0.02, 
          0.06, 0.12, 0.24, 0.12, 0.06,
-        0.03, 0.07, 0.07, 0.03 };
+        0.02, 0.08, 0.08, 0.02 };
       break;
     case UnitType::kEW:
       start_movement_points = 3.f;
