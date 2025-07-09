@@ -99,6 +99,7 @@ src/menu/menu_screen.h
 src/structs/texture_states.h
 src/structs/vector2i.h
 
+src/utils/math_utils.h
 src/utils/set_operations.h
 
 )
