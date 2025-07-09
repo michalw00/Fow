@@ -1,7 +1,9 @@
 #pragma once
 
-#include <compare>
+#include <cmath>
 #include <type_traits>
+
+#include "../utils/math_utils.h"
 
 namespace fow {
 
@@ -20,6 +22,34 @@ struct Vector2I {
   }
   Vector2I operator-(const Vector2I& other) const {
     return { this->x - other.x, this->y - other.y };
+  }
+  static Vector2I GetClosestDirection(int x, int y) {
+    if (x == 0 && y == 0) {
+      return { 0, 0 };
+    }
+
+    const int abs_x = std::abs(x);
+    const int abs_y = std::abs(y);
+
+    const bool is_close_to_ox = (12 * abs_y <= 5 * abs_x);
+    const bool is_close_to_oy = (12 * abs_x <= 5 * abs_y);
+
+    if (is_close_to_ox) {
+      return (x > 0) ? Vector2I{ 1, 0 } : Vector2I{ -1, 0 };
+    }
+    if (is_close_to_oy) {
+      return (y > 0) ? Vector2I{ 0, 1 } : Vector2I{ 0, -1 };
+    }
+
+    if (sign(x) == sign(y)) {
+      return (x > 0) ? Vector2I{ 1, 1 } : Vector2I{ -1, -1 };
+    } else {
+      return (x > 0) ? Vector2I{ 1, -1 } : Vector2I{ -1, 1 };
+    }
+  }
+
+  Vector2I GetClosestDirection() const {
+    return GetClosestDirection(x, y);
   }
 };
 
