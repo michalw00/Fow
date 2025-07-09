@@ -6,6 +6,7 @@
 
 #include "../../../drawable/texture_manager.h"
 #include "../../../structs/vector2i.h"
+#include "../../map/map.h"
 #include "../target.h"
 
 namespace fow {
@@ -34,6 +35,10 @@ struct UnitModifiers {
   float start_movement_points = 0.f;
   float start_health_points = 0.f;
   float bridge_damage = 0.f;
+  float soft_attack = 0.f;
+  float hard_attack = 0.f;
+  float soft_defense = 0.f;
+  float hard_defense = 0.f;
   int min_attack_range = 0;
   int attack_range = 0;
   int recon_range = 0;
@@ -50,7 +55,7 @@ class Unit : public Target {
     : Target(position), unit_type_(unit_type), unit_modifiers_(unit_modifiers),
     movement_points_(unit_modifiers->start_movement_points), health_points_(unit_modifiers->start_health_points) {}
 
-  void Attack(std::shared_ptr<Target> other);
+  void Attack(std::shared_ptr<Target> other, const std::unique_ptr<Map>& map);
   void ResetMovementPoints();
   void SubstractMovementPoints(float movement_points) { movement_points_ -= movement_points; };
   float GetMovementPoints() const { return movement_points_; }

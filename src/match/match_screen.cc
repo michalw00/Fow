@@ -114,6 +114,7 @@ void MatchScreen::InitSelectedUnitHud() {
 }
 
 void MatchScreen::Update() {
+  match_->DeleteDeadUnits();
   auto& player = match_->GetCurrentPlayer();
   player.Update(match_->GetMap(), match_->GetOtherPlayers());
 

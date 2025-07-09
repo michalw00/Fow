@@ -48,7 +48,7 @@ public:
     else current_action_ = UnitAction::kMove;
   }
 
-  void DoUnitAction(const std::unique_ptr<Map>& map);
+  void DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> other_players);
 private:
   void UpdateRenderMap();
 
@@ -63,8 +63,9 @@ private:
       std::unordered_map<std::shared_ptr<Unit>, std::unordered_set<Vector2I>>& possible_tiles,
       const std::vector<std::shared_ptr<Unit>>& enemy_units);
 
-  void MoveSelectedUnit(const std::unique_ptr<Map>& map);
+  void MoveSelectedUnit(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players);
   void ReconTile(const std::unique_ptr<Map>& map);
+  void AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players);
 
   void SetSelectedTilePosition(Vector2I position);
   void SetActionTilePosition(Vector2I position);

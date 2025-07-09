@@ -7,22 +7,34 @@ namespace fow {
 TerrainModifiers::TerrainModifiers(TerrainType terrain_type) {
   switch (terrain_type) {
     case TerrainType::kPlains:
+      attack_bonus = 0.1f;
+      defense_bonus = 0.0f;
       break;
     case TerrainType::kHills:
+      attack_bonus = 0.3f;
+      defense_bonus = 0.2f;
       range_extend = 1;
       movement_cost = 1.5f;
       break;
     case TerrainType::kMountains:
+      attack_bonus = 0.1f;
+      defense_bonus = 0.3f;
       range_extend = 1;
       movement_cost = 2.f;
       break;
     case TerrainType::kMarsh:
+      attack_bonus = 0.f;
+      defense_bonus = -0.1f;
       movement_cost = 2.f;
       break;
     case TerrainType::kForest:
+      attack_bonus = 0.2f;
+      defense_bonus = 0.1f;
       movement_cost = 1.5f;
       break;
     case TerrainType::kWater:
+      attack_bonus = -100.f;
+      defense_bonus = -0.2f;
       range_extend = -100;
       movement_cost = 2.f;
       break;

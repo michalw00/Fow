@@ -53,6 +53,19 @@ void Match::EndTurn() {
   players_[current_player_index_].StartTurn();
 }
 
+void Match::DeleteDeadUnits() {
+  for (auto& player : players_) {
+    auto& units = player.GetUnits();
+    for (auto it = units.begin(); it != units.end();) {
+      if (it->get()->GetHealthPoints() < 0.1f) {
+        it = units.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+}
+
 std::vector<Player> Match::GetOtherPlayers() const {
   std::vector<Player> other_players = players_;
   other_players.erase(other_players.begin() + current_player_index_);

@@ -4,8 +4,6 @@
 
 namespace fow {
 
-class Unit;
-
 class Target {
   public:
   Target(Vector2I position) : position_(position) {}
@@ -13,8 +11,7 @@ class Target {
   void SetPosition(Vector2I position) { position_ = position; }
   Vector2I GetPosition() const { return position_; }
 
-  void Defense(Unit* unit);
-  private:
+  protected:
   Vector2I position_;
 };
 

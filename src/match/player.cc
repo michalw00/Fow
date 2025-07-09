@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <random>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
@@ -75,23 +76,25 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
   }
 }
 void Player::Update(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
-  DoUnitAction(map);
+  DoUnitAction(map, other_players);
   UpdateRenderMap();
   UpdateProbabilitiesMap(map, std::move(other_players));
 }
 
-void Player::DoUnitAction(const std::unique_ptr<Map>& map) {
+void Player::DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> other_players) {
   if (!selected_unit_) {
     return;
   }
   switch (current_action_) {
     case UnitAction::kMove:
-      MoveSelectedUnit(map);
+      MoveSelectedUnit(map, std::move(other_players));
       break;
     case UnitAction::kRecon:
       ReconTile(map);
       break;
     case UnitAction::kAttack:
+      AttackTile(map, std::move(other_players));
+      should_update_probabilities_map_ = true;
       break;
     case UnitAction::kReinforce:
       break;
@@ -271,12 +274,11 @@ void Player::SetSelectedUnit(std::shared_ptr<Unit> unit, const std::unique_ptr<M
   ClearActionTile();
 }
 
-void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map) {
-  const auto& tiles = map->GetTiles();
-
+void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
   if (!possible_move_tiles_.contains(action_tile_position_)) {
     return;
   }
+  const auto& tiles = map->GetTiles();
   Vector2I unit_position = selected_unit_->GetPosition();
   was_unit_tiles_.emplace(unit_position);
   selected_unit_->SubstractMovementPoints(movement_costs_.at(action_tile_position_));
@@ -293,6 +295,50 @@ void Player::ReconTile(const std::unique_ptr<Map>& map) {
   recon_tiles_.emplace(action_tile_position_);
   should_update_probabilities_map_ = true;
   UpdatePossibleTiles(map);
+}
+
+void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
+  if (!possible_attack_tiles_.contains(action_tile_position_)) {
+    return;
+  }
+  Vector2I target_tile;
+  if (possible_attacked_tiles_.size() == 1) {
+     target_tile = possible_attacked_tiles_.begin()->first;
+     if (!probabilities_map_[target_tile.x][target_tile.y]) {
+       return; // Misclick avoidance
+     }
+  } else {
+    std::vector<Vector2I> keys;
+    std::vector<double> weights;
+    for (const auto& [key, hit_chance] : possible_attacked_tiles_) {
+      keys.push_back(key);
+      weights.push_back(hit_chance);
+    }
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::discrete_distribution<> dist(weights.begin(), weights.end());
+    int random_index = dist(gen);
+    target_tile = keys[random_index];
+    const auto& tiles = map->GetTiles();
+    if (target_tile.x < 0 || target_tile.x >= tiles.size()
+      || target_tile.y < 0 || target_tile.y >= tiles[0].size()) {
+      // TODO: Decrease action points
+      return; // Attacked out of range
+    }
+  }
+  // TODO: Decrease action points
+
+  std::vector<std::shared_ptr<Unit>> enemy_units = GetEnemyUnits(std::move(other_players));
+  auto unit_it = std::find_if(enemy_units.begin(), enemy_units.end(), [&target_tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == target_tile; });
+  // Is miss
+  if (unit_it != enemy_units.end()) {
+    selected_unit_->Attack(*unit_it, map);
+  }
+  unit_it = std::find_if(units_.begin(), units_.end(), [&target_tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == target_tile; });
+  // Is ff
+  if (unit_it != units_.end()) {
+    selected_unit_->Attack(*unit_it, map);
+  }
 }
 
 void Player::ClearSelectedTile() {

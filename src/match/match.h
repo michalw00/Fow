@@ -16,6 +16,7 @@ class Match {
   void InitMap(int rows, int columns);
   void InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number = 2);
   void EndTurn();
+  void DeleteDeadUnits();
 
   const std::unique_ptr<Map>& GetMap() const { return map_; }
 
