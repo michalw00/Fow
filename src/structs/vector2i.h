@@ -22,7 +22,7 @@ struct Vector2I {
   }
   Vector2I operator-(const Vector2I& other) const {
     return { this->x - other.x, this->y - other.y };
-  }
+  } 
   static Vector2I GetClosestDirection(int x, int y) {
     if (x == 0 && y == 0) {
       return { 0, 0 };
