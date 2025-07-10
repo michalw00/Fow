@@ -33,7 +33,7 @@ public:
   std::vector<std::shared_ptr<Unit>>& GetUnits();
   const std::vector<std::vector<std::shared_ptr<Button>>>& GetRenderMap() const { return render_map_; }
   const std::vector<std::vector<float>>& GetProbabilitiesMap() const;
-  void InvertShowPrevMap() { if (turn != 0) show_prev_map_ = !show_prev_map_; }
+  void InvertShowPrevMap() { if (turn_ != 0) show_prev_map_ = !show_prev_map_; }
   bool GetShowPrevMap() const { return show_prev_map_; }
   const std::unordered_set<Vector2I>& GetPossibleMoveTiles() const { return possible_move_tiles_; }
   const std::unordered_map<Vector2I, float>& GetMovementCosts() const { return movement_costs_; }
@@ -49,6 +49,10 @@ public:
   }
 
   void DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> other_players);
+
+  Vector2I GetHitedTile() const { return hited_tile_; }
+  bool GetShowedHitedTile() const { return showed_hited_tile_; }
+  void SetShowedHitedTile(bool showed_hited_tile) { showed_hited_tile_ = showed_hited_tile; }
 private:
   void UpdateRenderMap();
 
@@ -100,6 +104,8 @@ private:
   UnitAction current_action_ = UnitAction::kMove;
   mutable Vector2I attacked_tile_ = { -1, -1 };
   mutable std::unordered_map<Vector2I, double> possible_attacked_tiles_;
+  Vector2I hited_tile_ = { -1, -1 };
+  bool showed_hited_tile_ = true;
 
   int turn_ = -1;
 };

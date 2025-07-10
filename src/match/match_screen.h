@@ -13,7 +13,7 @@
 namespace fow {
 
 class MatchScreen : public Screen {
-  public:
+public:
   MatchScreen(std::shared_ptr<RCamera2D> camera) : Screen(camera) {}
 
   void Init() override;
@@ -21,7 +21,7 @@ class MatchScreen : public Screen {
   ScreenType Finish() override;
 
   void CheckInputs();
-  private:
+private:
   void PlacePlayerButtons(Player& player);
   void PlaceRenderMap(Player& player);
   void PlaceUnits(Player& player);
@@ -39,6 +39,8 @@ class MatchScreen : public Screen {
 
   std::unique_ptr<Match> match_;
   Input input;
+  float show_hit_time_ = 0.5f;
+  float show_hit_stopwatch_ = 0.0;
 
   bool show_prev_map_ = false;
   bool show_fow = true;

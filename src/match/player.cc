@@ -234,7 +234,7 @@ void Player::FillProbabilitiesMap(const std::unordered_map<Vector2I, std::unorde
 }
 
 void Player::StartTurn() {
-  ++turn;
+  ++turn_;
   selected_unit_ = nullptr;
   ClearPossibleTiles();
 
@@ -327,7 +327,9 @@ void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& o
     }
   }
   // TODO: Decrease action points
-
+  
+  hited_tile_ = target_tile;
+  showed_hited_tile_ = false;
   std::vector<std::shared_ptr<Unit>> enemy_units = GetEnemyUnits(std::move(other_players));
   auto unit_it = std::find_if(enemy_units.begin(), enemy_units.end(), [&target_tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == target_tile; });
   // Is miss
@@ -356,7 +358,7 @@ void Player::ClearActionTile() {
 }
 
 std::vector<std::shared_ptr<Unit>>& Player::GetUnits() {
-  if (show_prev_map_ && turn != 0) {
+  if (show_prev_map_ && turn_ != 0) {
     return prev_units_;
   } else {
     return units_;
@@ -364,7 +366,7 @@ std::vector<std::shared_ptr<Unit>>& Player::GetUnits() {
 }
 
 const std::vector<std::vector<float>>& Player::GetProbabilitiesMap() const {
-  if (show_prev_map_ && turn != 0) {
+  if (show_prev_map_ && turn_ != 0) {
     return prev_map_;
   } else {
     return probabilities_map_;

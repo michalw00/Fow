@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include <Color.hpp>
 #include <Rectangle.hpp>
@@ -128,6 +129,21 @@ void MatchScreen::Update() {
   if (player.GetShowPrevMap()) {
     auto layer = std::make_shared<Rectangle>(RVector2(0.f, 0.f), RVector2(10000.f, 10000.f), RColor::Gray().Alpha(0.2f));
     PlaceDrawable(layer, true);
+  }
+  if (!player.GetShowedHitedTile() && show_hit_stopwatch_ == -1.f) {
+    show_hit_stopwatch_ = 0.f;   
+  } else if (!player.GetShowedHitedTile() && show_hit_stopwatch_ < show_hit_time_) {
+    show_hit_stopwatch_ += GetFrameTime();
+    auto& buttons = player.GetRenderMap();
+    auto tile = player.GetHitedTile();
+    RRectangle area = buttons[tile.x][tile.y]->GetArea();
+    RVector2 size = { area.GetSize() };
+    RVector2 position = area.GetPosition();
+    auto hit = std::make_shared<Rectangle>(position, size, RColor::Black());
+    PlaceDrawable(hit);
+  } else {
+    show_hit_stopwatch_ = -1.f;
+    player.SetShowedHitedTile(true);
   }
 
   auto& hud_drawables = panel_hud_->GetDrawables();

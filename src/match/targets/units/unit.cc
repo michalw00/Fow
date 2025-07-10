@@ -25,7 +25,7 @@ void Unit::Attack(std::shared_ptr<Target> other, const std::unique_ptr<Map>& map
 
   const float base_damage = 100.f;
   const float initiative_bonus = 0.2f;
-  const float min_damage = 0.1f;
+  const float min_damage = 10.f;
   float attacker_power = initiative_bonus + tile.GetTerrain()->GetModifiers().attack_bonus;
   if (other_modifiers->is_vehicle) {
     attacker_power += modifiers->hard_attack;
