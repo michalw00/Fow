@@ -113,7 +113,7 @@ void Player::UpdateRenderMap() {
 }
 
 void Player::UpdateProbabilitiesMap(const std::unique_ptr<Map>& map, std::vector<Player>&& other_players) {
-  if (show_prev_map_ && turn != 0) {
+  if (show_prev_map_ && turn_ != 0) {
     return;
   }
   if (!should_update_probabilities_map_) {

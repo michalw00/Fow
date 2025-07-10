@@ -10,11 +10,11 @@
 namespace fow {
 
 class ScreenController {
-  public:
+public:
   ScreenController(ScreenType start_screen_type, std::unique_ptr<RWindow> window);
 
   void ProcessScreen();
-  private:
+private:
   std::shared_ptr<RCamera2D> CreateCamera();
   void ChangeScreen(ScreenType screen_type, std::shared_ptr<RCamera2D> camera);
 

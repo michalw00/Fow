@@ -101,7 +101,7 @@ private:
   mutable Vector2I attacked_tile_ = { -1, -1 };
   mutable std::unordered_map<Vector2I, double> possible_attacked_tiles_;
 
-  int turn = -1;
+  int turn_ = -1;
 };
 
 } // namespace fow

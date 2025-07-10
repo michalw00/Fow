@@ -16,7 +16,7 @@ enum class ScreenType {
 };
 
 class Screen {
-  public:
+public:
   Screen(std::shared_ptr<RCamera2D> camera) : camera_(camera) {}
   virtual ~Screen() {};
 
@@ -31,7 +31,7 @@ class Screen {
 
   bool ShouldClose() const { return should_close_; }
   bool ShouldFinish() const { return should_finish_; }
-  protected:
+protected:
   void PlaceDrawable(std::shared_ptr<Drawable> drawable, bool is_static = false);
 
   std::shared_ptr<RCamera2D> camera_;
@@ -42,8 +42,7 @@ class Screen {
   float basic_width_ = 1600.f;
   float basic_height_ = 900.f;
 
-  private:
-
+private:  
   std::vector<std::shared_ptr<Drawable>> drawables_;
   std::vector<std::shared_ptr<Button>> buttons_;
 

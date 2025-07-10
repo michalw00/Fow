@@ -5,9 +5,9 @@
 
 #include <Camera2D.hpp>
 #include <Color.hpp>
-#include <raylib.h>
 #include <Vector2.hpp>
 #include <Window.hpp>
+#include <raylib.h>
 
 #include "../../match/match_screen.h"
 #include "../../menu/menu_screen.h"
