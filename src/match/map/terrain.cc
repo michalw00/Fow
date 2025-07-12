@@ -33,7 +33,7 @@ TerrainModifiers::TerrainModifiers(TerrainType terrain_type) {
       movement_cost = 1.5f;
       break;
     case TerrainType::kWater:
-      attack_bonus = -100.f;
+      attack_bonus = -1.f;
       defense_bonus = -0.2f;
       range_extend = -100;
       movement_cost = 2.f;

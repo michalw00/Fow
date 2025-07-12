@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include <Rectangle.hpp>
 #include <Vector2.hpp>
 
 #include "../drawable/button/texture_button.h"
@@ -446,6 +447,10 @@ void Player::ResetUnitsMovementPoints() {
   for (auto& unit : units_) {
     unit->ResetMovementPoints();
   }
+}
+
+RRectangle Player::GetTileArea(Vector2I position) const {
+    return render_map_[position.x][position.y]->GetArea();
 }
 
 void Player::UpdatePossibleTiles(const std::unique_ptr<Map>& map) {

@@ -67,6 +67,9 @@ src/drawable/texture.cc
 src/drawable/texture.h
 src/drawable/texture_manager.h
 
+src/gui/window.cc
+src/gui/window.h
+
 src/input/input.cc
 src/input/input.h
 

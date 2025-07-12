@@ -30,12 +30,15 @@ void Screen::Draw() const {
 
 void Screen::CheckButtons() {
   RVector2 mouse_position = GetMousePosition();
-  for (auto& button_static : buttons_static_) {
-    button_static->CheckMouse(mouse_position);
+  bool consumed = false;
+
+  for (auto it = buttons_static_.rbegin(); it != buttons_static_.rend(); ++it) {
+      consumed = (*it)->CheckMouse(mouse_position, !consumed) || consumed;
   }
+
   RVector2 mouse_position_world = camera_->GetScreenToWorld(mouse_position);
-  for (auto& button : buttons_) {
-    button->CheckMouse(mouse_position_world);
+  for (auto it = buttons_.rbegin(); it != buttons_.rend(); ++it) {
+      consumed = (*it)->CheckMouse(mouse_position_world, !consumed) || consumed;
   }
 }
 

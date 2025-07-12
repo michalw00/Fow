@@ -2,13 +2,17 @@
 
 #include <memory>
 
+#include <Camera2D.hpp>
+
 #include "../core/screen/screen.h"
 #include "../drawable/complex_drawable.h"
+#include "../gui/window.h"
 #include "../input/input.h"
+#include "../structs/vector2i.h"
+#include "../structs/vector2i.h"
 #include "match.h"
 #include "player.h"
 #include "targets/units/unit.h"
-#include <Camera2D.hpp>
 
 namespace fow {
 
@@ -28,6 +32,7 @@ private:
   void PlaceProbabilityMap(Player& player);
   void PlacePossibleTiles(Player& player);
 
+  void UpdateTileInfoWindow(Player& player);
   void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager);
 
   void InitMatch();
@@ -36,6 +41,8 @@ private:
 
   std::unique_ptr<ComplexDrawable> selected_unit_hud_;
   std::unique_ptr<ComplexDrawable> panel_hud_;
+  std::unique_ptr<Window> tile_info_window_;
+  Vector2I last_selected_tile_{ -2, -2 };
 
   std::unique_ptr<Match> match_;
   Input input;
