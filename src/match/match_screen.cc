@@ -46,28 +46,30 @@ void MatchScreen::InitMatch() {
 
 void MatchScreen::InitPanelHud() {
   RVector2 origin = { basic_width_, basic_height_ };
-  float shift = 130.f;
 
   RColor background_color = RColor::Black().Alpha(0.875f);
-  RVector2 background_shift = { shift, 120.f };
+  RVector2 background_shift = { 130.f, 105.f };
   background_shift *= 2.f;
   RVector2 background_position = origin - background_shift;
-  std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_shift, background_color);
+  RVector2 background_size = background_shift + Vector2(0.f, 30.f);
+  std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_size, background_color);
   ComplexDrawablePart background("BG", background_rectangle);
 
   float font_size = 40.f;
 
-  RVector2 show_fow_position = origin - RVector2(shift, 200.f);
+  Vector2 button_shift = Vector2(0.f, -50.f);
+
   RText show_fow_text("SHOW FOW", font_size);
+  RVector2 show_fow_position = background_position + show_fow_text.MeasureEx()/1.5f;
   auto show_fow_button = std::make_shared<TextButton>(show_fow_position, [&]() { show_fow = !show_fow; }, show_fow_text, true);
   ComplexDrawablePart show_fow("SHOW_FOW", show_fow_button);
 
-  RVector2 show_zeros_position = origin - RVector2(shift, 150.f);
+  RVector2 show_zeros_position = show_fow_position - button_shift;
   RText show_zeros_text("SHOW 0.0%", font_size);
   auto show_zeros_button = std::make_shared<TextButton>(show_zeros_position, [&]() { show_zero = !show_zero; }, show_zeros_text, true);
   ComplexDrawablePart show_zeros("SHOW_ZEROS", show_zeros_button);
 
-  RVector2 prev_map_position = origin - RVector2(shift, 100.f);
+  RVector2 prev_map_position = show_zeros_position - button_shift;
   RText prev_map_text("PREV MAP", font_size);
   auto InvertMaps = [&]() {
     auto& player = match_->GetCurrentPlayer();
@@ -76,7 +78,7 @@ void MatchScreen::InitPanelHud() {
   auto prev_map_button = std::make_shared<TextButton>(prev_map_position, InvertMaps, prev_map_text, true);
   ComplexDrawablePart prev_map("PREV_MAP", prev_map_button);
 
-  RVector2 end_turn_position = origin - RVector2(shift, 50.f);
+  RVector2 end_turn_position = prev_map_position - button_shift;
   RText end_turn_text("END TURN", font_size);
   auto end_turn_button = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
   ComplexDrawablePart end_turn("END_TURN", end_turn_button);
@@ -86,25 +88,26 @@ void MatchScreen::InitPanelHud() {
 }
 
 void MatchScreen::InitSelectedUnitHud() {
-  float shift = 120.f;
-  RVector2 origin(basic_width_ / 2.f, basic_height_ - shift);
+  RVector2 origin(basic_width_ / 2.f, basic_height_ - 105.f);
 
   RColor background_color = RColor::Black().Alpha(0.875f);
   // RVector2 background_shift(130.f, 40.f); // during swap action button
-  RVector2 background_shift(130.f, 80.f);
+  RVector2 background_shift(140.f, 110.f);
   RVector2 background_position = origin - background_shift;
   RVector2 background_size = background_shift * 2.f;
-  background_size.y += shift;
+  background_size.y += 30.f;
   std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_size, background_color);
   ComplexDrawablePart background("BG", background_rectangle);
+
+  RVector2 button_shift = Vector2(0.f, 40.f);
 
   std::shared_ptr<Text> unit_type_text = std::make_shared<Text>(origin, RText("", 40.f));
   ComplexDrawablePart unit_type("UNIT_TYPE", unit_type_text);
 
-  std::shared_ptr<Text> hp_text = std::make_shared<Text>(origin + RVector2(0.f, 40.f), RText("", 25.f), true);
+  std::shared_ptr<Text> hp_text = std::make_shared<Text>(origin + button_shift, RText("", 30.f), true);
   ComplexDrawablePart hp("HP", hp_text);
 
-  std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + RVector2(0.f, 80.f), RText("", 25.f), true);
+  std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + (button_shift*2), RText("", 30.f), true);
   ComplexDrawablePart mp("MP", mp_text);
   
   // TODO: Separate buttons
@@ -191,12 +194,11 @@ void MatchScreen::PlaceRenderMap(Player& player) {
 }
 
 void MatchScreen::PlaceUnits(Player& player) {
-  auto& buttons = player.GetRenderMap();
   auto& units = player.GetUnits();
   const auto& unit_manager = match_->GetUnitManager();
   for (auto& unit : units) {
     Vector2I unit_position = unit->GetPosition();
-    RRectangle area = buttons[unit_position.x][unit_position.y]->GetArea();
+    RRectangle area = player.GetTileArea(unit_position);
     RVector2 size = { area.GetSize() };
     size.x *= 0.95f;
     RVector2 ratio = { 1.0, 1.5 };
@@ -220,13 +222,11 @@ void MatchScreen::PlaceUnits(Player& player) {
 }
 
 void MatchScreen::PlaceProbabilityMap(Player& player) {
-  auto& buttons = player.GetRenderMap();
   auto& probability_map = player.GetProbabilitiesMap();
-
   for (int i = 0; i < probability_map.size(); ++i) {
     for (int j = 0; j < probability_map[0].size(); ++j) {
       Vector2I tile_position = { i, j };
-      RRectangle area = buttons[i][j]->GetArea();
+      RRectangle area = player.GetTileArea(tile_position);
       RVector2 size = { area.GetSize() };
       RVector2 position = area.GetPosition();
       float probability = probability_map[i][j];
@@ -270,7 +270,6 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
   if (player.GetShowPrevMap()) {
     return;
   }
-  auto& buttons = player.GetRenderMap();
 
   UnitAction current_action = player.GetCurrentAction();
 
@@ -295,6 +294,7 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
   }
 
   std::vector<std::shared_ptr<Drawable>> draw_later;
+  auto& buttons = player.GetRenderMap();
   for (const auto& tile : tiles) {
     auto& button = buttons[tile.x][tile.y];
     RRectangle area = button->GetArea();
@@ -350,17 +350,13 @@ void MatchScreen::UpdateTileInfoWindow(Player& player) {
       auto terrain = tiles[selected.x][selected.y].GetTerrain();
       TerrainModifiers mods = terrain->GetModifiers();
       std::string info = map->GetTerrainManager().GetName(terrain->GetType());
-
-      info += "\nAttack bonus: " + std::format("{:+.0f}%", mods.attack_bonus * 100);
+      info += "\n\nAttack bonus: " + std::format("{:+.0f}%", mods.attack_bonus * 100);
       info += "\nDefense bonus: " + std::format("{:+.0f}%", mods.defense_bonus * 100);
       info += "\nMovement cost: " + std::format("{:.1f}", mods.movement_cost);
 
-      RRectangle area = player.GetTileArea(selected);
-      RVector2 center = area.GetPosition() + area.GetSize() / 2.f;
-      RVector2 screen_center = camera_->GetWorldToScreen(center);
-      RVector2 size = { 220.f, 120.f };
-      RVector2 pos = screen_center + size / 12.f;
-      tile_info_window_ = std::make_unique<Window>(pos, size, RText(info, 20.f));
+      RVector2 size = { 400.f, 230.f };
+      RVector2 pos = { 0, 700 };
+      tile_info_window_ = std::make_unique<Window>(pos, size, RText(info, 35.f));
     }
 
     last_selected_tile_ = selected;

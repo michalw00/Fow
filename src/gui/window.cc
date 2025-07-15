@@ -25,7 +25,7 @@ Window::Window(RVector2 position, RVector2 size, const RText& text) {
 
 void Window::InitWindow(RVector2 pos, RVector2 size,
 	const std::optional<RText>& text) {
-	RColor background_color = RColor::Black().Alpha(0.8f);
+	RColor background_color = RColor::Black().Alpha(0.875f);
 	std::shared_ptr<Rectangle> background = std::make_shared<Rectangle>(pos, size, background_color);
 	drawables_.push_back(background);
 
@@ -35,8 +35,8 @@ void Window::InitWindow(RVector2 pos, RVector2 size,
 		drawables_.push_back(window_text);
 	}
 
-	RVector2 close_pos = pos + RVector2(size.GetX() - 25.f, 5.f);
-	RText close_text("X", 20.f);
+	RVector2 close_pos = pos + RVector2(size.GetX() - 30.f, 5.f);
+	RText close_text("x", 40.f);
 	close_button_ = std::make_shared<TextButton>(close_pos, [this]() { should_close_ = true; }, close_text, false);
 	drawables_.push_back(close_button_);
 }
