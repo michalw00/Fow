@@ -19,6 +19,7 @@ class ComplexDrawable {
   public:
   ComplexDrawable(std::initializer_list<ComplexDrawablePart> parts);
   void EditText(std::string&& name, std::string&& new_text);
+  void SelectButton(std::string&& name, bool selected);
 
   std::vector<std::shared_ptr<Drawable>>& GetDrawables();
   private:

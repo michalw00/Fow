@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "button/button.h"
 #include "drawable.h"
 #include "text.h"
 
@@ -26,6 +27,16 @@ void ComplexDrawable::EditText(std::string&& name, std::string&& new_text) {
   }
 
   text->ChangeText(std::move(new_text));
+}
+
+void ComplexDrawable::SelectButton(std::string&& name, bool selected) {
+  std::shared_ptr<Button> button = std::dynamic_pointer_cast<Button>(parts_.at(name));
+
+  if (!button) {
+    throw std::runtime_error("SelectButton: part \"" + name + "\" is not a Button object");
+  }
+
+  button->SetIsSelected(selected);
 }
 
 std::vector<std::shared_ptr<Drawable>>& ComplexDrawable::GetDrawables() {
