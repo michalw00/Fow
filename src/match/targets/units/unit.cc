@@ -32,7 +32,7 @@ void Unit::Attack(std::shared_ptr<Target> other, const std::unique_ptr<Map>& map
   } else {
     attacker_power += modifiers->soft_attack;
   }
-  float defender_power = other_tile.GetTerrain()->GetModifiers().defense_bonus;
+  float defender_power = other_tile.GetTerrain()->GetModifiers().defense_bonus + defense_bonus_;
   if (modifiers->is_vehicle) {
     defender_power += other_modifiers->hard_defense;
   } else {
@@ -45,7 +45,7 @@ void Unit::Attack(std::shared_ptr<Target> other, const std::unique_ptr<Map>& map
     return; // Can't counterattack
   }
 
-  attacker_power = other_tile.GetTerrain()->GetModifiers().attack_bonus;
+  attacker_power = other_tile.GetTerrain()->GetModifiers().defense_bonus + defense_bonus_;
   if (other_modifiers->is_vehicle) {
     attacker_power += other_modifiers->hard_defense; // Not attack because it is close range combat
   } else {
@@ -67,7 +67,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
   switch (unit_type) {
     case UnitType::kAntiTank:
       start_movement_points = 3.f;
-      start_health_points = 100.f;
       bridge_damage = 0.1f;
       soft_attack = 0.2f;
       hard_attack = 1.f;
@@ -78,7 +77,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kArtillery:
       start_movement_points = 3.f;
-      start_health_points = 70.f;
       bridge_damage = 0.2f;
       soft_attack = 0.5f;
       hard_attack = 0.5f;
@@ -101,7 +99,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kEW:
       start_movement_points = 3.f;
-      start_health_points = 85.f;
       soft_attack = 0.2f;
       hard_attack = 0.1f;
       soft_defense = soft_attack;
@@ -111,7 +108,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kInfantry:
       start_movement_points = 3.0f;
-      start_health_points = 100.0f;
       soft_attack = 0.3f;
       hard_attack = 0.2f;
       soft_defense = soft_attack;
@@ -121,7 +117,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kMechanizedInfantry:
       start_movement_points = 8.f;
-      start_health_points = 120.0f;
       soft_attack = 0.5f;
       hard_attack = 0.4f;
       soft_defense = soft_attack;
@@ -132,7 +127,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kTank:
       start_movement_points = 6.0f;
-      start_health_points = 150.0f;
       bridge_damage = 0.2f;
       soft_attack = 0.8f;
       hard_attack = 0.8f;
@@ -144,7 +138,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kTBM:
       start_movement_points = 5.f;
-      start_health_points = 70.0f;
       min_attack_range = 6;
       attack_range = 16;
       recon_range = 1;
@@ -161,7 +154,6 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       break;
     case UnitType::kUCAV:
       start_movement_points = 3.f;
-      start_health_points = 70.0f;
       bridge_damage = 0.2f;
       soft_attack = 0.7f;
       hard_attack = 0.4f;
@@ -174,8 +166,9 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
   }
 }
 
-void Unit::ResetMovementPoints() {
+void Unit::ResetPoints() {
   movement_points_ = unit_modifiers_->start_movement_points;
+  ability_points_ = unit_modifiers_->start_ability_points;
 }
 
 std::string UnitManager::GetName(UnitType unit_type) const {
@@ -188,7 +181,6 @@ std::string UnitManager::GetName(UnitType unit_type) const {
     case UnitType::kTank: return "Tank";
     case UnitType::kTBM: return "MRL";
     case UnitType::kUCAV: return "UCAV";
-    default: return "";
   }
 }
 
@@ -202,7 +194,24 @@ std::string UnitManager::GetTextureName(UnitType unit_type) const {
     case UnitType::kTank: return "units/tank/tank";
     case UnitType::kTBM: return "units/tbm/tbm";
     case UnitType::kUCAV: return "units/ucav/ucav";
-    default: return "";
+  }
+}
+
+std::string ActionManager::GetName(UnitAction unit_action) const {
+  switch (unit_action) {
+    case UnitAction::kMove: return "Move";
+    case UnitAction::kRecon: return "Recon";
+    case UnitAction::kAttack: return "Attack";
+    case UnitAction::kReinforce: return "Reinforce";
+  }
+}
+
+std::string ActionManager::GetTextureName(UnitAction unit_action) const {
+  switch (unit_action) {
+    case UnitAction::kMove: return "actions/move/move";
+    case UnitAction::kRecon: return "actions/recon/recon";
+    case UnitAction::kAttack: return "actions/attack/attack";
+    case UnitAction::kReinforce: return "actions/reinforce/reinforce";
   }
 }
 

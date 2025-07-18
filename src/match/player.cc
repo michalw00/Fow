@@ -58,8 +58,9 @@ void Player::InitMaps(const std::unique_ptr<Map>& map, float basic_width, float 
       TerrainType tile_type = tiles[i][j].GetTerrain()->GetType();
       TextureState tile_textures = terrain_manager.GetTexture(tile_type);
       auto lmb_action = [this, i, j]() {
-        if ((selected_tile_position_.x != i || selected_tile_position_.y != j)
-          && !selected_unit_) {
+        if (selected_tile_position_.x != i || selected_tile_position_.y != j) {
+          selected_unit_ = nullptr;
+          ClearPossibleTiles();
           ClearSelectedTile();
           SetSelectedTilePosition({ i, j });
         } else {
@@ -98,8 +99,14 @@ void Player::DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> o
       should_update_probabilities_map_ = true;
       break;
     case UnitAction::kReinforce:
-      break;
-    default:
+      float defense_bonus = selected_unit_->GetDefenseBonus();
+      float defense_cost = 1.f;
+      if (defense_bonus + 0.05f < selected_unit_->GetUnitModifiers()->max_defense_bonus
+        && selected_unit_->GetAbilityPoints() + 0.05f > defense_cost) {
+        selected_unit_->AddDefenseBonus(0.2f); 
+        selected_unit_->SubstractAbilityPoints(defense_cost);
+      }
+      current_action_ = prev_action_;
       break;
   }
   ClearActionTile();
@@ -284,15 +291,19 @@ void Player::MoveSelectedUnit(const std::unique_ptr<Map>& map, std::vector<Playe
   was_unit_tiles_.emplace(unit_position);
   selected_unit_->SubstractMovementPoints(movement_costs_.at(action_tile_position_));
   selected_unit_->SetPosition(action_tile_position_);
+  selected_unit_->AddDefenseBonus(-selected_unit_->GetDefenseBonus());
   should_update_probabilities_map_ = true;
   UpdatePossibleTiles(map);
 }
 
 void Player::ReconTile(const std::unique_ptr<Map>& map) {
-  if (!possible_recon_tiles_.contains(action_tile_position_)) {
+  float recon_cost = 1.f;
+  if (!possible_recon_tiles_.contains(action_tile_position_) 
+    || selected_unit_->GetAbilityPoints() + 0.05f < recon_cost) {
     return;
   }
   
+  selected_unit_->SubstractAbilityPoints(recon_cost);
   recon_tiles_.emplace(action_tile_position_);
   should_update_probabilities_map_ = true;
   UpdatePossibleTiles(map);
@@ -302,6 +313,17 @@ void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& o
   if (!possible_attack_tiles_.contains(action_tile_position_)) {
     return;
   }
+  float attack_cost = 1.f;
+  UnitType unit_type = selected_unit_->GetType();
+  if (unit_type == UnitType::kArtillery) {
+    attack_cost *= 0.25f;
+  } else if (unit_type == UnitType::kTBM) {
+    attack_cost *= 0.5f;
+  }
+  if (selected_unit_->GetAbilityPoints() + 0.05f < attack_cost) {
+    return;
+  }
+
   Vector2I target_tile;
   if (possible_attacked_tiles_.size() == 1) {
      target_tile = possible_attacked_tiles_.begin()->first;
@@ -323,12 +345,11 @@ void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& o
     const auto& tiles = map->GetTiles();
     if (target_tile.x < 0 || target_tile.x >= tiles.size()
       || target_tile.y < 0 || target_tile.y >= tiles[0].size()) {
-      // TODO: Decrease action points
+      selected_unit_->SubstractAbilityPoints(attack_cost);
       return; // Attacked out of range
     }
   }
-  // TODO: Decrease action points
-  
+  selected_unit_->SubstractAbilityPoints(attack_cost);
   hited_tile_ = target_tile;
   showed_hited_tile_ = false;
   std::vector<std::shared_ptr<Unit>> enemy_units = GetEnemyUnits(std::move(other_players));
@@ -445,7 +466,7 @@ void Player::SetActionTilePosition(Vector2I position) {
 
 void Player::ResetUnitsMovementPoints() {
   for (auto& unit : units_) {
-    unit->ResetMovementPoints();
+    unit->ResetPoints();
   }
 }
 

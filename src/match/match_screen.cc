@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -88,34 +89,65 @@ void MatchScreen::InitPanelHud() {
 }
 
 void MatchScreen::InitSelectedUnitHud() {
-  RVector2 origin(basic_width_ / 2.f, basic_height_ - 105.f);
+  RVector2 origin(basic_width_ / 2.f, basic_height_ - 170.f);
 
   RColor background_color = RColor::Black().Alpha(0.875f);
-  // RVector2 background_shift(130.f, 40.f); // during swap action button
-  RVector2 background_shift(140.f, 110.f);
+  RVector2 background_shift(140.f, 50.f);
   RVector2 background_position = origin - background_shift;
-  RVector2 background_size = background_shift * 2.f;
-  background_size.y += 30.f;
+  RVector2 background_size = { background_shift.x * 2.f, basic_height_ - origin.y + background_shift.y };
+  background_size.y += 28.f;
+
   std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_size, background_color);
   ComplexDrawablePart background("BG", background_rectangle);
 
-  RVector2 button_shift = Vector2(0.f, 40.f);
+  RVector2 button_shift = Vector2(0.f, 45.f);
 
-  std::shared_ptr<Text> unit_type_text = std::make_shared<Text>(origin, RText("", 40.f));
+  std::shared_ptr<Text> unit_type_text = std::make_shared<Text>(origin - RVector2(0, 10.f), RText("", 40.f));
   ComplexDrawablePart unit_type("UNIT_TYPE", unit_type_text);
 
   std::shared_ptr<Text> hp_text = std::make_shared<Text>(origin + button_shift, RText("", 30.f), true);
   ComplexDrawablePart hp("HP", hp_text);
 
-  std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + (button_shift*2), RText("", 30.f), true);
+  std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + (button_shift * 2), RText("", 30.f), true);
   ComplexDrawablePart mp("MP", mp_text);
-  
-  // TODO: Separate buttons
-  auto SwapAction = [this]() { match_->GetCurrentPlayer().SwapAction(); };
-  std::shared_ptr<TextButton> swap_action_button = std::make_shared<TextButton>(origin - RVector2(0.f, 60.f), SwapAction, RText("SWITCH ACTION", 25.f));
-  ComplexDrawablePart swap_action("SWAP_ACTION", swap_action_button);
 
-  std::initializer_list<ComplexDrawablePart> parts = { background, unit_type, hp, mp, swap_action };
+  std::shared_ptr<Text> ap_text = std::make_shared<Text>(origin + (button_shift * 3), RText("", 30.f), true);
+  ComplexDrawablePart ap("AP", ap_text);
+
+  std::shared_ptr<Text> db_text = std::make_shared<Text>(origin + (button_shift * 4), RText("", 30.f), true);
+  ComplexDrawablePart db("DB", db_text);
+
+  RVector2 action_size = background_size / 2.f;
+
+  auto& player = match_->GetCurrentPlayer();
+
+  auto move_texture = action_manager_.GetTexture(UnitAction::kMove);
+  RVector2 move_position = origin - background_shift - action_size;
+  move_position.y += action_size.GetY();
+  std::shared_ptr<TextureButton> move_button = std::make_shared<TextureButton>(move_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kMove); }, move_texture);
+  ComplexDrawablePart move("Move", move_button);
+
+  auto recon_texture = action_manager_.GetTexture(UnitAction::kRecon);
+  RVector2 recon_position = origin - background_shift - action_size;
+  recon_position.y += action_size.GetY() * 2.f;
+  std::shared_ptr<TextureButton> recon_button = std::make_shared<TextureButton>(recon_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kRecon); }, recon_texture);
+  ComplexDrawablePart recon("Recon", recon_button);
+
+  auto attack_texture = action_manager_.GetTexture(UnitAction::kAttack);
+  RVector2 attack_position = origin - background_shift - action_size;
+  attack_position.x += background_shift.GetX() * 3.f;
+  attack_position.y += action_size.GetY();
+  std::shared_ptr<TextureButton> attack_button = std::make_shared<TextureButton>(attack_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kAttack); }, attack_texture);
+  ComplexDrawablePart attack("Attack", attack_button);
+
+  auto defense_texture = action_manager_.GetTexture(UnitAction::kReinforce);
+  RVector2 defense_position = origin - background_shift - action_size;
+  defense_position.x += background_shift.GetX() * 3.f;
+  defense_position.y += action_size.GetY() * 2.f;
+  std::shared_ptr<TextureButton> defense_button = std::make_shared<TextureButton>(defense_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kReinforce); }, defense_texture);
+  ComplexDrawablePart defense("Reinforce", defense_button);
+
+  std::initializer_list<ComplexDrawablePart> parts = { background, unit_type, hp, mp, ap, db, move, recon, attack, defense };
   selected_unit_hud_ = std::make_unique<ComplexDrawable>(parts);
 }
 
@@ -129,7 +161,7 @@ void MatchScreen::Update() {
   UpdateTileInfoWindow(player);
 
   if (auto& unit = player.GetSelectedUnit(); unit) {
-    ShowSelectedUnitHud(unit, match_->GetUnitManager());
+    ShowSelectedUnitHud(unit, match_->GetUnitManager(), player);
   }
 
   if (player.GetShowPrevMap()) {
@@ -290,7 +322,7 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
       color = RColor::Red();
       break;
     case UnitAction::kReinforce:
-      break;
+      return;
   }
 
   std::vector<std::shared_ptr<Drawable>> draw_later;
@@ -306,7 +338,7 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
       const std::unordered_map<Vector2I, float>& movement_costs = player.GetMovementCosts();
       position += size / 2.f;
       position.y += size.y / 3.f;
-      std::string move_cost_str = std::format("{:.1f}", movement_costs.at(tile));
+      std::string move_cost_str = std::format("{:.2f}", movement_costs.at(tile));
       RText rtext(move_cost_str, size.GetX() * 0.33f);
       std::shared_ptr<Text> move_cost = std::make_shared<Text>(position, rtext);
       PlaceDrawable(move_cost);
@@ -374,7 +406,7 @@ void MatchScreen::UpdateTileInfoWindow(Player& player) {
   }
 }
 
-void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager) {
+void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager, const Player& player) {
   UnitType unit_type = unit->GetType();
   auto unit_modifiers = unit_manager.GetResource(unit_type);
   selected_unit_hud_->EditText("UNIT_TYPE", unit_manager.GetName(unit_type));
@@ -383,9 +415,26 @@ void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const U
   std::string max_hp = std::format("{:.1f}", unit_modifiers->start_health_points);
   selected_unit_hud_->EditText("HP", "HP: " + current_hp + " / " + max_hp);
 
-  std::string current_mp = std::format("{:.1f}", unit->GetMovementPoints());
+  std::string current_mp = std::format("{:.2f}", unit->GetMovementPoints());
   std::string max_mp = std::format("{:.1f}", unit_modifiers->start_movement_points);
   selected_unit_hud_->EditText("MP", "MP: " + current_mp + " / " + max_mp);
+
+  std::string current_ap = std::format("{:.2f}", unit->GetAbilityPoints());
+  std::string max_ap = std::format("{:.1f}", unit_modifiers->start_ability_points);
+  selected_unit_hud_->EditText("AP", "AP: " + current_ap + " / " + max_ap);
+
+  std::string current_db = std::format("{:.1f}", unit->GetDefenseBonus());
+  std::string max_db = std::format("{:.1f}", unit_modifiers->max_defense_bonus);
+  selected_unit_hud_->EditText("DB", "DB: " + current_db + " / " + max_db);
+
+  UnitAction current_action = player.GetCurrentAction();
+
+  selected_unit_hud_->SelectButton("Move", false);
+  selected_unit_hud_->SelectButton("Recon", false);
+  selected_unit_hud_->SelectButton("Attack", false);
+  selected_unit_hud_->SelectButton("Reinforce", false);
+  std::string button_name = action_manager_.GetName(current_action);
+  selected_unit_hud_->SelectButton(std::move(button_name), true);
 
   auto& hud_drawables = selected_unit_hud_->GetDrawables();
   for (auto& hud_drawable : hud_drawables) {

@@ -33,7 +33,7 @@ private:
   void PlacePossibleTiles(Player& player);
 
   void UpdateTileInfoWindow(Player& player);
-  void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager);
+  void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager, const Player& player);
 
   void InitMatch();
   void InitPanelHud();
@@ -47,7 +47,9 @@ private:
   std::unique_ptr<Match> match_;
   Input input;
   float show_hit_time_ = 0.5f;
-  float show_hit_stopwatch_ = 0.0;
+  float show_hit_stopwatch_ = 0.f;
+
+  ActionManager action_manager_;
 
   bool show_prev_map_ = false;
   bool show_fow = true;

@@ -44,12 +44,7 @@ public:
   const std::unordered_set<Vector2I>& GetPossibleAttackTiles() const { return possible_attack_tiles_; }
   const std::unordered_map<Vector2I, double>& GetPossibleAttackedTiles(Vector2I attacked_tile) const;
   UnitAction GetCurrentAction() const { return current_action_; }
-  // TODO: Separate methods 
-  void SwapAction() { 
-    if (current_action_ == UnitAction::kMove) current_action_ = UnitAction::kRecon;
-    else if (current_action_ == UnitAction::kRecon) current_action_ = UnitAction::kAttack;
-    else current_action_ = UnitAction::kMove;
-  }
+  void SetCurrentAction(UnitAction unit_action) { prev_action_ = current_action_;  current_action_ = unit_action; }
 
   void DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> other_players);
 
@@ -104,6 +99,7 @@ private:
   bool show_prev_map_ = false;
   bool should_update_probabilities_map_ = true;
 
+  UnitAction prev_action_ = UnitAction::kMove;
   UnitAction current_action_ = UnitAction::kMove;
   mutable Vector2I attacked_tile_ = { -1, -1 };
   mutable std::unordered_map<Vector2I, double> possible_attacked_tiles_;
