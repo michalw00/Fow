@@ -1,4 +1,6 @@
 # Fow
+<img width="2594" height="1459" alt="image" src="https://github.com/user-attachments/assets/aa9c59ae-832f-4d13-a48e-2f167ea25b3b" />
+
 ## Current features in the game
 ### Probabilities map
 ![image](https://github.com/user-attachments/assets/930a28d9-4459-4c68-ba12-2cca8b7141ec)
