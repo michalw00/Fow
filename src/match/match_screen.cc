@@ -119,32 +119,30 @@ void MatchScreen::InitSelectedUnitHud() {
 
   RVector2 action_size = background_size / 2.f;
 
-  auto& player = match_->GetCurrentPlayer();
-
   auto move_texture = action_manager_.GetTexture(UnitAction::kMove);
   RVector2 move_position = origin - background_shift - action_size;
   move_position.y += action_size.GetY();
-  std::shared_ptr<TextureButton> move_button = std::make_shared<TextureButton>(move_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kMove); }, move_texture);
+  std::shared_ptr<TextureButton> move_button = std::make_shared<TextureButton>(move_position, action_size, [this]() { auto& player = match_->GetCurrentPlayer(); player.SetCurrentAction(UnitAction::kMove); }, move_texture);
   ComplexDrawablePart move("Move", move_button);
 
   auto recon_texture = action_manager_.GetTexture(UnitAction::kRecon);
   RVector2 recon_position = origin - background_shift - action_size;
   recon_position.y += action_size.GetY() * 2.f;
-  std::shared_ptr<TextureButton> recon_button = std::make_shared<TextureButton>(recon_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kRecon); }, recon_texture);
+  std::shared_ptr<TextureButton> recon_button = std::make_shared<TextureButton>(recon_position, action_size, [this]() { auto& player = match_->GetCurrentPlayer(); player.SetCurrentAction(UnitAction::kRecon); }, recon_texture);
   ComplexDrawablePart recon("Recon", recon_button);
 
   auto attack_texture = action_manager_.GetTexture(UnitAction::kAttack);
   RVector2 attack_position = origin - background_shift - action_size;
   attack_position.x += background_shift.GetX() * 3.f;
   attack_position.y += action_size.GetY();
-  std::shared_ptr<TextureButton> attack_button = std::make_shared<TextureButton>(attack_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kAttack); }, attack_texture);
+  std::shared_ptr<TextureButton> attack_button = std::make_shared<TextureButton>(attack_position, action_size, [this]() { auto& player = match_->GetCurrentPlayer(); player.SetCurrentAction(UnitAction::kAttack); }, attack_texture);
   ComplexDrawablePart attack("Attack", attack_button);
 
   auto defense_texture = action_manager_.GetTexture(UnitAction::kReinforce);
   RVector2 defense_position = origin - background_shift - action_size;
   defense_position.x += background_shift.GetX() * 3.f;
   defense_position.y += action_size.GetY() * 2.f;
-  std::shared_ptr<TextureButton> defense_button = std::make_shared<TextureButton>(defense_position, action_size, [&player]() { player.SetCurrentAction(UnitAction::kReinforce); }, defense_texture);
+  std::shared_ptr<TextureButton> defense_button = std::make_shared<TextureButton>(defense_position, action_size, [this]() { auto& player = match_->GetCurrentPlayer(); player.SetCurrentAction(UnitAction::kReinforce); }, defense_texture);
   ComplexDrawablePart defense("Reinforce", defense_button);
 
   std::initializer_list<ComplexDrawablePart> parts = { background, unit_type, hp, mp, ap, db, move, recon, attack, defense };
