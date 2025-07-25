@@ -32,7 +32,7 @@ void Unit::Attack(std::shared_ptr<Target> other, const std::unique_ptr<Map>& map
   } else {
     attacker_power += modifiers->soft_attack;
   }
-  float defender_power = other_tile.GetTerrain()->GetModifiers().defense_bonus + defense_bonus_;
+  float defender_power = other_tile.GetTerrain()->GetModifiers().defense_bonus + other_unit->defense_bonus_;
   if (modifiers->is_vehicle) {
     defender_power += other_modifiers->hard_defense;
   } else {
@@ -45,7 +45,7 @@ void Unit::Attack(std::shared_ptr<Target> other, const std::unique_ptr<Map>& map
     return; // Can't counterattack
   }
 
-  attacker_power = other_tile.GetTerrain()->GetModifiers().defense_bonus + defense_bonus_;
+  attacker_power = other_tile.GetTerrain()->GetModifiers().defense_bonus + other_unit->defense_bonus_;
   if (other_modifiers->is_vehicle) {
     attacker_power += other_modifiers->hard_defense; // Not attack because it is close range combat
   } else {

@@ -164,7 +164,7 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kMountains, 0.5},
     {TerrainType::kMarsh, 0.7},
     {TerrainType::kForest, 0.3},
-    {TerrainType::kUrban, 0.0 }
+    {TerrainType::kUrban, 0.3 }
   };
 
   terrain_compatibility[TerrainType::kUrban] = {
@@ -174,7 +174,7 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kMountains, 0.0},
     {TerrainType::kMarsh, 0.0},
     {TerrainType::kForest, 0.0},
-    {TerrainType::kWater, 0.0}
+    {TerrainType::kWater, 0.3}
   };
 }
 

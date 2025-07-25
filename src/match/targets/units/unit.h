@@ -35,7 +35,7 @@ struct UnitModifiers {
   float start_movement_points = 0.f;
   float start_health_points = 100.f;
   float start_ability_points = 2.f;
-  float max_defense_bonus = 0.6f;
+  float max_defense_bonus = 0.2f;
   float bridge_damage = 0.f;
   float soft_attack = 0.f;
   float hard_attack = 0.f;

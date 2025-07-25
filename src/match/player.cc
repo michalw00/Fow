@@ -104,7 +104,7 @@ void Player::DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> o
       float defense_cost = 1.f;
       if (defense_bonus + 0.05f < selected_unit_->GetUnitModifiers()->max_defense_bonus
         && selected_unit_->GetAbilityPoints() + 0.05f > defense_cost) {
-        selected_unit_->AddDefenseBonus(0.2f); 
+        selected_unit_->AddDefenseBonus(0.1f); 
         selected_unit_->SubstractAbilityPoints(defense_cost);
       }
       current_action_ = prev_action_;
