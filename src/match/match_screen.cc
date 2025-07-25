@@ -89,10 +89,10 @@ void MatchScreen::InitPanelHud() {
 }
 
 void MatchScreen::InitSelectedUnitHud() {
-  RVector2 origin(basic_width_ / 2.f, basic_height_ - 170.f);
+  RVector2 origin(basic_width_ / 2.f, basic_height_ - 150.f);
 
   RColor background_color = RColor::Black().Alpha(0.875f);
-  RVector2 background_shift(140.f, 50.f);
+  RVector2 background_shift(120.f, 50.f);
   RVector2 background_position = origin - background_shift;
   RVector2 background_size = { background_shift.x * 2.f, basic_height_ - origin.y + background_shift.y };
   background_size.y += 28.f;
@@ -100,21 +100,22 @@ void MatchScreen::InitSelectedUnitHud() {
   std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_size, background_color);
   ComplexDrawablePart background("BG", background_rectangle);
 
-  RVector2 button_shift = Vector2(0.f, 45.f);
+  float font_size = 27.f;
+  RVector2 button_shift = Vector2(0.f, 40.f);
 
-  std::shared_ptr<Text> unit_type_text = std::make_shared<Text>(origin - RVector2(0, 10.f), RText("", 40.f));
+  std::shared_ptr<Text> unit_type_text = std::make_shared<Text>(origin - RVector2(0, 10.f), RText("", font_size + 10.f));
   ComplexDrawablePart unit_type("UNIT_TYPE", unit_type_text);
 
-  std::shared_ptr<Text> hp_text = std::make_shared<Text>(origin + button_shift, RText("", 30.f), true);
+  std::shared_ptr<Text> hp_text = std::make_shared<Text>(origin + button_shift, RText("", font_size), true);
   ComplexDrawablePart hp("HP", hp_text);
 
-  std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + (button_shift * 2), RText("", 30.f), true);
+  std::shared_ptr<Text> mp_text = std::make_shared<Text>(origin + (button_shift * 2), RText("", font_size), true);
   ComplexDrawablePart mp("MP", mp_text);
 
-  std::shared_ptr<Text> ap_text = std::make_shared<Text>(origin + (button_shift * 3), RText("", 30.f), true);
+  std::shared_ptr<Text> ap_text = std::make_shared<Text>(origin + (button_shift * 3), RText("", font_size), font_size);
   ComplexDrawablePart ap("AP", ap_text);
 
-  std::shared_ptr<Text> db_text = std::make_shared<Text>(origin + (button_shift * 4), RText("", 30.f), true);
+  std::shared_ptr<Text> db_text = std::make_shared<Text>(origin + (button_shift * 4), RText("", font_size), font_size);
   ComplexDrawablePart db("DB", db_text);
 
   RVector2 action_size = background_size / 2.f;
@@ -169,7 +170,7 @@ void MatchScreen::Update() {
 
   auto& hited_tiles = player.GetHitedTiles();
   if (bool is_empty = hited_tiles.empty(); !is_empty && show_hit_stopwatch_ == -1.f) {
-    show_hit_stopwatch_ = 0.f;   
+    show_hit_stopwatch_ = 0.f;
   } else if (!is_empty && show_hit_stopwatch_ < show_hit_time_) {
     show_hit_stopwatch_ += GetFrameTime();
     auto& buttons = player.GetRenderMap();

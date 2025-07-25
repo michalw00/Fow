@@ -12,7 +12,7 @@
 namespace fow {
 
 class Match {
-  public:
+public:
   void InitMap(int rows, int columns);
   void InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number = 2);
   void EndTurn();
@@ -23,8 +23,10 @@ class Match {
   Player& GetCurrentPlayer() { return players_.at(current_player_index_); }
   std::vector<Player> GetOtherPlayers() const;
   const UnitManager& GetUnitManager() { return unit_manager_; }
-  private:
+private:
   void NextPlayer();
+  void PlaceUnits1();
+  void PlaceUnits2();
 
   UnitManager unit_manager_;
 
