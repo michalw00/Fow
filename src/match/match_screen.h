@@ -46,7 +46,7 @@ private:
 
   std::unique_ptr<Match> match_;
   Input input;
-  float show_hit_time_ = 0.5f;
+  float show_hit_time_ = 0.35f;
   float show_hit_stopwatch_ = 0.f;
 
   ActionManager action_manager_;

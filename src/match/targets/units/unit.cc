@@ -96,6 +96,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
         0.02, 0.08, 0.08, 0.02, 
          0.06, 0.12, 0.24, 0.12, 0.06,
         0.02, 0.08, 0.08, 0.02 };
+      shots = 4;
       break;
     case UnitType::kEW:
       start_movement_points = 3.f;
@@ -151,6 +152,7 @@ UnitModifiers::UnitModifiers(UnitType unit_type) {
       direction_deviation = 0;
       hit_chances = { 0.15, 0.7, 0.15 };
       diag_hit_chances = hit_chances;
+      shots = 2;
       break;
     case UnitType::kUCAV:
       start_movement_points = 3.f;

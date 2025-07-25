@@ -166,20 +166,22 @@ void MatchScreen::Update() {
     auto layer = std::make_shared<Rectangle>(RVector2(0.f, 0.f), RVector2(10000.f, 10000.f), RColor::Gray().Alpha(0.2f));
     PlaceDrawable(layer, true);
   }
-  if (!player.GetShowedHitedTile() && show_hit_stopwatch_ == -1.f) {
+
+  auto& hited_tiles = player.GetHitedTiles();
+  if (bool is_empty = hited_tiles.empty(); !is_empty && show_hit_stopwatch_ == -1.f) {
     show_hit_stopwatch_ = 0.f;   
-  } else if (!player.GetShowedHitedTile() && show_hit_stopwatch_ < show_hit_time_) {
+  } else if (!is_empty && show_hit_stopwatch_ < show_hit_time_) {
     show_hit_stopwatch_ += GetFrameTime();
     auto& buttons = player.GetRenderMap();
-    auto tile = player.GetHitedTile();
+    auto& tile = hited_tiles.front();
     RRectangle area = buttons[tile.x][tile.y]->GetArea();
     RVector2 size = { area.GetSize() };
     RVector2 position = area.GetPosition();
     auto hit = std::make_shared<Rectangle>(position, size, RColor::Black());
     PlaceDrawable(hit);
-  } else {
+  } else if (!is_empty) {
     show_hit_stopwatch_ = -1.f;
-    player.SetShowedHitedTile(true);
+    hited_tiles.pop();
   }
 
   auto& hud_drawables = panel_hud_->GetDrawables();
@@ -417,8 +419,8 @@ void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const U
   std::string max_mp = std::format("{:.1f}", unit_modifiers->start_movement_points);
   selected_unit_hud_->EditText("MP", "MP: " + current_mp + " / " + max_mp);
 
-  std::string current_ap = std::format("{:.2f}", unit->GetAbilityPoints());
-  std::string max_ap = std::format("{:.1f}", unit_modifiers->start_ability_points);
+  std::string current_ap = std::format("{:.0f}", unit->GetAbilityPoints());
+  std::string max_ap = std::format("{:.0f}", unit_modifiers->start_ability_points);
   selected_unit_hud_->EditText("AP", "AP: " + current_ap + " / " + max_ap);
 
   std::string current_db = std::format("{:.1f}", unit->GetDefenseBonus());

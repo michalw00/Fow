@@ -4,6 +4,7 @@
 #include <iterator>
 #include <memory>
 #include <random>
+#include <queue>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
@@ -314,17 +315,16 @@ void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& o
     return;
   }
   float attack_cost = 1.f;
-  UnitType unit_type = selected_unit_->GetType();
-  if (unit_type == UnitType::kArtillery) {
-    attack_cost *= 0.25f;
-  } else if (unit_type == UnitType::kTBM) {
-    attack_cost *= 0.5f;
-  }
+
   if (selected_unit_->GetAbilityPoints() + 0.05f < attack_cost) {
     return;
   }
 
+  int shots = selected_unit_->GetUnitModifiers()->shots;
+  attack_cost /= shots;
+  std::vector<std::shared_ptr<Unit>> enemy_units = GetEnemyUnits(std::move(other_players));
   Vector2I target_tile;
+  for (int i = 1; i <= shots; ++i) {
   if (possible_attacked_tiles_.size() == 1) {
      target_tile = possible_attacked_tiles_.begin()->first;
      if (!probabilities_map_[target_tile.x][target_tile.y]) {
@@ -350,9 +350,7 @@ void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& o
     }
   }
   selected_unit_->SubstractAbilityPoints(attack_cost);
-  hited_tile_ = target_tile;
-  showed_hited_tile_ = false;
-  std::vector<std::shared_ptr<Unit>> enemy_units = GetEnemyUnits(std::move(other_players));
+    hited_tiles_.emplace(target_tile); 
   auto unit_it = std::find_if(enemy_units.begin(), enemy_units.end(), [&target_tile](std::shared_ptr<Unit> unit) { return unit->GetPosition() == target_tile; });
   // Is miss
   if (unit_it != enemy_units.end()) {
@@ -363,6 +361,7 @@ void Player::AttackTile(const std::unique_ptr<Map>& map, std::vector<Player>&& o
   if (unit_it != units_.end()) {
     selected_unit_->Attack(*unit_it, map);
   }
+}
 }
 
 void Player::ClearSelectedTile() {

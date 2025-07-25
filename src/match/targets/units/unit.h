@@ -44,6 +44,7 @@ struct UnitModifiers {
   int min_attack_range = 0;
   int attack_range = 0;
   int recon_range = 0;
+  int shots = 1;
   bool is_vehicle = false;
   int range_deviation = 0;
   int direction_deviation = 0;

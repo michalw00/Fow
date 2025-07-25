@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <queue>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -48,9 +49,7 @@ public:
 
   void DoUnitAction(const std::unique_ptr<Map>& map, std::vector<Player> other_players);
 
-  Vector2I GetHitedTile() const { return hited_tile_; }
-  bool GetShowedHitedTile() const { return showed_hited_tile_; }
-  void SetShowedHitedTile(bool showed_hited_tile) { showed_hited_tile_ = showed_hited_tile; }
+  std::queue<Vector2I>& GetHitedTiles() { return hited_tiles_; }
 private:
   void UpdateRenderMap();
 
@@ -103,8 +102,7 @@ private:
   UnitAction current_action_ = UnitAction::kMove;
   mutable Vector2I attacked_tile_ = { -1, -1 };
   mutable std::unordered_map<Vector2I, double> possible_attacked_tiles_;
-  Vector2I hited_tile_ = { -1, -1 };
-  bool showed_hited_tile_ = true;
+  std::queue<Vector2I> hited_tiles_;
 
   int turn_ = -1;
 };
