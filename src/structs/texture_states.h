@@ -17,6 +17,8 @@ struct TextureState {
     selected->SetFilter(TextureFilter::TEXTURE_FILTER_ANISOTROPIC_16X);
   }
 
+
+
   std::shared_ptr<RTexture> basic;
   std::shared_ptr<RTexture> hovered;
   std::shared_ptr<RTexture> selected;

@@ -158,6 +158,7 @@ void MatchScreen::Update() {
   camera_ = player.GetCamera();
   PlacePlayerButtons(player);
   UpdateTileInfoWindow(player);
+  ShowUnitsHud(match_->GetUnitManager(), player);
 
   if (auto& unit = player.GetSelectedUnit(); unit) {
     ShowSelectedUnitHud(unit, match_->GetUnitManager(), player);
@@ -441,6 +442,53 @@ void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const U
   for (auto& hud_drawable : hud_drawables) {
     PlaceDrawable(hud_drawable, true);
   }
+}
+
+void MatchScreen::ShowUnitsHud(const UnitManager& unit_manager, Player& player) {
+    const auto& highlighted_unit = player.GetSelectedUnit();
+    const auto& units = player.GetUnits();
+
+    float size = 40.f;
+    float spacing = 18.f;
+    float x = 10.f;
+    float y = 10.f;
+
+    for (int i = 0; i < units.size(); i++) {
+        const auto& unit = units[i];
+        const auto texture = unit_manager.GetTexture(unit->GetType());
+
+        RVector2 pos(x + i * (size + spacing), y);
+        RVector2 window_size(texture.basic->GetSize().GetX(), texture.basic->GetSize().GetY());
+
+        auto lmb_action = [this, &player, &unit]() {
+            if (player.GetSelectedUnit() == unit) {
+                player.SetSelectedUnit(nullptr);
+            }
+            else {
+                player.SetSelectedUnit(unit, match_->GetMap());
+                player.ClearSelectedTile();
+            }
+            };
+
+        auto button = std::make_shared<TextureButton>(pos, window_size, lmb_action, texture);
+        button->SetIsSelected(player.GetSelectedUnit() == unit);
+        PlaceDrawable(button, true);
+
+        float max_hp = unit->GetUnitModifiers()->start_health_points;
+        float ratio = unit->GetHealthPoints() / max_hp;
+        if (ratio < 1.f) {
+            float overlay_height = window_size.y * (1.f - ratio);
+            RVector2 overlay_pos = pos + RVector2(0.f, window_size.y - overlay_height);
+            auto overlay = std::make_shared<Rectangle>(overlay_pos, RVector2(window_size.x, overlay_height), RColor::Red().Alpha(0.5f));
+            PlaceDrawable(overlay, true);
+        }
+
+        std::string name = unit_manager.GetName(unit->GetType());
+        RText rtext(name, 11.f);
+        RVector2 text_pos = pos + RVector2(window_size.x / 2.f, window_size.y + 10.f);
+        auto text = std::make_shared<Text>(text_pos, rtext, true);
+        PlaceDrawable(text, true);
+    }
 }
 
 } // namespace fow

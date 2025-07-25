@@ -34,6 +34,7 @@ private:
 
   void UpdateTileInfoWindow(Player& player);
   void ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const UnitManager& unit_manager, const Player& player);
+  void ShowUnitsHud(const UnitManager& unit_manager, Player& player);
 
   void InitMatch();
   void InitPanelHud();
