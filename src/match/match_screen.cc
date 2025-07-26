@@ -61,7 +61,7 @@ void MatchScreen::InitPanelHud() {
   Vector2 button_shift = Vector2(0.f, -50.f);
 
   RText show_fow_text("SHOW FOW", font_size);
-  RVector2 show_fow_position = background_position + show_fow_text.MeasureEx()/1.5f;
+  RVector2 show_fow_position = background_position + show_fow_text.MeasureEx() / 1.5f;
   auto show_fow_button = std::make_shared<TextButton>(show_fow_position, [&]() { show_fow = !show_fow; }, show_fow_text, true);
   ComplexDrawablePart show_fow("SHOW_FOW", show_fow_button);
 
@@ -84,7 +84,7 @@ void MatchScreen::InitPanelHud() {
   auto end_turn_button = std::make_shared<TextButton>(end_turn_position, [&]() { match_->EndTurn(); }, end_turn_text, true);
   ComplexDrawablePart end_turn("END_TURN", end_turn_button);
 
-  std::initializer_list<ComplexDrawablePart> parts = { background, show_fow, show_zeros, prev_map, end_turn  };
+  std::initializer_list<ComplexDrawablePart> parts = { background, show_fow, show_zeros, prev_map, end_turn };
   panel_hud_ = std::make_unique<ComplexDrawable>(parts);
 }
 
@@ -275,7 +275,7 @@ void MatchScreen::PlaceProbabilityMap(Player& player) {
         }
         continue;
       }
-      position += size / 2.f;     
+      position += size / 2.f;
       if (probability >= 0.f) {
         text_string = std::format("{:.1f}", probability * 100) + '%';
       }
@@ -290,7 +290,7 @@ void MatchScreen::PlaceProbabilityMap(Player& player) {
       } else {
         g *= 1 - probability;
       }
-      
+
       RColor color(r, g, b);
       RText rtext(text_string, size.GetX() * 0.3f, color);
 
@@ -309,11 +309,11 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
 
   std::unordered_set<Vector2I> tiles;
   RColor color;
-  
+
   switch (current_action) {
     case UnitAction::kMove:
       tiles = player.GetPossibleMoveTiles();
-      color = RColor::Green();    
+      color = RColor::Green();
       break;
     case UnitAction::kRecon:
       tiles = player.GetPossibleReconTiles();
@@ -359,14 +359,14 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
           draw_later.emplace_back(attacked);
           attacked_position += size / 2.f;
           attacked_position.y -= size.y / 3.f;
-          std::string hit_chance_str = std::format("{:.0f}", hit_chance*100.0);
-          RText rtext(hit_chance_str+'%', size.GetX() * 0.33f, RColor::Black());
-          std::shared_ptr<Text> hit_chance = std::make_shared<Text>(attacked_position, rtext);     
+          std::string hit_chance_str = std::format("{:.0f}", hit_chance * 100.0);
+          RText rtext(hit_chance_str + '%', size.GetX() * 0.33f, RColor::Black());
+          std::shared_ptr<Text> hit_chance = std::make_shared<Text>(attacked_position, rtext);
           draw_later.emplace_back(hit_chance);
         }
       }
     }
-  } 
+  }
   for (auto& drawable : draw_later) {
     PlaceDrawable(drawable);
   }
@@ -445,50 +445,54 @@ void MatchScreen::ShowSelectedUnitHud(const std::shared_ptr<Unit>& unit, const U
 }
 
 void MatchScreen::ShowUnitsHud(const UnitManager& unit_manager, Player& player) {
-    const auto& highlighted_unit = player.GetSelectedUnit();
-    const auto& units = player.GetUnits();
+  const auto& highlighted_unit = player.GetSelectedUnit();
+  const auto& units = player.GetUnits();
 
-    float size = 40.f;
-    float spacing = 18.f;
-    float x = 10.f;
-    float y = 10.f;
+  float size = 50.f;
+  float spacing = 10.f;
+  float x = 10.f;
+  float y = 10.f;
+  int row = 0;
+  int max_row = 11;
+  int column = 0;
 
-    for (int i = 0; i < units.size(); i++) {
-        const auto& unit = units[i];
-        const auto texture = unit_manager.GetTexture(unit->GetType());
-
-        RVector2 pos(x + i * (size + spacing), y);
-        RVector2 window_size(texture.basic->GetSize().GetX(), texture.basic->GetSize().GetY());
-
-        auto lmb_action = [this, &player, &unit]() {
-            if (player.GetSelectedUnit() == unit) {
-                player.SetSelectedUnit(nullptr);
-            }
-            else {
-                player.SetSelectedUnit(unit, match_->GetMap());
-                player.ClearSelectedTile();
-            }
-            };
-
-        auto button = std::make_shared<TextureButton>(pos, window_size, lmb_action, texture);
-        button->SetIsSelected(player.GetSelectedUnit() == unit);
-        PlaceDrawable(button, true);
-
-        float max_hp = unit->GetUnitModifiers()->start_health_points;
-        float ratio = unit->GetHealthPoints() / max_hp;
-        if (ratio < 1.f) {
-            float overlay_height = window_size.y * (1.f - ratio);
-            RVector2 overlay_pos = pos + RVector2(0.f, window_size.y - overlay_height);
-            auto overlay = std::make_shared<Rectangle>(overlay_pos, RVector2(window_size.x, overlay_height), RColor::Red().Alpha(0.5f));
-            PlaceDrawable(overlay, true);
-        }
-
-        std::string name = unit_manager.GetName(unit->GetType());
-        RText rtext(name, 11.f);
-        RVector2 text_pos = pos + RVector2(window_size.x / 2.f, window_size.y + 10.f);
-        auto text = std::make_shared<Text>(text_pos, rtext, true);
-        PlaceDrawable(text, true);
+  for (const auto& unit : units) {
+    const auto texture = unit_manager.GetTexture(unit->GetType());
+    if (row == max_row) {
+      row = 0;
+      ++column;
     }
+    RVector2 pos(x + column * (size + spacing), y + row * (size + spacing));
+    ++row;
+    RVector2 window_size(size, size / 1.5f);
+    auto lmb_action = [this, &player, &unit]() {
+      if (player.GetSelectedUnit() == unit) {
+        player.SetSelectedUnit(nullptr);
+      } else {
+        player.SetSelectedUnit(unit, match_->GetMap());
+        player.ClearSelectedTile();
+      }
+    };
+
+    auto button = std::make_shared<TextureButton>(pos, window_size, lmb_action, texture);
+    button->SetIsSelected(player.GetSelectedUnit() == unit);
+    PlaceDrawable(button, true);
+
+    float max_hp = unit->GetUnitModifiers()->start_health_points;
+    float ratio = unit->GetHealthPoints() / max_hp;
+    if (ratio < 1.f) {
+      float overlay_height = window_size.y * (1.f - ratio);
+      RVector2 overlay_pos = pos + RVector2(0.f, window_size.y - overlay_height);
+      auto overlay = std::make_shared<Rectangle>(overlay_pos, RVector2(window_size.x, overlay_height), RColor::Red().Alpha(0.5f));
+      PlaceDrawable(overlay, true);
+    }
+
+    std::string name = unit_manager.GetName(unit->GetType());
+    RText rtext(name, 11.f);
+    RVector2 text_pos = pos + RVector2(window_size.x / 2.f, window_size.y + 10.f);
+    auto text = std::make_shared<Text>(text_pos, rtext, true);
+    PlaceDrawable(text, true);
+  }
 }
 
 } // namespace fow

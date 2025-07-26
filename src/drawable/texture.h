@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Rectangle.hpp>
 #include <Texture.hpp>
 #include <Vector2.hpp>
 
@@ -15,6 +16,7 @@ class Texture : public Drawable {
   void Scale(RVector2 scale) override;
   private:
   RTexture rtexture_;
+  RRectangle area_;
 };
 
 } // namespace fow
