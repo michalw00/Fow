@@ -3,6 +3,7 @@
 #include <cmath>
 #include <compare>
 #include <type_traits>
+#include <functional>
 
 #include "../utils/math_utils.h"
 

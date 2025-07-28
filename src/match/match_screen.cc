@@ -95,7 +95,6 @@ void MatchScreen::InitSelectedUnitHud() {
   RVector2 background_shift(120.f, 50.f);
   RVector2 background_position = origin - background_shift;
   RVector2 background_size = { background_shift.x * 2.f, basic_height_ - origin.y + background_shift.y };
-  background_size.y += 28.f;
 
   std::shared_ptr<Rectangle> background_rectangle = std::make_shared<Rectangle>(background_position, background_size, background_color);
   ComplexDrawablePart background("BG", background_rectangle);
@@ -361,8 +360,8 @@ void MatchScreen::PlacePossibleTiles(Player& player) {
           attacked_position.y -= size.y / 3.f;
           std::string hit_chance_str = std::format("{:.0f}", hit_chance * 100.0);
           RText rtext(hit_chance_str + '%', size.GetX() * 0.33f, RColor::Black());
-          std::shared_ptr<Text> hit_chance = std::make_shared<Text>(attacked_position, rtext);
-          draw_later.emplace_back(hit_chance);
+          std::shared_ptr<Text> hit_chance_text = std::make_shared<Text>(attacked_position, rtext);
+          draw_later.emplace_back(hit_chance_text);
         }
       }
     }
