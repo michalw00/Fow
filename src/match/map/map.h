@@ -29,6 +29,8 @@ public:
   const TerrainManager& GetTerrainManager() const { return terrain_manager_; }
 
   std::unordered_set<Vector2I> GetNeighbors(Vector2I position, bool itself = false) const;
+
+  void SetTileFromType(Vector2I position, TerrainType type);
 private:
   void InitSize(int rows, int columns);
   void InitTerrainCompatibility();

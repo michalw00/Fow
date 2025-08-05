@@ -8,6 +8,7 @@
 #include "map/map.h"
 #include "match.h"
 #include "targets/units/unit.h"
+#include "../utils/astar.h"
 
 namespace fow {
 
@@ -26,6 +27,13 @@ void Match::InitMap(int rows, int columns) {
   // 41 <= k <= 60: high clusterization
   // k >= 61: very high clusterization
   map_ = std::make_unique<Map>(rows, columns, distribution, k);
+
+  static AStar astar; // TODO: debug stuff, remove later
+  AStar::Node nodeStart;
+  nodeStart.pos.x = 10;
+  nodeStart.pos.y = 10;
+  astar.FloodFill(nodeStart, map_);
+  
 }
 
 void Match::InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number) {
