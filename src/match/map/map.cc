@@ -190,7 +190,6 @@ double Map::GetCompatibility(TerrainType a, TerrainType b) const {
 void Map::SetTileFromType(Vector2I pos, TerrainType type) { // TODO: sprawdzic granice mapy
     std::shared_ptr<Terrain> terrain = terrain_manager_.GetResource(type);
     tiles_[pos.y][pos.x].SetTerrain(terrain_manager_.GetResource(type));
-    //tiles_[pos.y][pos.x].SetTerrain(std::make_shared<Terrain>(terrain));
 }
 
 void Map::RandomFillMap(TerrainDistribution distribution, std::mt19937 gen) {
