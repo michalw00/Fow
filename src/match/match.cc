@@ -28,12 +28,7 @@ void Match::InitMap(int rows, int columns) {
   // k >= 61: very high clusterization
   map_ = std::make_unique<Map>(rows, columns, distribution, k);
 
-  static AStar astar; // TODO: debug stuff, remove later
-  AStar::Node nodeStart;
-  nodeStart.pos.x = 10;
-  nodeStart.pos.y = 10;
-  astar.FloodFill(nodeStart, map_);
-  
+  map_->GenerateRoads(20, 0.25);
 }
 
 void Match::InitPlayers(float basic_width, float basic_height, RCamera2D camera, int number) {

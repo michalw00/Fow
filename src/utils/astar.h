@@ -82,10 +82,10 @@ namespace fow {
 
 		std::priority_queue<Node*, std::vector<Node*>, MinByF> open_set;
 
-		std::vector<Vector2I> FindPathAStar(Node start, Vector2I goal, std::unique_ptr<Map>& map_) {
+		std::vector<Vector2I> FindPathAStar(Node start, Vector2I goal, const Map& map_) {
 			open_set = std::priority_queue<Node*, std::vector<Node*>, MinByF>{};
 
-			bounds = map_->GetBounds();
+			bounds = map_.GetBounds();
 			int W = bounds.x;
 			int H = bounds.y;
 
