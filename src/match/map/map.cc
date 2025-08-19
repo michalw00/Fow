@@ -79,6 +79,12 @@ std::unordered_set<Vector2I> Map::GetNeighbors(Vector2I position, bool itself) c
   return neighbors;
 }
 
+Vector2I Map::GetBounds() const {
+    int height = static_cast<int>(tiles_.size());
+    int width = static_cast<int>(tiles_[0].size());
+    return { width, height };
+}
+
 void Map::InitSize(int rows, int columns) {
   tiles_.resize(columns);
   for (int i = 0; i < columns; ++i) {
