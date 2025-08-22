@@ -247,6 +247,14 @@ void Map::GenerateRoads(int max_distance, double chance) {
     auto clusters = FindClusters(TerrainType::kUrban);
     if (clusters.size() < 2) return;
 
+    auto water_clusters = FindClusters(TerrainType::kWater);
+    std::unordered_set<Vector2I> blocked;
+    for (const auto& cluster : water_clusters) {
+        if (cluster.size() > 1) {
+            blocked.insert(cluster.begin(), cluster.end());
+        }
+    }
+
     std::vector<Vector2I> centers;
     centers.reserve(clusters.size());
     for (const auto& cluster : clusters) {
@@ -283,7 +291,7 @@ void Map::GenerateRoads(int max_distance, double chance) {
 
             AStar::Node start;
             start.pos = centers[i];
-            auto path = astar.FindPathAStar(start, centers[j], *this);
+            auto path = astar.FindPathAStar(start, centers[j], *this, blocked);
 
             for (const auto& p : path) {
                 if (p.x < 0 || p.x >= width || p.y < 0 || p.y >= height) {

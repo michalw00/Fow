@@ -4,7 +4,8 @@
 #include <queue>
 #include <vector>
 #include <algorithm>
-#include <cmath> 
+#include <cmath>
+#include <unordered_set>
 #include "../structs/vector2i.h"
 #include "../match/map/map.h"
 
@@ -39,7 +40,7 @@ namespace fow {
 			return D * std::max(dx, dy) + (D2 - D) * std::min(dx, dy);
 		}
 
-		void ExpandNeighbors(Node* cur, const Vector2I& goal, int W, int H, std::vector<Node>& nodes) {
+		void ExpandNeighbors(Node* cur, const Vector2I& goal, int W, int H, std::vector<Node>& nodes, const std::unordered_set<Vector2I>& blocked) {
 			int OFFS[8][2] = {
 				{ 0,-1},{ 1,-1},{ 1, 0},{ 1, 1},
 				{ 0, 1},{-1, 1},{-1, 0},{-1,-1}
@@ -48,12 +49,13 @@ namespace fow {
 			for (int d = 0; d < 8; d++) {
 				int nx = cur->pos.x + OFFS[d][0];
 				int ny = cur->pos.y + OFFS[d][1];
-				PushNode(cur, nx, ny, goal, W, H, nodes);
+				PushNode(cur, nx, ny, goal, W, H, nodes, blocked);
 			}
 		}
 
-		void PushNode(Node* cur, int nx, int ny, const Vector2I& goal, int W, int H, std::vector<Node>& nodes) {
+		void PushNode(Node* cur, int nx, int ny, const Vector2I& goal, int W, int H, std::vector<Node>& nodes, const std::unordered_set<Vector2I>& blocked) {
 			if (!IsInBounds({ nx, ny }, { 0 , 0 }, { W, H })) return;
+			if (blocked.contains({ nx, ny })) return;
 
 			int childIndex = Idx(nx, ny, W);
 			Node& child = nodes[childIndex];
@@ -82,7 +84,7 @@ namespace fow {
 
 		std::priority_queue<Node*, std::vector<Node*>, MinByF> open_set;
 
-		std::vector<Vector2I> FindPathAStar(Node start, Vector2I goal, const Map& map_) {
+		std::vector<Vector2I> FindPathAStar(Node start, Vector2I goal, const Map& map_, const std::unordered_set<Vector2I>& blocked) {
 			open_set = std::priority_queue<Node*, std::vector<Node*>, MinByF>{};
 
 			bounds = map_.GetBounds();
@@ -128,7 +130,7 @@ namespace fow {
 					return path;
 				}
 
-				ExpandNeighbors(top, goal, W, H, nodes);
+				ExpandNeighbors(top, goal, W, H, nodes, blocked);
 			}
 
 			return {};
