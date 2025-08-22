@@ -113,7 +113,8 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kForest, {}},
     {TerrainType::kWater, {}},
     {TerrainType::kUrban, {}},
-    {TerrainType::kRoad, {}}
+    {TerrainType::kRoad, {}},
+    {TerrainType::kBridge, {}}
   };
 
   terrain_compatibility[TerrainType::kPlains] = {
@@ -184,8 +185,13 @@ void Map::InitTerrainCompatibility() {
     {TerrainType::kForest, 0.0},
     {TerrainType::kWater, 0.3}
   };
+
   terrain_compatibility[TerrainType::kRoad] = {
     {TerrainType::kRoad, 1.0}
+  };
+
+  terrain_compatibility[TerrainType::kBridge] = {
+  {TerrainType::kBridge, 1.0}
   };
 }
 
@@ -299,7 +305,12 @@ void Map::GenerateRoads(int max_distance, double chance) {
                 }
                 TerrainType current = tiles_[p.x][p.y].GetTerrain()->GetType();
                 if (current != TerrainType::kUrban) {
-                    SetTileFromType(p, TerrainType::kRoad);
+                    if (current == TerrainType::kWater) {
+                        SetTileFromType(p, TerrainType::kBridge);
+                    }
+                    else if (current != TerrainType::kUrban) {
+                        SetTileFromType(p, TerrainType::kRoad);
+                    }
                 }
             }
 

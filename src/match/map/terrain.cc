@@ -43,6 +43,9 @@ TerrainModifiers::TerrainModifiers(TerrainType terrain_type) {
     case TerrainType::kRoad:
         movement_cost = 0.8f;
         break;
+    case TerrainType::kBridge:
+        movement_cost = 0.8f;
+        break;
   }
 }
 
@@ -58,6 +61,7 @@ std::string TerrainManager::GetName(TerrainType terrain_type) const {
     case TerrainType::kWater: return "Water";
     case TerrainType::kUrban: return "Urban";
     case TerrainType::kRoad: return "Road";
+    case TerrainType::kBridge: return "Bridge";
   }
 }
 
@@ -71,6 +75,7 @@ std::string TerrainManager::GetTextureName(TerrainType terrain_type) const {
     case TerrainType::kWater: return "terrain/water/water";
     case TerrainType::kUrban: return "terrain/urban/urban";
     case TerrainType::kRoad: return "terrain/road/road";
+    case TerrainType::kBridge: return "terrain/bridge/bridge";
   }
 }
 
